@@ -1,8 +1,23 @@
-Schutzsuchende
+1. Welche Jahre wollen wir betrachten?
 
-Stichtag = 31.12.2023
-Es gibt Stichtage zu den letzten 17 Jahren (Seit 31.12.2007). Diese Tabelle mit allen Stichtagen downloaden, damit wir die Zaheln über die letzten 17 Jahre analysieren können.
+Schutzsuchende: Jahre 2007 - 2023
 
+Ausländerstatistik: Jahre 1980 - 2023
+
+Momentan beinhaltet die csv nur 2023.
+
+----------------------------------------------
+2. Ländergruppierungen:
 Ausländerstatistik + Schutzsuchende:  Die Ländergruppierungen überschneiden sich.
 Wie können wir in einem Plot darstellen aus welchen Ländergruppierungen die Migranten kommen?
+
+----------------------------------------------
+3. Ausländerstatistik:
+Es gibt verschiedene Tabellen mit Infos zu 
+- Durchschnittl. Aufenthaltsdauer
+- Durchschnittsalter der Ausländer
+- Familienstand
+- Aufenthaltsdauer
+- Aufenthaltstitel
+- Tabellen nach Land (Deutschland), Bundesland, Kreise
 
