@@ -1,3 +1,5 @@
-Schutzsuchende:
+#Schutzsuchende#
+
 Stichtag = 31.12.2023
 Es gibt Stichtage zu den letzten 17 Jahren (Seit 31.12.2007). Diese Tabelle mit allen Stichtagen downloaden, damit wir die Zaheln über die letzten 17 Jahre analysieren können.
+
