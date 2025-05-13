@@ -21,3 +21,7 @@ Es gibt verschiedene Tabellen mit Infos zu
 - Aufenthaltstitel
 - Tabellen nach Land (Deutschland), Bundesland, Kreise
 
+--------------------------------------------------
+4. Altersgruppen erstellen
+Alter wird für jedes Jahr angezeigt (1-jährige, 2-jährige, etc). 
+
