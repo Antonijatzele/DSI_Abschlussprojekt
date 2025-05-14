@@ -1,8 +1,8 @@
 # Abschlussprojekt: Migration in Deutschland
 ## 1. Einleitung
-Motivation & Relevanz des Themas
-Zielsetzung des Projekts
-Datenquellen & Methodiküberblick
+- Motivation & Relevanz des Themas
+- Zielsetzung des Projekts
+- Datenquellen & Methodiküberblick
 
 ## 2. Demografische und Geografische Analyse der Migration
 ### 2.1 Entwicklung der Migrantenzahlen in Deutschland
