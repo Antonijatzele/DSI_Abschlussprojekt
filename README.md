@@ -4,7 +4,7 @@
 - Zielsetzung des Projekts
 - Datenquellen & Methodiküberblick
 
-## 2. Demografische und Geografische Analyse der Migration
+## 2. Demografische und Geografische Analyse der Migration (Clemens)
 ### 2.1 Entwicklung der Migrantenzahlen in Deutschland
 - Zeitliche Entwicklung
 - Anteil an der Gesamtbevölkerung
@@ -22,24 +22,24 @@
 - Wanderungsbewegungen innerhalb Deutschlands
 - Veränderung von Mustern über Zeit
 
-## 3. Integration der Migrant:innen
-### 3.1 Integration in den Arbeitsmarkt
+## 3. Integration der Migrant:innen (Sarah & Antonija)
+### 3.1 Integration in den Arbeitsmarkt (Sarah)
 - Beschäftigungsquote, Berufsfelder
 - Vergleich zwischen Migrant:innen und Gesamtbevölkerung
 - Einfluss von Herkunftsland, Aufenthaltsdauer, Bildungsgrad
 
-### 3.2 Integration im Bildungssystem
-- Schulerfolg, Bildungsabschlüsse
-- Sprachförderung
-- Unterschiede je nach Bundesland
-
-### 3.3 Wirksamkeit von Integrationsmaßnahmen
+### 3.2 Wirksamkeit von Integrationsmaßnahmen (Sarah)
 - Sprachkurse, Integrationskurse
 - Regionale Unterschiede in der Umsetzung
 - Korrelation mit Arbeitsmarkterfolg o. ä.
 - Zeitliche Analyse: Wurde es besser?
 
-### 3.4 Einbürgerungen
+### 3.3 Integration im Bildungssystem (Antonija)
+- Schulerfolg, Bildungsabschlüsse
+- Sprachförderung
+- Unterschiede je nach Bundesland
+
+### 3.4 Einbürgerungen (Antonija)
 - Entwicklung der Einbürgerungszahlen über die Jahre
 - Herkunftsländer mit höchsten Einbürgerungszahlen
 - Einflussfaktoren: Aufenthaltsdauer, Alter, Bildungsstand
