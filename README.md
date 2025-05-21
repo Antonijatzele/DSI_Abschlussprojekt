@@ -1,4 +1,4 @@
-# Abschlussprojekt: Migration in Deutschland
+# Abschlussprojekt: Migration und Integration in Deutschland
 ## 1. Einleitung
 - Motivation & Relevanz des Themas
 - Zielsetzung des Projekts
