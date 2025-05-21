@@ -47,23 +47,10 @@
 - Korrelation mit Integrationserfolgen (z. B. Arbeitsmarktintegration, Sprachniveau)
 
 
-## 4. Data Science & Modellierung  (OPTIONAL)
-### 4.1 Clustering von Landkreisen (z. B. mit k-Means)
-- Gruppierung nach Migrations- und Integrationsmerkmalen
-- Identifikation von Typen (z. B. "hoher Zuzug, gute Integration" vs. "niedriger Zuzug, schlechte Integration")
-
-### 4.2 Prädiktive Analyse
-- Bevölkerungsentwicklung in Landkreisen modellieren
-- Mögliche Verfahren: lineare Regression, Entscheidungsbäume o. ä.
-- Szenarien für zukünftige Migration/Integration
-
 ## 5. Fazit und Ausblick
-- Wichtigste Erkenntnisse
-- Limitationen der Analyse
-- Empfehlungen für Politik / nächste Schritte
 
 ## 6. Anhang
 - Datenquellen
-- Code / Reproducibility-Hinweise
+- Code 
 - Glossar wichtiger Begriffe
 
