@@ -39,8 +39,15 @@
 - Korrelation mit Arbeitsmarkterfolg o. ä.
 - Zeitliche Analyse: Wurde es besser?
 
+### 3.4 Einbürgerungen
+- Entwicklung der Einbürgerungszahlen über die Jahre
+- Herkunftsländer mit höchsten Einbürgerungszahlen
+- Einflussfaktoren: Aufenthaltsdauer, Alter, Bildungsstand
+- Regionale Unterschiede (z. B. Einbürgerungsquote pro Bundesland)
+- Korrelation mit Integrationserfolgen (z. B. Arbeitsmarktintegration, Sprachniveau)
 
-## 4. Data Science & Modellierung
+
+## 4. Data Science & Modellierung  (OPTIONAL)
 ### 4.1 Clustering von Landkreisen (z. B. mit k-Means)
 - Gruppierung nach Migrations- und Integrationsmerkmalen
 - Identifikation von Typen (z. B. "hoher Zuzug, gute Integration" vs. "niedriger Zuzug, schlechte Integration")
