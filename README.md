@@ -29,21 +29,19 @@
 - Einfluss von Herkunftsland, Aufenthaltsdauer, Bildungsgrad
 
 ### 3.2 Wirksamkeit von Integrationsmaßnahmen (Sarah)
-- Sprachkurse, Integrationskurse
-- Regionale Unterschiede in der Umsetzung
+- Sprachkurse/ Integrationskurse
+- Regionale Unterschiede 
 - Korrelation mit Arbeitsmarkterfolg o. ä.
-- Zeitliche Analyse: Wurde es besser?
 
 ### 3.3 Integration im Bildungssystem (Antonija)
 - Schulerfolg, Bildungsabschlüsse
-- Sprachförderung
 - Unterschiede je nach Bundesland
 
 ### 3.4 Einbürgerungen (Antonija)
 - Entwicklung der Einbürgerungszahlen über die Jahre
 - Herkunftsländer mit höchsten Einbürgerungszahlen
 - Einflussfaktoren: Aufenthaltsdauer, Alter, Bildungsstand
-- Regionale Unterschiede (z. B. Einbürgerungsquote pro Bundesland)
+- Regionale Unterschiede 
 - Korrelation mit Integrationserfolgen (z. B. Arbeitsmarktintegration, Sprachniveau)
 
 
