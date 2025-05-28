@@ -1,0 +1,993 @@
+Bundesland,Bildungsbereich,Schulart,Anzahl,Geschlecht,Herkunft
+Baden-Württemberg 1,Vorschulbereich,Schulkindergärten,4004,männlich,deutsch
+Baden-Württemberg 1,Primarbereich,Grundschulen,144699,männlich,deutsch
+Baden-Württemberg 1,Primarbereich,Integrierte Gesamtschulen,21302,männlich,deutsch
+Baden-Württemberg 1,Primarbereich,Freie Waldorfschulen,3603,männlich,deutsch
+Baden-Württemberg 1,Sekundarbereich I,Hauptschulen,17542,männlich,deutsch
+Baden-Württemberg 1,Sekundarbereich I,Realschulen,96664,männlich,deutsch
+Baden-Württemberg 1,Sekundarbereich I,Gymnasien,90049,männlich,deutsch
+Baden-Württemberg 1,Sekundarbereich I,Integrierte Gesamtschulen,37700,männlich,deutsch
+Baden-Württemberg 1,Sekundarbereich I,Freie Waldorfschulen,5156,männlich,deutsch
+Baden-Württemberg 1,Sekundarbereich I,Abendrealschulen,367,männlich,deutsch
+Baden-Württemberg 1,Sekundarbereich II,Gymnasien,41570,männlich,deutsch
+Baden-Württemberg 1,Sekundarbereich II,Integrierte Gesamtschulen,430,männlich,deutsch
+Baden-Württemberg 1,Sekundarbereich II,Freie Waldorfschulen,1944,männlich,deutsch
+Baden-Württemberg 1,Sekundarbereich II,Abendgymnasien,561,männlich,deutsch
+Baden-Württemberg 1,Sekundarbereich II,Kollegs,155,männlich,deutsch
+Baden-Württemberg 1,Keinem Bereich zugeordnet,Förderschulen,26730,männlich,deutsch
+Bayern,Primarbereich,Grundschulen,195671,männlich,deutsch
+Bayern,Primarbereich,Freie Waldorfschulen,1488,männlich,deutsch
+Bayern,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,203,männlich,deutsch
+Bayern,Sekundarbereich I,Hauptschulen,82471,männlich,deutsch
+Bayern,Sekundarbereich I,Realschulen,107959,männlich,deutsch
+Bayern,Sekundarbereich I,Gymnasien,94324,männlich,deutsch
+Bayern,Sekundarbereich I,Integrierte Gesamtschulen,878,männlich,deutsch
+Bayern,Sekundarbereich I,Freie Waldorfschulen,2097,männlich,deutsch
+Bayern,Sekundarbereich I,Abendrealschulen,98,männlich,deutsch
+Bayern,Sekundarbereich II,Gymnasien,48047,männlich,deutsch
+Bayern,Sekundarbereich II,Freie Waldorfschulen,787,männlich,deutsch
+Bayern,Sekundarbereich II,Abendgymnasien,245,männlich,deutsch
+Bayern,Sekundarbereich II,Kollegs,392,männlich,deutsch
+Bayern,Keinem Bereich zugeordnet,Förderschulen,29158,männlich,deutsch
+Berlin,Primarbereich,Grundschulen,50925,männlich,deutsch
+Berlin,Primarbereich,Integrierte Gesamtschulen,4263,männlich,deutsch
+Berlin,Primarbereich,Freie Waldorfschulen,776,männlich,deutsch
+Berlin,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,22129,männlich,deutsch
+Berlin,Sekundarbereich I,Gymnasien,18933,männlich,deutsch
+Berlin,Sekundarbereich I,Integrierte Gesamtschulen,32038,männlich,deutsch
+Berlin,Sekundarbereich I,Freie Waldorfschulen,977,männlich,deutsch
+Berlin,Sekundarbereich I,Abendhauptschulen,69,männlich,deutsch
+Berlin,Sekundarbereich I,Abendrealschulen,239,männlich,deutsch
+Berlin,Sekundarbereich II,Gymnasien,14775,männlich,deutsch
+Berlin,Sekundarbereich II,Integrierte Gesamtschulen,6455,männlich,deutsch
+Berlin,Sekundarbereich II,Freie Waldorfschulen,375,männlich,deutsch
+Berlin,Sekundarbereich II,Abendgymnasien,157,männlich,deutsch
+Berlin,Sekundarbereich II,Kollegs,566,männlich,deutsch
+Berlin,Keinem Bereich zugeordnet,Förderschulen,4331,männlich,deutsch
+Brandenburg,Primarbereich,Grundschulen,42704,männlich,deutsch
+Brandenburg,Primarbereich,Integrierte Gesamtschulen,286,männlich,deutsch
+Brandenburg,Primarbereich,Freie Waldorfschulen,263,männlich,deutsch
+Brandenburg,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,19847,männlich,deutsch
+Brandenburg,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,17483,männlich,deutsch
+Brandenburg,Sekundarbereich I,Gymnasien,12793,männlich,deutsch
+Brandenburg,Sekundarbereich I,Integrierte Gesamtschulen,7230,männlich,deutsch
+Brandenburg,Sekundarbereich I,Freie Waldorfschulen,361,männlich,deutsch
+Brandenburg,Sekundarbereich I,Abendrealschulen,317,männlich,deutsch
+Brandenburg,Sekundarbereich II,Gymnasien,10908,männlich,deutsch
+Brandenburg,Sekundarbereich II,Integrierte Gesamtschulen,2700,männlich,deutsch
+Brandenburg,Sekundarbereich II,Freie Waldorfschulen,146,männlich,deutsch
+Brandenburg,Sekundarbereich II,Abendgymnasien,136,männlich,deutsch
+Brandenburg,Sekundarbereich II,Kollegs,82,männlich,deutsch
+Brandenburg,Keinem Bereich zugeordnet,Förderschulen,5393,männlich,deutsch
+Bremen,Vorschulbereich,Vorklassen,8,männlich,deutsch
+Bremen,Primarbereich,Grundschulen,9212,männlich,deutsch
+Bremen,Primarbereich,Freie Waldorfschulen,140,männlich,deutsch
+Bremen,Sekundarbereich I,Gymnasien,3201,männlich,deutsch
+Bremen,Sekundarbereich I,Integrierte Gesamtschulen,10493,männlich,deutsch
+Bremen,Sekundarbereich I,Freie Waldorfschulen,223,männlich,deutsch
+Bremen,Sekundarbereich I,Abendhauptschulen,20,männlich,deutsch
+Bremen,Sekundarbereich I,Abendrealschulen,111,männlich,deutsch
+Bremen,Sekundarbereich II,Gymnasien,1813,männlich,deutsch
+Bremen,Sekundarbereich II,Integrierte Gesamtschulen,1842,männlich,deutsch
+Bremen,Sekundarbereich II,Freie Waldorfschulen,83,männlich,deutsch
+Bremen,Sekundarbereich II,Abendgymnasien,62,männlich,deutsch
+Bremen,Sekundarbereich II,Kollegs,88,männlich,deutsch
+Bremen,Keinem Bereich zugeordnet,Förderschulen,228,männlich,deutsch
+Hamburg,Vorschulbereich,Vorklassen,4098,männlich,deutsch
+Hamburg,Primarbereich,Grundschulen,26661,männlich,deutsch
+Hamburg,Primarbereich,Integrierte Gesamtschulen,1891,männlich,deutsch
+Hamburg,Primarbereich,Freie Waldorfschulen,484,männlich,deutsch
+Hamburg,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,162,männlich,deutsch
+Hamburg,Sekundarbereich I,Gymnasien,16942,männlich,deutsch
+Hamburg,Sekundarbereich I,Integrierte Gesamtschulen,20740,männlich,deutsch
+Hamburg,Sekundarbereich I,Freie Waldorfschulen,699,männlich,deutsch
+Hamburg,Sekundarbereich I,Abendrealschulen 2,191,männlich,deutsch
+Hamburg,Sekundarbereich II,Gymnasien,8579,männlich,deutsch
+Hamburg,Sekundarbereich II,Integrierte Gesamtschulen,4468,männlich,deutsch
+Hamburg,Sekundarbereich II,Freie Waldorfschulen,303,männlich,deutsch
+Hamburg,Sekundarbereich II,Abendgymnasien,272,männlich,deutsch
+Hamburg,Sekundarbereich II,Kollegs,87,männlich,deutsch
+Hamburg,Keinem Bereich zugeordnet,Förderschulen,2366,männlich,deutsch
+Hessen,Vorschulbereich,Schulkindergärten,1551,männlich,deutsch
+Hessen,Primarbereich,Grundschulen 3,97655,männlich,deutsch
+Hessen,Primarbereich,Freie Waldorfschulen,867,männlich,deutsch
+Hessen,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,6618,männlich,deutsch
+Hessen,Sekundarbereich I,Hauptschulen,8049,männlich,deutsch
+Hessen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,2850,männlich,deutsch
+Hessen,Sekundarbereich I,Realschulen,28994,männlich,deutsch
+Hessen,Sekundarbereich I,Gymnasien,65334,männlich,deutsch
+Hessen,Sekundarbereich I,Integrierte Gesamtschulen,29013,männlich,deutsch
+Hessen,Sekundarbereich I,Freie Waldorfschulen,1234,männlich,deutsch
+Hessen,Sekundarbereich I,Abendhauptschulen,69,männlich,deutsch
+Hessen,Sekundarbereich I,Abendrealschulen,572,männlich,deutsch
+Hessen,Sekundarbereich II,Gymnasien 4,24649,männlich,deutsch
+Hessen,Sekundarbereich II,Freie Waldorfschulen,437,männlich,deutsch
+Hessen,Sekundarbereich II,Abendgymnasien,335,männlich,deutsch
+Hessen,Sekundarbereich II,Kollegs,197,männlich,deutsch
+Hessen,Keinem Bereich zugeordnet,Förderschulen,11438,männlich,deutsch
+Hessen,Keinem Bereich zugeordnet,Keine Zuordnung zu einer Schulart möglich 5,280,männlich,deutsch
+Mecklenburg-Vorpommern,Primarbereich,Grundschulen,26823,männlich,deutsch
+Mecklenburg-Vorpommern,Primarbereich,Freie Waldorfschulen,201,männlich,deutsch
+Mecklenburg-Vorpommern,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,22911,männlich,deutsch
+Mecklenburg-Vorpommern,Sekundarbereich I,Gymnasien,7766,männlich,deutsch
+Mecklenburg-Vorpommern,Sekundarbereich I,Integrierte Gesamtschulen,3533,männlich,deutsch
+Mecklenburg-Vorpommern,Sekundarbereich I,Freie Waldorfschulen,251,männlich,deutsch
+Mecklenburg-Vorpommern,Sekundarbereich II,Gymnasien,6464,männlich,deutsch
+Mecklenburg-Vorpommern,Sekundarbereich II,Integrierte Gesamtschulen,574,männlich,deutsch
+Mecklenburg-Vorpommern,Sekundarbereich II,Freie Waldorfschulen,100,männlich,deutsch
+Mecklenburg-Vorpommern,Sekundarbereich II,Abendgymnasien,164,männlich,deutsch
+Mecklenburg-Vorpommern,Keinem Bereich zugeordnet,Förderschulen,4593,männlich,deutsch
+Niedersachsen,Vorschulbereich,Schulkindergärten,1106,männlich,deutsch
+Niedersachsen,Primarbereich,Grundschulen,122440,männlich,deutsch
+Niedersachsen,Primarbereich,Integrierte Gesamtschulen,426,männlich,deutsch
+Niedersachsen,Primarbereich,Freie Waldorfschulen,1126,männlich,deutsch
+Niedersachsen,Sekundarbereich I,Hauptschulen,9446,männlich,deutsch
+Niedersachsen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,48571,männlich,deutsch
+Niedersachsen,Sekundarbereich I,Realschulen,29851,männlich,deutsch
+Niedersachsen,Sekundarbereich I,Gymnasien,79254,männlich,deutsch
+Niedersachsen,Sekundarbereich I,Integrierte Gesamtschulen,32490,männlich,deutsch
+Niedersachsen,Sekundarbereich I,Freie Waldorfschulen,1612,männlich,deutsch
+Niedersachsen,Sekundarbereich II,Gymnasien,32950,männlich,deutsch
+Niedersachsen,Sekundarbereich II,Integrierte Gesamtschulen,6402,männlich,deutsch
+Niedersachsen,Sekundarbereich II,Freie Waldorfschulen,565,männlich,deutsch
+Niedersachsen,Sekundarbereich II,Abendgymnasien,254,männlich,deutsch
+Niedersachsen,Sekundarbereich II,Kollegs,331,männlich,deutsch
+Niedersachsen,Keinem Bereich zugeordnet,Förderschulen,14506,männlich,deutsch
+Nordrhein-Westfalen,Vorschulbereich,Schulkindergärten,987,männlich,deutsch
+Nordrhein-Westfalen,Primarbereich,Grundschulen,277224,männlich,deutsch
+Nordrhein-Westfalen,Primarbereich,Integrierte Gesamtschulen,510,männlich,deutsch
+Nordrhein-Westfalen,Primarbereich,Freie Waldorfschulen,2691,männlich,deutsch
+Nordrhein-Westfalen,Sekundarbereich I,Hauptschulen,19104,männlich,deutsch
+Nordrhein-Westfalen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,28101,männlich,deutsch
+Nordrhein-Westfalen,Sekundarbereich I,Realschulen,91359,männlich,deutsch
+Nordrhein-Westfalen,Sekundarbereich I,Gymnasien,138279,männlich,deutsch
+Nordrhein-Westfalen,Sekundarbereich I,Integrierte Gesamtschulen,123747,männlich,deutsch
+Nordrhein-Westfalen,Sekundarbereich I,Freie Waldorfschulen,3768,männlich,deutsch
+Nordrhein-Westfalen,Sekundarbereich I,Abendrealschulen,2001,männlich,deutsch
+Nordrhein-Westfalen,Sekundarbereich II,Gymnasien,83589,männlich,deutsch
+Nordrhein-Westfalen,Sekundarbereich II,Integrierte Gesamtschulen,25131,männlich,deutsch
+Nordrhein-Westfalen,Sekundarbereich II,Freie Waldorfschulen,1317,männlich,deutsch
+Nordrhein-Westfalen,Sekundarbereich II,Abendgymnasien,1740,männlich,deutsch
+Nordrhein-Westfalen,Sekundarbereich II,Kollegs,2592,männlich,deutsch
+Nordrhein-Westfalen,Keinem Bereich zugeordnet,Förderschulen,45816,männlich,deutsch
+Rheinland-Pfalz,Vorschulbereich,Schulkindergärten,33,männlich,deutsch
+Rheinland-Pfalz,Primarbereich,Grundschulen 6,63878,männlich,deutsch
+Rheinland-Pfalz,Primarbereich,Freie Waldorfschulen,480,männlich,deutsch
+Rheinland-Pfalz,Sekundarbereich I,Hauptschulen,94,männlich,deutsch
+Rheinland-Pfalz,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,35387,männlich,deutsch
+Rheinland-Pfalz,Sekundarbereich I,Realschulen,678,männlich,deutsch
+Rheinland-Pfalz,Sekundarbereich I,Gymnasien,37729,männlich,deutsch
+Rheinland-Pfalz,Sekundarbereich I,Integrierte Gesamtschulen,17212,männlich,deutsch
+Rheinland-Pfalz,Sekundarbereich I,Freie Waldorfschulen,570,männlich,deutsch
+Rheinland-Pfalz,Sekundarbereich II,Gymnasien,16077,männlich,deutsch
+Rheinland-Pfalz,Sekundarbereich II,Integrierte Gesamtschulen,4142,männlich,deutsch
+Rheinland-Pfalz,Sekundarbereich II,Freie Waldorfschulen,200,männlich,deutsch
+Rheinland-Pfalz,Sekundarbereich II,Abendgymnasien,86,männlich,deutsch
+Rheinland-Pfalz,Sekundarbereich II,Kollegs,162,männlich,deutsch
+Rheinland-Pfalz,Keinem Bereich zugeordnet,Förderschulen,8889,männlich,deutsch
+Saarland,Vorschulbereich,Schulkindergärten,16,männlich,deutsch
+Saarland,Primarbereich,Grundschulen,13023,männlich,deutsch
+Saarland,Primarbereich,Freie Waldorfschulen,214,männlich,deutsch
+Saarland,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,39,männlich,deutsch
+Saarland,Sekundarbereich I,Realschulen,419,männlich,deutsch
+Saarland,Sekundarbereich I,Gymnasien,7072,männlich,deutsch
+Saarland,Sekundarbereich I,Integrierte Gesamtschulen,11121,männlich,deutsch
+Saarland,Sekundarbereich I,Freie Waldorfschulen,285,männlich,deutsch
+Saarland,Sekundarbereich I,Abendrealschulen,73,männlich,deutsch
+Saarland,Sekundarbereich II,Gymnasien,3839,männlich,deutsch
+Saarland,Sekundarbereich II,Integrierte Gesamtschulen,1157,männlich,deutsch
+Saarland,Sekundarbereich II,Freie Waldorfschulen,107,männlich,deutsch
+Saarland,Sekundarbereich II,Abendgymnasien,40,männlich,deutsch
+Saarland,Sekundarbereich II,Kollegs,27,männlich,deutsch
+Saarland,Keinem Bereich zugeordnet,Förderschulen,1929,männlich,deutsch
+Sachsen,Primarbereich,Grundschulen,68882,männlich,deutsch
+Sachsen,Primarbereich,Freie Waldorfschulen,459,männlich,deutsch
+Sachsen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,56225,männlich,deutsch
+Sachsen,Sekundarbereich I,Gymnasien,31589,männlich,deutsch
+Sachsen,Sekundarbereich I,Freie Waldorfschulen,564,männlich,deutsch
+Sachsen,Sekundarbereich I,Abendrealschulen,203,männlich,deutsch
+Sachsen,Sekundarbereich II,Gymnasien,15212,männlich,deutsch
+Sachsen,Sekundarbereich II,Freie Waldorfschulen,146,männlich,deutsch
+Sachsen,Sekundarbereich II,Abendgymnasien,159,männlich,deutsch
+Sachsen,Sekundarbereich II,Kollegs,291,männlich,deutsch
+Sachsen,Keinem Bereich zugeordnet,Förderschulen,11338,männlich,deutsch
+Sachsen-Anhalt,Primarbereich,Grundschulen,34257,männlich,deutsch
+Sachsen-Anhalt,Primarbereich,Freie Waldorfschulen,219,männlich,deutsch
+Sachsen-Anhalt,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,20604,männlich,deutsch
+Sachsen-Anhalt,Sekundarbereich I,Gymnasien,15603,männlich,deutsch
+Sachsen-Anhalt,Sekundarbereich I,Integrierte Gesamtschulen,8469,männlich,deutsch
+Sachsen-Anhalt,Sekundarbereich I,Freie Waldorfschulen,261,männlich,deutsch
+Sachsen-Anhalt,Sekundarbereich I,Abendrealschulen,39,männlich,deutsch
+Sachsen-Anhalt,Sekundarbereich II,Gymnasien,7632,männlich,deutsch
+Sachsen-Anhalt,Sekundarbereich II,Integrierte Gesamtschulen,336,männlich,deutsch
+Sachsen-Anhalt,Sekundarbereich II,Freie Waldorfschulen,69,männlich,deutsch
+Sachsen-Anhalt,Sekundarbereich II,Abendgymnasien,27,männlich,deutsch
+Sachsen-Anhalt,Sekundarbereich II,Kollegs,90,männlich,deutsch
+Sachsen-Anhalt,Keinem Bereich zugeordnet,Förderschulen,7344,männlich,deutsch
+Schleswig-Holstein,Primarbereich,Grundschulen,48200,männlich,deutsch
+Schleswig-Holstein,Primarbereich,Freie Waldorfschulen,787,männlich,deutsch
+Schleswig-Holstein,Sekundarbereich I,Gymnasien,23284,männlich,deutsch
+Schleswig-Holstein,Sekundarbereich I,Integrierte Gesamtschulen,42928,männlich,deutsch
+Schleswig-Holstein,Sekundarbereich I,Freie Waldorfschulen,1117,männlich,deutsch
+Schleswig-Holstein,Sekundarbereich II,Gymnasien,10981,männlich,deutsch
+Schleswig-Holstein,Sekundarbereich II,Integrierte Gesamtschulen,3959,männlich,deutsch
+Schleswig-Holstein,Sekundarbereich II,Freie Waldorfschulen,384,männlich,deutsch
+Schleswig-Holstein,Sekundarbereich II,Abendgymnasien,127,männlich,deutsch
+Schleswig-Holstein,Keinem Bereich zugeordnet,Förderschulen,3459,männlich,deutsch
+Thüringen,Primarbereich,Grundschulen,32132,männlich,deutsch
+Thüringen,Primarbereich,Integrierte Gesamtschulen,3303,männlich,deutsch
+Thüringen,Primarbereich,Freie Waldorfschulen,276,männlich,deutsch
+Thüringen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,22254,männlich,deutsch
+Thüringen,Sekundarbereich I,Gymnasien,14545,männlich,deutsch
+Thüringen,Sekundarbereich I,Integrierte Gesamtschulen,8679,männlich,deutsch
+Thüringen,Sekundarbereich I,Freie Waldorfschulen,330,männlich,deutsch
+Thüringen,Sekundarbereich II,Gymnasien,7493,männlich,deutsch
+Thüringen,Sekundarbereich II,Integrierte Gesamtschulen,598,männlich,deutsch
+Thüringen,Sekundarbereich II,Freie Waldorfschulen,94,männlich,deutsch
+Thüringen,Sekundarbereich II,Kollegs,45,männlich,deutsch
+Thüringen,Keinem Bereich zugeordnet,Förderschulen,4081,männlich,deutsch
+Deutschland,Vorschulbereich,Vorklassen,4107,männlich,deutsch
+Deutschland,Vorschulbereich,Schulkindergärten,7698,männlich,deutsch
+Deutschland,Primarbereich,Grundschulen,1254384,männlich,deutsch
+Deutschland,Primarbereich,Integrierte Gesamtschulen,31980,männlich,deutsch
+Deutschland,Primarbereich,Freie Waldorfschulen,14073,männlich,deutsch
+Deutschland,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,48960,männlich,deutsch
+Deutschland,Sekundarbereich I,Hauptschulen,136704,männlich,deutsch
+Deutschland,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,254424,männlich,deutsch
+Deutschland,Sekundarbereich I,Realschulen,355926,männlich,deutsch
+Deutschland,Sekundarbereich I,Gymnasien,656697,männlich,deutsch
+Deutschland,Sekundarbereich I,Integrierte Gesamtschulen,386271,männlich,deutsch
+Deutschland,Sekundarbereich I,Freie Waldorfschulen,19506,männlich,deutsch
+Deutschland,Sekundarbereich I,Abendhauptschulen,159,männlich,deutsch
+Deutschland,Sekundarbereich I,Abendrealschulen,4212,männlich,deutsch
+Deutschland,Sekundarbereich II,Gymnasien,334578,männlich,deutsch
+Deutschland,Sekundarbereich II,Integrierte Gesamtschulen,58194,männlich,deutsch
+Deutschland,Sekundarbereich II,Freie Waldorfschulen,7056,männlich,deutsch
+Deutschland,Sekundarbereich II,Abendgymnasien,4362,männlich,deutsch
+Deutschland,Sekundarbereich II,Kollegs,5106,männlich,deutsch
+Deutschland,Keinem Bereich zugeordnet,Förderschulen,181599,männlich,deutsch
+Deutschland,Keinem Bereich zugeordnet,Keine Zuordnung zu einer Schulart möglich 5,279,männlich,deutsch
+Baden-Württemberg 1,Vorschulbereich,Schulkindergärten,1734,weiblich,deutsch
+Baden-Württemberg 1,Primarbereich,Grundschulen,139417,weiblich,deutsch
+Baden-Württemberg 1,Primarbereich,Integrierte Gesamtschulen,20426,weiblich,deutsch
+Baden-Württemberg 1,Primarbereich,Freie Waldorfschulen,3778,weiblich,deutsch
+Baden-Württemberg 1,Sekundarbereich I,Hauptschulen,12805,weiblich,deutsch
+Baden-Württemberg 1,Sekundarbereich I,Realschulen,90294,weiblich,deutsch
+Baden-Württemberg 1,Sekundarbereich I,Gymnasien,97472,weiblich,deutsch
+Baden-Württemberg 1,Sekundarbereich I,Integrierte Gesamtschulen,31825,weiblich,deutsch
+Baden-Württemberg 1,Sekundarbereich I,Freie Waldorfschulen,5756,weiblich,deutsch
+Baden-Württemberg 1,Sekundarbereich I,Abendrealschulen,256,weiblich,deutsch
+Baden-Württemberg 1,Sekundarbereich II,Gymnasien,49034,weiblich,deutsch
+Baden-Württemberg 1,Sekundarbereich II,Integrierte Gesamtschulen,498,weiblich,deutsch
+Baden-Württemberg 1,Sekundarbereich II,Freie Waldorfschulen,2209,weiblich,deutsch
+Baden-Württemberg 1,Sekundarbereich II,Abendgymnasien,596,weiblich,deutsch
+Baden-Württemberg 1,Sekundarbereich II,Kollegs,142,weiblich,deutsch
+Baden-Württemberg 1,Keinem Bereich zugeordnet,Förderschulen,14168,weiblich,deutsch
+Bayern,Primarbereich,Grundschulen,189876,weiblich,deutsch
+Bayern,Primarbereich,Freie Waldorfschulen,1561,weiblich,deutsch
+Bayern,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,205,weiblich,deutsch
+Bayern,Sekundarbereich I,Hauptschulen,65872,weiblich,deutsch
+Bayern,Sekundarbereich I,Realschulen,106598,weiblich,deutsch
+Bayern,Sekundarbereich I,Gymnasien,99762,weiblich,deutsch
+Bayern,Sekundarbereich I,Integrierte Gesamtschulen,845,weiblich,deutsch
+Bayern,Sekundarbereich I,Freie Waldorfschulen,2165,weiblich,deutsch
+Bayern,Sekundarbereich I,Abendrealschulen,77,weiblich,deutsch
+Bayern,Sekundarbereich II,Gymnasien,56284,weiblich,deutsch
+Bayern,Sekundarbereich II,Freie Waldorfschulen,856,weiblich,deutsch
+Bayern,Sekundarbereich II,Abendgymnasien,251,weiblich,deutsch
+Bayern,Sekundarbereich II,Kollegs,330,weiblich,deutsch
+Bayern,Keinem Bereich zugeordnet,Förderschulen,17263,weiblich,deutsch
+Berlin,Primarbereich,Grundschulen,48670,weiblich,deutsch
+Berlin,Primarbereich,Integrierte Gesamtschulen,4236,weiblich,deutsch
+Berlin,Primarbereich,Freie Waldorfschulen,830,weiblich,deutsch
+Berlin,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,21134,weiblich,deutsch
+Berlin,Sekundarbereich I,Gymnasien,21227,weiblich,deutsch
+Berlin,Sekundarbereich I,Integrierte Gesamtschulen,27326,weiblich,deutsch
+Berlin,Sekundarbereich I,Freie Waldorfschulen,1137,weiblich,deutsch
+Berlin,Sekundarbereich I,Abendhauptschulen,57,weiblich,deutsch
+Berlin,Sekundarbereich I,Abendrealschulen,230,weiblich,deutsch
+Berlin,Sekundarbereich II,Gymnasien,16860,weiblich,deutsch
+Berlin,Sekundarbereich II,Integrierte Gesamtschulen,6774,weiblich,deutsch
+Berlin,Sekundarbereich II,Freie Waldorfschulen,418,weiblich,deutsch
+Berlin,Sekundarbereich II,Abendgymnasien,150,weiblich,deutsch
+Berlin,Sekundarbereich II,Kollegs,515,weiblich,deutsch
+Berlin,Keinem Bereich zugeordnet,Förderschulen,2513,weiblich,deutsch
+Brandenburg,Primarbereich,Grundschulen,41264,weiblich,deutsch
+Brandenburg,Primarbereich,Integrierte Gesamtschulen,259,weiblich,deutsch
+Brandenburg,Primarbereich,Freie Waldorfschulen,271,weiblich,deutsch
+Brandenburg,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,18907,weiblich,deutsch
+Brandenburg,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,13987,weiblich,deutsch
+Brandenburg,Sekundarbereich I,Gymnasien,15204,weiblich,deutsch
+Brandenburg,Sekundarbereich I,Integrierte Gesamtschulen,6321,weiblich,deutsch
+Brandenburg,Sekundarbereich I,Freie Waldorfschulen,381,weiblich,deutsch
+Brandenburg,Sekundarbereich I,Abendrealschulen,332,weiblich,deutsch
+Brandenburg,Sekundarbereich II,Gymnasien,12947,weiblich,deutsch
+Brandenburg,Sekundarbereich II,Integrierte Gesamtschulen,2991,weiblich,deutsch
+Brandenburg,Sekundarbereich II,Freie Waldorfschulen,177,weiblich,deutsch
+Brandenburg,Sekundarbereich II,Abendgymnasien,101,weiblich,deutsch
+Brandenburg,Sekundarbereich II,Kollegs,70,weiblich,deutsch
+Brandenburg,Keinem Bereich zugeordnet,Förderschulen,3092,weiblich,deutsch
+Bremen,Vorschulbereich,Vorklassen,8,weiblich,deutsch
+Bremen,Primarbereich,Grundschulen,8722,weiblich,deutsch
+Bremen,Primarbereich,Freie Waldorfschulen,162,weiblich,deutsch
+Bremen,Sekundarbereich I,Gymnasien,3233,weiblich,deutsch
+Bremen,Sekundarbereich I,Integrierte Gesamtschulen,9421,weiblich,deutsch
+Bremen,Sekundarbereich I,Freie Waldorfschulen,264,weiblich,deutsch
+Bremen,Sekundarbereich I,Abendhauptschulen,12,weiblich,deutsch
+Bremen,Sekundarbereich I,Abendrealschulen,76,weiblich,deutsch
+Bremen,Sekundarbereich II,Gymnasien,1947,weiblich,deutsch
+Bremen,Sekundarbereich II,Integrierte Gesamtschulen,2357,weiblich,deutsch
+Bremen,Sekundarbereich II,Freie Waldorfschulen,91,weiblich,deutsch
+Bremen,Sekundarbereich II,Abendgymnasien,61,weiblich,deutsch
+Bremen,Sekundarbereich II,Kollegs,67,weiblich,deutsch
+Bremen,Keinem Bereich zugeordnet,Förderschulen,159,weiblich,deutsch
+Hamburg,Vorschulbereich,Vorklassen,3810,weiblich,deutsch
+Hamburg,Primarbereich,Grundschulen,25571,weiblich,deutsch
+Hamburg,Primarbereich,Integrierte Gesamtschulen,1795,weiblich,deutsch
+Hamburg,Primarbereich,Freie Waldorfschulen,585,weiblich,deutsch
+Hamburg,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,129,weiblich,deutsch
+Hamburg,Sekundarbereich I,Gymnasien,17806,weiblich,deutsch
+Hamburg,Sekundarbereich I,Integrierte Gesamtschulen,17701,weiblich,deutsch
+Hamburg,Sekundarbereich I,Freie Waldorfschulen,867,weiblich,deutsch
+Hamburg,Sekundarbereich I,Abendrealschulen 2,147,weiblich,deutsch
+Hamburg,Sekundarbereich II,Gymnasien,9585,weiblich,deutsch
+Hamburg,Sekundarbereich II,Integrierte Gesamtschulen,5153,weiblich,deutsch
+Hamburg,Sekundarbereich II,Freie Waldorfschulen,372,weiblich,deutsch
+Hamburg,Sekundarbereich II,Abendgymnasien,261,weiblich,deutsch
+Hamburg,Sekundarbereich II,Kollegs,54,weiblich,deutsch
+Hamburg,Keinem Bereich zugeordnet,Förderschulen,1139,weiblich,deutsch
+Hessen,Vorschulbereich,Schulkindergärten,873,weiblich,deutsch
+Hessen,Primarbereich,Grundschulen 3,94358,weiblich,deutsch
+Hessen,Primarbereich,Freie Waldorfschulen,890,weiblich,deutsch
+Hessen,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,5842,weiblich,deutsch
+Hessen,Sekundarbereich I,Hauptschulen,5305,weiblich,deutsch
+Hessen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,2462,weiblich,deutsch
+Hessen,Sekundarbereich I,Realschulen,26331,weiblich,deutsch
+Hessen,Sekundarbereich I,Gymnasien,69805,weiblich,deutsch
+Hessen,Sekundarbereich I,Integrierte Gesamtschulen,26422,weiblich,deutsch
+Hessen,Sekundarbereich I,Freie Waldorfschulen,1319,weiblich,deutsch
+Hessen,Sekundarbereich I,Abendhauptschulen,64,weiblich,deutsch
+Hessen,Sekundarbereich I,Abendrealschulen,493,weiblich,deutsch
+Hessen,Sekundarbereich II,Gymnasien 4,29885,weiblich,deutsch
+Hessen,Sekundarbereich II,Freie Waldorfschulen,487,weiblich,deutsch
+Hessen,Sekundarbereich II,Abendgymnasien,292,weiblich,deutsch
+Hessen,Sekundarbereich II,Kollegs,158,weiblich,deutsch
+Hessen,Keinem Bereich zugeordnet,Förderschulen,6080,weiblich,deutsch
+Hessen,Keinem Bereich zugeordnet,Keine Zuordnung zu einer Schulart möglich 5,272,weiblich,deutsch
+Mecklenburg-Vorpommern,Primarbereich,Grundschulen,25858,weiblich,deutsch
+Mecklenburg-Vorpommern,Primarbereich,Freie Waldorfschulen,208,weiblich,deutsch
+Mecklenburg-Vorpommern,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,20933,weiblich,deutsch
+Mecklenburg-Vorpommern,Sekundarbereich I,Gymnasien,9186,weiblich,deutsch
+Mecklenburg-Vorpommern,Sekundarbereich I,Integrierte Gesamtschulen,3244,weiblich,deutsch
+Mecklenburg-Vorpommern,Sekundarbereich I,Freie Waldorfschulen,280,weiblich,deutsch
+Mecklenburg-Vorpommern,Sekundarbereich II,Gymnasien,7960,weiblich,deutsch
+Mecklenburg-Vorpommern,Sekundarbereich II,Integrierte Gesamtschulen,689,weiblich,deutsch
+Mecklenburg-Vorpommern,Sekundarbereich II,Freie Waldorfschulen,103,weiblich,deutsch
+Mecklenburg-Vorpommern,Sekundarbereich II,Abendgymnasien,131,weiblich,deutsch
+Mecklenburg-Vorpommern,Keinem Bereich zugeordnet,Förderschulen,2686,weiblich,deutsch
+Niedersachsen,Vorschulbereich,Schulkindergärten,578,weiblich,deutsch
+Niedersachsen,Primarbereich,Grundschulen,117925,weiblich,deutsch
+Niedersachsen,Primarbereich,Integrierte Gesamtschulen,474,weiblich,deutsch
+Niedersachsen,Primarbereich,Freie Waldorfschulen,1184,weiblich,deutsch
+Niedersachsen,Sekundarbereich I,Hauptschulen,6706,weiblich,deutsch
+Niedersachsen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,40153,weiblich,deutsch
+Niedersachsen,Sekundarbereich I,Realschulen,25557,weiblich,deutsch
+Niedersachsen,Sekundarbereich I,Gymnasien,87983,weiblich,deutsch
+Niedersachsen,Sekundarbereich I,Integrierte Gesamtschulen,30626,weiblich,deutsch
+Niedersachsen,Sekundarbereich I,Freie Waldorfschulen,1787,weiblich,deutsch
+Niedersachsen,Sekundarbereich II,Gymnasien,39759,weiblich,deutsch
+Niedersachsen,Sekundarbereich II,Integrierte Gesamtschulen,7602,weiblich,deutsch
+Niedersachsen,Sekundarbereich II,Freie Waldorfschulen,708,weiblich,deutsch
+Niedersachsen,Sekundarbereich II,Abendgymnasien,302,weiblich,deutsch
+Niedersachsen,Sekundarbereich II,Kollegs,269,weiblich,deutsch
+Niedersachsen,Keinem Bereich zugeordnet,Förderschulen,7079,weiblich,deutsch
+Nordrhein-Westfalen,Vorschulbereich,Schulkindergärten,765,weiblich,deutsch
+Nordrhein-Westfalen,Primarbereich,Grundschulen,271494,weiblich,deutsch
+Nordrhein-Westfalen,Primarbereich,Integrierte Gesamtschulen,459,weiblich,deutsch
+Nordrhein-Westfalen,Primarbereich,Freie Waldorfschulen,2880,weiblich,deutsch
+Nordrhein-Westfalen,Sekundarbereich I,Hauptschulen,13608,weiblich,deutsch
+Nordrhein-Westfalen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,22113,weiblich,deutsch
+Nordrhein-Westfalen,Sekundarbereich I,Realschulen,84318,weiblich,deutsch
+Nordrhein-Westfalen,Sekundarbereich I,Gymnasien,152457,weiblich,deutsch
+Nordrhein-Westfalen,Sekundarbereich I,Integrierte Gesamtschulen,112980,weiblich,deutsch
+Nordrhein-Westfalen,Sekundarbereich I,Freie Waldorfschulen,4224,weiblich,deutsch
+Nordrhein-Westfalen,Sekundarbereich I,Abendrealschulen,1785,weiblich,deutsch
+Nordrhein-Westfalen,Sekundarbereich II,Gymnasien,97110,weiblich,deutsch
+Nordrhein-Westfalen,Sekundarbereich II,Integrierte Gesamtschulen,30066,weiblich,deutsch
+Nordrhein-Westfalen,Sekundarbereich II,Freie Waldorfschulen,1425,weiblich,deutsch
+Nordrhein-Westfalen,Sekundarbereich II,Abendgymnasien,1728,weiblich,deutsch
+Nordrhein-Westfalen,Sekundarbereich II,Kollegs,2034,weiblich,deutsch
+Nordrhein-Westfalen,Keinem Bereich zugeordnet,Förderschulen,22455,weiblich,deutsch
+Rheinland-Pfalz,Vorschulbereich,Schulkindergärten,18,weiblich,deutsch
+Rheinland-Pfalz,Primarbereich,Grundschulen 6,61233,weiblich,deutsch
+Rheinland-Pfalz,Primarbereich,Freie Waldorfschulen,473,weiblich,deutsch
+Rheinland-Pfalz,Sekundarbereich I,Hauptschulen,41,weiblich,deutsch
+Rheinland-Pfalz,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,28680,weiblich,deutsch
+Rheinland-Pfalz,Sekundarbereich I,Realschulen,2263,weiblich,deutsch
+Rheinland-Pfalz,Sekundarbereich I,Gymnasien,41745,weiblich,deutsch
+Rheinland-Pfalz,Sekundarbereich I,Integrierte Gesamtschulen,15561,weiblich,deutsch
+Rheinland-Pfalz,Sekundarbereich I,Freie Waldorfschulen,661,weiblich,deutsch
+Rheinland-Pfalz,Sekundarbereich II,Gymnasien,20071,weiblich,deutsch
+Rheinland-Pfalz,Sekundarbereich II,Integrierte Gesamtschulen,5298,weiblich,deutsch
+Rheinland-Pfalz,Sekundarbereich II,Freie Waldorfschulen,213,weiblich,deutsch
+Rheinland-Pfalz,Sekundarbereich II,Abendgymnasien,105,weiblich,deutsch
+Rheinland-Pfalz,Sekundarbereich II,Kollegs,117,weiblich,deutsch
+Rheinland-Pfalz,Keinem Bereich zugeordnet,Förderschulen,4764,weiblich,deutsch
+Saarland,Vorschulbereich,Schulkindergärten,12,weiblich,deutsch
+Saarland,Primarbereich,Grundschulen,12604,weiblich,deutsch
+Saarland,Primarbereich,Freie Waldorfschulen,173,weiblich,deutsch
+Saarland,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,3,weiblich,deutsch
+Saarland,Sekundarbereich I,Realschulen,567,weiblich,deutsch
+Saarland,Sekundarbereich I,Gymnasien,7668,weiblich,deutsch
+Saarland,Sekundarbereich I,Integrierte Gesamtschulen,9787,weiblich,deutsch
+Saarland,Sekundarbereich I,Freie Waldorfschulen,306,weiblich,deutsch
+Saarland,Sekundarbereich I,Abendrealschulen,59,weiblich,deutsch
+Saarland,Sekundarbereich II,Gymnasien,4278,weiblich,deutsch
+Saarland,Sekundarbereich II,Integrierte Gesamtschulen,1345,weiblich,deutsch
+Saarland,Sekundarbereich II,Freie Waldorfschulen,123,weiblich,deutsch
+Saarland,Sekundarbereich II,Abendgymnasien,35,weiblich,deutsch
+Saarland,Sekundarbereich II,Kollegs,32,weiblich,deutsch
+Saarland,Keinem Bereich zugeordnet,Förderschulen,978,weiblich,deutsch
+Sachsen,Primarbereich,Grundschulen,66640,weiblich,deutsch
+Sachsen,Primarbereich,Freie Waldorfschulen,444,weiblich,deutsch
+Sachsen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,50676,weiblich,deutsch
+Sachsen,Sekundarbereich I,Gymnasien,34144,weiblich,deutsch
+Sachsen,Sekundarbereich I,Freie Waldorfschulen,595,weiblich,deutsch
+Sachsen,Sekundarbereich I,Abendrealschulen,176,weiblich,deutsch
+Sachsen,Sekundarbereich II,Gymnasien,17845,weiblich,deutsch
+Sachsen,Sekundarbereich II,Freie Waldorfschulen,171,weiblich,deutsch
+Sachsen,Sekundarbereich II,Abendgymnasien,141,weiblich,deutsch
+Sachsen,Sekundarbereich II,Kollegs,251,weiblich,deutsch
+Sachsen,Keinem Bereich zugeordnet,Förderschulen,6734,weiblich,deutsch
+Sachsen-Anhalt,Primarbereich,Grundschulen,33252,weiblich,deutsch
+Sachsen-Anhalt,Primarbereich,Freie Waldorfschulen,246,weiblich,deutsch
+Sachsen-Anhalt,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,18315,weiblich,deutsch
+Sachsen-Anhalt,Sekundarbereich I,Gymnasien,17199,weiblich,deutsch
+Sachsen-Anhalt,Sekundarbereich I,Integrierte Gesamtschulen,7737,weiblich,deutsch
+Sachsen-Anhalt,Sekundarbereich I,Freie Waldorfschulen,315,weiblich,deutsch
+Sachsen-Anhalt,Sekundarbereich I,Abendrealschulen,30,weiblich,deutsch
+Sachsen-Anhalt,Sekundarbereich II,Gymnasien,9366,weiblich,deutsch
+Sachsen-Anhalt,Sekundarbereich II,Integrierte Gesamtschulen,399,weiblich,deutsch
+Sachsen-Anhalt,Sekundarbereich II,Freie Waldorfschulen,96,weiblich,deutsch
+Sachsen-Anhalt,Sekundarbereich II,Abendgymnasien,21,weiblich,deutsch
+Sachsen-Anhalt,Sekundarbereich II,Kollegs,99,weiblich,deutsch
+Sachsen-Anhalt,Keinem Bereich zugeordnet,Förderschulen,3867,weiblich,deutsch
+Schleswig-Holstein,Primarbereich,Grundschulen,44977,weiblich,deutsch
+Schleswig-Holstein,Primarbereich,Freie Waldorfschulen,825,weiblich,deutsch
+Schleswig-Holstein,Sekundarbereich I,Gymnasien,25296,weiblich,deutsch
+Schleswig-Holstein,Sekundarbereich I,Integrierte Gesamtschulen,37187,weiblich,deutsch
+Schleswig-Holstein,Sekundarbereich I,Freie Waldorfschulen,1179,weiblich,deutsch
+Schleswig-Holstein,Sekundarbereich II,Gymnasien,12810,weiblich,deutsch
+Schleswig-Holstein,Sekundarbereich II,Integrierte Gesamtschulen,4631,weiblich,deutsch
+Schleswig-Holstein,Sekundarbereich II,Freie Waldorfschulen,418,weiblich,deutsch
+Schleswig-Holstein,Sekundarbereich II,Abendgymnasien,121,weiblich,deutsch
+Schleswig-Holstein,Keinem Bereich zugeordnet,Förderschulen,1775,weiblich,deutsch
+Thüringen,Primarbereich,Grundschulen,30848,weiblich,deutsch
+Thüringen,Primarbereich,Integrierte Gesamtschulen,3111,weiblich,deutsch
+Thüringen,Primarbereich,Freie Waldorfschulen,256,weiblich,deutsch
+Thüringen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,19549,weiblich,deutsch
+Thüringen,Sekundarbereich I,Gymnasien,16263,weiblich,deutsch
+Thüringen,Sekundarbereich I,Integrierte Gesamtschulen,7998,weiblich,deutsch
+Thüringen,Sekundarbereich I,Freie Waldorfschulen,387,weiblich,deutsch
+Thüringen,Sekundarbereich II,Gymnasien,9312,weiblich,deutsch
+Thüringen,Sekundarbereich II,Integrierte Gesamtschulen,741,weiblich,deutsch
+Thüringen,Sekundarbereich II,Freie Waldorfschulen,127,weiblich,deutsch
+Thüringen,Sekundarbereich II,Kollegs,41,weiblich,deutsch
+Thüringen,Keinem Bereich zugeordnet,Förderschulen,2271,weiblich,deutsch
+Deutschland,Vorschulbereich,Vorklassen,3819,weiblich,deutsch
+Deutschland,Vorschulbereich,Schulkindergärten,3981,weiblich,deutsch
+Deutschland,Primarbereich,Grundschulen,1212711,weiblich,deutsch
+Deutschland,Primarbereich,Integrierte Gesamtschulen,30759,weiblich,deutsch
+Deutschland,Primarbereich,Freie Waldorfschulen,14766,weiblich,deutsch
+Deutschland,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,46218,weiblich,deutsch
+Deutschland,Sekundarbereich I,Hauptschulen,104337,weiblich,deutsch
+Deutschland,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,216870,weiblich,deutsch
+Deutschland,Sekundarbereich I,Realschulen,335928,weiblich,deutsch
+Deutschland,Sekundarbereich I,Gymnasien,716448,weiblich,deutsch
+Deutschland,Sekundarbereich I,Integrierte Gesamtschulen,344979,weiblich,deutsch
+Deutschland,Sekundarbereich I,Freie Waldorfschulen,21621,weiblich,deutsch
+Deutschland,Sekundarbereich I,Abendhauptschulen,132,weiblich,deutsch
+Deutschland,Sekundarbereich I,Abendrealschulen,3660,weiblich,deutsch
+Deutschland,Sekundarbereich II,Gymnasien,395055,weiblich,deutsch
+Deutschland,Sekundarbereich II,Integrierte Gesamtschulen,68544,weiblich,deutsch
+Deutschland,Sekundarbereich II,Freie Waldorfschulen,7995,weiblich,deutsch
+Deutschland,Sekundarbereich II,Abendgymnasien,4296,weiblich,deutsch
+Deutschland,Sekundarbereich II,Kollegs,4179,weiblich,deutsch
+Deutschland,Keinem Bereich zugeordnet,Förderschulen,97023,weiblich,deutsch
+Deutschland,Keinem Bereich zugeordnet,Keine Zuordnung zu einer Schulart möglich 5,273,weiblich,deutsch
+Baden-Württemberg 1,Vorschulbereich,Schulkindergärten,1193,männlich,ausland
+Baden-Württemberg 1,Primarbereich,Grundschulen,23769,männlich,ausland
+Baden-Württemberg 1,Primarbereich,Integrierte Gesamtschulen,3737,männlich,ausland
+Baden-Württemberg 1,Primarbereich,Freie Waldorfschulen,112,männlich,ausland
+Baden-Württemberg 1,Sekundarbereich I,Hauptschulen,8051,männlich,ausland
+Baden-Württemberg 1,Sekundarbereich I,Realschulen,11197,männlich,ausland
+Baden-Württemberg 1,Sekundarbereich I,Gymnasien,5927,männlich,ausland
+Baden-Württemberg 1,Sekundarbereich I,Integrierte Gesamtschulen,9934,männlich,ausland
+Baden-Württemberg 1,Sekundarbereich I,Freie Waldorfschulen,162,männlich,ausland
+Baden-Württemberg 1,Sekundarbereich I,Abendrealschulen,149,männlich,ausland
+Baden-Württemberg 1,Sekundarbereich II,Gymnasien,2246,männlich,ausland
+Baden-Württemberg 1,Sekundarbereich II,Integrierte Gesamtschulen,35,männlich,ausland
+Baden-Württemberg 1,Sekundarbereich II,Freie Waldorfschulen,64,männlich,ausland
+Baden-Württemberg 1,Sekundarbereich II,Abendgymnasien,245,männlich,ausland
+Baden-Württemberg 1,Sekundarbereich II,Kollegs,13,männlich,ausland
+Baden-Württemberg 1,Keinem Bereich zugeordnet,Förderschulen,7365,männlich,ausland
+Bayern,Primarbereich,Grundschulen,28316,männlich,ausland
+Bayern,Primarbereich,Freie Waldorfschulen,29,männlich,ausland
+Bayern,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,85,männlich,ausland
+Bayern,Sekundarbereich I,Hauptschulen,24675,männlich,ausland
+Bayern,Sekundarbereich I,Realschulen,7271,männlich,ausland
+Bayern,Sekundarbereich I,Gymnasien,5397,männlich,ausland
+Bayern,Sekundarbereich I,Integrierte Gesamtschulen,87,männlich,ausland
+Bayern,Sekundarbereich I,Freie Waldorfschulen,41,männlich,ausland
+Bayern,Sekundarbereich I,Abendrealschulen,102,männlich,ausland
+Bayern,Sekundarbereich II,Gymnasien,1979,männlich,ausland
+Bayern,Sekundarbereich II,Freie Waldorfschulen,15,männlich,ausland
+Bayern,Sekundarbereich II,Abendgymnasien,68,männlich,ausland
+Bayern,Sekundarbereich II,Kollegs,110,männlich,ausland
+Bayern,Keinem Bereich zugeordnet,Förderschulen,6044,männlich,ausland
+Berlin,Primarbereich,Grundschulen,12370,männlich,ausland
+Berlin,Primarbereich,Integrierte Gesamtschulen,1089,männlich,ausland
+Berlin,Primarbereich,Freie Waldorfschulen,34,männlich,ausland
+Berlin,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,6002,männlich,ausland
+Berlin,Sekundarbereich I,Gymnasien,1976,männlich,ausland
+Berlin,Sekundarbereich I,Integrierte Gesamtschulen,7785,männlich,ausland
+Berlin,Sekundarbereich I,Freie Waldorfschulen,34,männlich,ausland
+Berlin,Sekundarbereich I,Abendhauptschulen,83,männlich,ausland
+Berlin,Sekundarbereich I,Abendrealschulen,98,männlich,ausland
+Berlin,Sekundarbereich II,Gymnasien,1360,männlich,ausland
+Berlin,Sekundarbereich II,Integrierte Gesamtschulen,803,männlich,ausland
+Berlin,Sekundarbereich II,Freie Waldorfschulen,13,männlich,ausland
+Berlin,Sekundarbereich II,Abendgymnasien,56,männlich,ausland
+Berlin,Sekundarbereich II,Kollegs,265,männlich,ausland
+Berlin,Keinem Bereich zugeordnet,Förderschulen,1021,männlich,ausland
+Brandenburg,Primarbereich,Grundschulen,3007,männlich,ausland
+Brandenburg,Primarbereich,Integrierte Gesamtschulen,20,männlich,ausland
+Brandenburg,Primarbereich,Freie Waldorfschulen,1,männlich,ausland
+Brandenburg,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,1422,männlich,ausland
+Brandenburg,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,1643,männlich,ausland
+Brandenburg,Sekundarbereich I,Gymnasien,386,männlich,ausland
+Brandenburg,Sekundarbereich I,Integrierte Gesamtschulen,504,männlich,ausland
+Brandenburg,Sekundarbereich I,Freie Waldorfschulen,9,männlich,ausland
+Brandenburg,Sekundarbereich I,Abendrealschulen,234,männlich,ausland
+Brandenburg,Sekundarbereich II,Gymnasien,366,männlich,ausland
+Brandenburg,Sekundarbereich II,Integrierte Gesamtschulen,80,männlich,ausland
+Brandenburg,Sekundarbereich II,Freie Waldorfschulen,8,männlich,ausland
+Brandenburg,Sekundarbereich II,Abendgymnasien,26,männlich,ausland
+Brandenburg,Sekundarbereich II,Kollegs,36,männlich,ausland
+Brandenburg,Keinem Bereich zugeordnet,Förderschulen,268,männlich,ausland
+Bremen,Vorschulbereich,Vorklassen,0,männlich,ausland
+Bremen,Primarbereich,Grundschulen,2736,männlich,ausland
+Bremen,Primarbereich,Freie Waldorfschulen,6,männlich,ausland
+Bremen,Sekundarbereich I,Gymnasien,391,männlich,ausland
+Bremen,Sekundarbereich I,Integrierte Gesamtschulen,3329,männlich,ausland
+Bremen,Sekundarbereich I,Freie Waldorfschulen,8,männlich,ausland
+Bremen,Sekundarbereich I,Abendhauptschulen,74,männlich,ausland
+Bremen,Sekundarbereich I,Abendrealschulen,77,männlich,ausland
+Bremen,Sekundarbereich II,Gymnasien,121,männlich,ausland
+Bremen,Sekundarbereich II,Integrierte Gesamtschulen,226,männlich,ausland
+Bremen,Sekundarbereich II,Freie Waldorfschulen,2,männlich,ausland
+Bremen,Sekundarbereich II,Abendgymnasien,7,männlich,ausland
+Bremen,Sekundarbereich II,Kollegs,26,männlich,ausland
+Bremen,Keinem Bereich zugeordnet,Förderschulen,68,männlich,ausland
+Hamburg,Vorschulbereich,Vorklassen,983,männlich,ausland
+Hamburg,Primarbereich,Grundschulen,4714,männlich,ausland
+Hamburg,Primarbereich,Integrierte Gesamtschulen,463,männlich,ausland
+Hamburg,Primarbereich,Freie Waldorfschulen,6,männlich,ausland
+Hamburg,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,74,männlich,ausland
+Hamburg,Sekundarbereich I,Gymnasien,1276,männlich,ausland
+Hamburg,Sekundarbereich I,Integrierte Gesamtschulen,5489,männlich,ausland
+Hamburg,Sekundarbereich I,Freie Waldorfschulen,13,männlich,ausland
+Hamburg,Sekundarbereich I,Abendrealschulen 2,169,männlich,ausland
+Hamburg,Sekundarbereich II,Gymnasien,460,männlich,ausland
+Hamburg,Sekundarbereich II,Integrierte Gesamtschulen,569,männlich,ausland
+Hamburg,Sekundarbereich II,Freie Waldorfschulen,9,männlich,ausland
+Hamburg,Sekundarbereich II,Abendgymnasien,47,männlich,ausland
+Hamburg,Sekundarbereich II,Kollegs,6,männlich,ausland
+Hamburg,Keinem Bereich zugeordnet,Förderschulen,574,männlich,ausland
+Hessen,Vorschulbereich,Schulkindergärten,823,männlich,ausland
+Hessen,Primarbereich,Grundschulen 3,15667,männlich,ausland
+Hessen,Primarbereich,Freie Waldorfschulen,5,männlich,ausland
+Hessen,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,1375,männlich,ausland
+Hessen,Sekundarbereich I,Hauptschulen,3300,männlich,ausland
+Hessen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,788,männlich,ausland
+Hessen,Sekundarbereich I,Realschulen,4564,männlich,ausland
+Hessen,Sekundarbereich I,Gymnasien,4640,männlich,ausland
+Hessen,Sekundarbereich I,Integrierte Gesamtschulen,6194,männlich,ausland
+Hessen,Sekundarbereich I,Freie Waldorfschulen,33,männlich,ausland
+Hessen,Sekundarbereich I,Abendhauptschulen,161,männlich,ausland
+Hessen,Sekundarbereich I,Abendrealschulen,465,männlich,ausland
+Hessen,Sekundarbereich II,Gymnasien 4,1605,männlich,ausland
+Hessen,Sekundarbereich II,Freie Waldorfschulen,29,männlich,ausland
+Hessen,Sekundarbereich II,Abendgymnasien,99,männlich,ausland
+Hessen,Sekundarbereich II,Kollegs,33,männlich,ausland
+Hessen,Keinem Bereich zugeordnet,Förderschulen,2457,männlich,ausland
+Hessen,Keinem Bereich zugeordnet,Keine Zuordnung zu einer Schulart möglich 5,4480,männlich,ausland
+Mecklenburg-Vorpommern,Primarbereich,Grundschulen,1810,männlich,ausland
+Mecklenburg-Vorpommern,Primarbereich,Freie Waldorfschulen,2,männlich,ausland
+Mecklenburg-Vorpommern,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,1483,männlich,ausland
+Mecklenburg-Vorpommern,Sekundarbereich I,Gymnasien,324,männlich,ausland
+Mecklenburg-Vorpommern,Sekundarbereich I,Integrierte Gesamtschulen,338,männlich,ausland
+Mecklenburg-Vorpommern,Sekundarbereich I,Freie Waldorfschulen,4,männlich,ausland
+Mecklenburg-Vorpommern,Sekundarbereich II,Gymnasien,289,männlich,ausland
+Mecklenburg-Vorpommern,Sekundarbereich II,Integrierte Gesamtschulen,34,männlich,ausland
+Mecklenburg-Vorpommern,Sekundarbereich II,Freie Waldorfschulen,0,männlich,ausland
+Mecklenburg-Vorpommern,Sekundarbereich II,Abendgymnasien,46,männlich,ausland
+Mecklenburg-Vorpommern,Keinem Bereich zugeordnet,Förderschulen,228,männlich,ausland
+Niedersachsen,Vorschulbereich,Schulkindergärten,508,männlich,ausland
+Niedersachsen,Primarbereich,Grundschulen,19648,männlich,ausland
+Niedersachsen,Primarbereich,Integrierte Gesamtschulen,114,männlich,ausland
+Niedersachsen,Primarbereich,Freie Waldorfschulen,6,männlich,ausland
+Niedersachsen,Sekundarbereich I,Hauptschulen,3446,männlich,ausland
+Niedersachsen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,7920,männlich,ausland
+Niedersachsen,Sekundarbereich I,Realschulen,3564,männlich,ausland
+Niedersachsen,Sekundarbereich I,Gymnasien,4207,männlich,ausland
+Niedersachsen,Sekundarbereich I,Integrierte Gesamtschulen,4094,männlich,ausland
+Niedersachsen,Sekundarbereich I,Freie Waldorfschulen,19,männlich,ausland
+Niedersachsen,Sekundarbereich II,Gymnasien,1095,männlich,ausland
+Niedersachsen,Sekundarbereich II,Integrierte Gesamtschulen,323,männlich,ausland
+Niedersachsen,Sekundarbereich II,Freie Waldorfschulen,5,männlich,ausland
+Niedersachsen,Sekundarbereich II,Abendgymnasien,31,männlich,ausland
+Niedersachsen,Sekundarbereich II,Kollegs,36,männlich,ausland
+Niedersachsen,Keinem Bereich zugeordnet,Förderschulen,1958,männlich,ausland
+Nordrhein-Westfalen,Vorschulbereich,Schulkindergärten,132,männlich,ausland
+Nordrhein-Westfalen,Primarbereich,Grundschulen,50241,männlich,ausland
+Nordrhein-Westfalen,Primarbereich,Integrierte Gesamtschulen,102,männlich,ausland
+Nordrhein-Westfalen,Primarbereich,Freie Waldorfschulen,42,männlich,ausland
+Nordrhein-Westfalen,Sekundarbereich I,Hauptschulen,11103,männlich,ausland
+Nordrhein-Westfalen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,4509,männlich,ausland
+Nordrhein-Westfalen,Sekundarbereich I,Realschulen,14001,männlich,ausland
+Nordrhein-Westfalen,Sekundarbereich I,Gymnasien,9783,männlich,ausland
+Nordrhein-Westfalen,Sekundarbereich I,Integrierte Gesamtschulen,21198,männlich,ausland
+Nordrhein-Westfalen,Sekundarbereich I,Freie Waldorfschulen,90,männlich,ausland
+Nordrhein-Westfalen,Sekundarbereich I,Abendrealschulen,2703,männlich,ausland
+Nordrhein-Westfalen,Sekundarbereich II,Gymnasien,3900,männlich,ausland
+Nordrhein-Westfalen,Sekundarbereich II,Integrierte Gesamtschulen,1968,männlich,ausland
+Nordrhein-Westfalen,Sekundarbereich II,Freie Waldorfschulen,36,männlich,ausland
+Nordrhein-Westfalen,Sekundarbereich II,Abendgymnasien,381,männlich,ausland
+Nordrhein-Westfalen,Sekundarbereich II,Kollegs,804,männlich,ausland
+Nordrhein-Westfalen,Keinem Bereich zugeordnet,Förderschulen,8445,männlich,ausland
+Rheinland-Pfalz,Vorschulbereich,Schulkindergärten,16,männlich,ausland
+Rheinland-Pfalz,Primarbereich,Grundschulen 6,8878,männlich,ausland
+Rheinland-Pfalz,Primarbereich,Freie Waldorfschulen,9,männlich,ausland
+Rheinland-Pfalz,Sekundarbereich I,Hauptschulen,1,männlich,ausland
+Rheinland-Pfalz,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,7391,männlich,ausland
+Rheinland-Pfalz,Sekundarbereich I,Realschulen,9,männlich,ausland
+Rheinland-Pfalz,Sekundarbereich I,Gymnasien,2139,männlich,ausland
+Rheinland-Pfalz,Sekundarbereich I,Integrierte Gesamtschulen,1523,männlich,ausland
+Rheinland-Pfalz,Sekundarbereich I,Freie Waldorfschulen,8,männlich,ausland
+Rheinland-Pfalz,Sekundarbereich II,Gymnasien,619,männlich,ausland
+Rheinland-Pfalz,Sekundarbereich II,Integrierte Gesamtschulen,209,männlich,ausland
+Rheinland-Pfalz,Sekundarbereich II,Freie Waldorfschulen,7,männlich,ausland
+Rheinland-Pfalz,Sekundarbereich II,Abendgymnasien,13,männlich,ausland
+Rheinland-Pfalz,Sekundarbereich II,Kollegs,21,männlich,ausland
+Rheinland-Pfalz,Keinem Bereich zugeordnet,Förderschulen,1338,männlich,ausland
+Saarland,Vorschulbereich,Schulkindergärten,12,männlich,ausland
+Saarland,Primarbereich,Grundschulen,2934,männlich,ausland
+Saarland,Primarbereich,Freie Waldorfschulen,2,männlich,ausland
+Saarland,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,8,männlich,ausland
+Saarland,Sekundarbereich I,Realschulen,29,männlich,ausland
+Saarland,Sekundarbereich I,Gymnasien,620,männlich,ausland
+Saarland,Sekundarbereich I,Integrierte Gesamtschulen,2681,männlich,ausland
+Saarland,Sekundarbereich I,Freie Waldorfschulen,9,männlich,ausland
+Saarland,Sekundarbereich I,Abendrealschulen,26,männlich,ausland
+Saarland,Sekundarbereich II,Gymnasien,210,männlich,ausland
+Saarland,Sekundarbereich II,Integrierte Gesamtschulen,228,männlich,ausland
+Saarland,Sekundarbereich II,Freie Waldorfschulen,3,männlich,ausland
+Saarland,Sekundarbereich II,Abendgymnasien,7,männlich,ausland
+Saarland,Sekundarbereich II,Kollegs,0,männlich,ausland
+Saarland,Keinem Bereich zugeordnet,Förderschulen,383,männlich,ausland
+Sachsen,Primarbereich,Grundschulen,5061,männlich,ausland
+Sachsen,Primarbereich,Freie Waldorfschulen,32,männlich,ausland
+Sachsen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,4216,männlich,ausland
+Sachsen,Sekundarbereich I,Gymnasien,1375,männlich,ausland
+Sachsen,Sekundarbereich I,Freie Waldorfschulen,20,männlich,ausland
+Sachsen,Sekundarbereich I,Abendrealschulen,324,männlich,ausland
+Sachsen,Sekundarbereich II,Gymnasien,538,männlich,ausland
+Sachsen,Sekundarbereich II,Freie Waldorfschulen,7,männlich,ausland
+Sachsen,Sekundarbereich II,Abendgymnasien,23,männlich,ausland
+Sachsen,Sekundarbereich II,Kollegs,189,männlich,ausland
+Sachsen,Keinem Bereich zugeordnet,Förderschulen,713,männlich,ausland
+Sachsen-Anhalt,Primarbereich,Grundschulen,3006,männlich,ausland
+Sachsen-Anhalt,Primarbereich,Freie Waldorfschulen,6,männlich,ausland
+Sachsen-Anhalt,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,1392,männlich,ausland
+Sachsen-Anhalt,Sekundarbereich I,Gymnasien,573,männlich,ausland
+Sachsen-Anhalt,Sekundarbereich I,Integrierte Gesamtschulen,933,männlich,ausland
+Sachsen-Anhalt,Sekundarbereich I,Freie Waldorfschulen,9,männlich,ausland
+Sachsen-Anhalt,Sekundarbereich I,Abendrealschulen,18,männlich,ausland
+Sachsen-Anhalt,Sekundarbereich II,Gymnasien,177,männlich,ausland
+Sachsen-Anhalt,Sekundarbereich II,Integrierte Gesamtschulen,12,männlich,ausland
+Sachsen-Anhalt,Sekundarbereich II,Freie Waldorfschulen,0,männlich,ausland
+Sachsen-Anhalt,Sekundarbereich II,Abendgymnasien,3,männlich,ausland
+Sachsen-Anhalt,Sekundarbereich II,Kollegs,27,männlich,ausland
+Sachsen-Anhalt,Keinem Bereich zugeordnet,Förderschulen,324,männlich,ausland
+Schleswig-Holstein,Primarbereich,Grundschulen,5993,männlich,ausland
+Schleswig-Holstein,Primarbereich,Freie Waldorfschulen,4,männlich,ausland
+Schleswig-Holstein,Sekundarbereich I,Gymnasien,941,männlich,ausland
+Schleswig-Holstein,Sekundarbereich I,Integrierte Gesamtschulen,5675,männlich,ausland
+Schleswig-Holstein,Sekundarbereich I,Freie Waldorfschulen,4,männlich,ausland
+Schleswig-Holstein,Sekundarbereich II,Gymnasien,263,männlich,ausland
+Schleswig-Holstein,Sekundarbereich II,Integrierte Gesamtschulen,191,männlich,ausland
+Schleswig-Holstein,Sekundarbereich II,Freie Waldorfschulen,5,männlich,ausland
+Schleswig-Holstein,Sekundarbereich II,Abendgymnasien,13,männlich,ausland
+Schleswig-Holstein,Keinem Bereich zugeordnet,Förderschulen,370,männlich,ausland
+Thüringen,Primarbereich,Grundschulen,2726,männlich,ausland
+Thüringen,Primarbereich,Integrierte Gesamtschulen,227,männlich,ausland
+Thüringen,Primarbereich,Freie Waldorfschulen,5,männlich,ausland
+Thüringen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,2003,männlich,ausland
+Thüringen,Sekundarbereich I,Gymnasien,619,männlich,ausland
+Thüringen,Sekundarbereich I,Integrierte Gesamtschulen,750,männlich,ausland
+Thüringen,Sekundarbereich I,Freie Waldorfschulen,6,männlich,ausland
+Thüringen,Sekundarbereich II,Gymnasien,183,männlich,ausland
+Thüringen,Sekundarbereich II,Integrierte Gesamtschulen,48,männlich,ausland
+Thüringen,Sekundarbereich II,Freie Waldorfschulen,3,männlich,ausland
+Thüringen,Sekundarbereich II,Kollegs,8,männlich,ausland
+Thüringen,Keinem Bereich zugeordnet,Förderschulen,203,männlich,ausland
+Deutschland,Vorschulbereich,Vorklassen,984,männlich,ausland
+Deutschland,Vorschulbereich,Schulkindergärten,2685,männlich,ausland
+Deutschland,Primarbereich,Grundschulen,190875,männlich,ausland
+Deutschland,Primarbereich,Integrierte Gesamtschulen,5751,männlich,ausland
+Deutschland,Primarbereich,Freie Waldorfschulen,300,männlich,ausland
+Deutschland,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,8958,männlich,ausland
+Deutschland,Sekundarbereich I,Hauptschulen,50577,männlich,ausland
+Deutschland,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,31353,männlich,ausland
+Deutschland,Sekundarbereich I,Realschulen,40635,männlich,ausland
+Deutschland,Sekundarbereich I,Gymnasien,40572,männlich,ausland
+Deutschland,Sekundarbereich I,Integrierte Gesamtschulen,70515,männlich,ausland
+Deutschland,Sekundarbereich I,Freie Waldorfschulen,468,männlich,ausland
+Deutschland,Sekundarbereich I,Abendhauptschulen,318,männlich,ausland
+Deutschland,Sekundarbereich I,Abendrealschulen,4365,männlich,ausland
+Deutschland,Sekundarbereich II,Gymnasien,15411,männlich,ausland
+Deutschland,Sekundarbereich II,Integrierte Gesamtschulen,4728,männlich,ausland
+Deutschland,Sekundarbereich II,Freie Waldorfschulen,207,männlich,ausland
+Deutschland,Sekundarbereich II,Abendgymnasien,1068,männlich,ausland
+Deutschland,Sekundarbereich II,Kollegs,1572,männlich,ausland
+Deutschland,Keinem Bereich zugeordnet,Förderschulen,31761,männlich,ausland
+Deutschland,Keinem Bereich zugeordnet,Keine Zuordnung zu einer Schulart möglich 5,4479,männlich,ausland
+Baden-Württemberg 1,Vorschulbereich,Schulkindergärten,866,weiblich,ausland
+Baden-Württemberg 1,Primarbereich,Grundschulen,23106,weiblich,ausland
+Baden-Württemberg 1,Primarbereich,Integrierte Gesamtschulen,3758,weiblich,ausland
+Baden-Württemberg 1,Primarbereich,Freie Waldorfschulen,100,weiblich,ausland
+Baden-Württemberg 1,Sekundarbereich I,Hauptschulen,6582,weiblich,ausland
+Baden-Württemberg 1,Sekundarbereich I,Realschulen,11397,weiblich,ausland
+Baden-Württemberg 1,Sekundarbereich I,Gymnasien,6731,weiblich,ausland
+Baden-Württemberg 1,Sekundarbereich I,Integrierte Gesamtschulen,8815,weiblich,ausland
+Baden-Württemberg 1,Sekundarbereich I,Freie Waldorfschulen,191,weiblich,ausland
+Baden-Württemberg 1,Sekundarbereich I,Abendrealschulen,85,weiblich,ausland
+Baden-Württemberg 1,Sekundarbereich II,Gymnasien,2611,weiblich,ausland
+Baden-Württemberg 1,Sekundarbereich II,Integrierte Gesamtschulen,40,weiblich,ausland
+Baden-Württemberg 1,Sekundarbereich II,Freie Waldorfschulen,74,weiblich,ausland
+Baden-Württemberg 1,Sekundarbereich II,Abendgymnasien,200,weiblich,ausland
+Baden-Württemberg 1,Sekundarbereich II,Kollegs,13,weiblich,ausland
+Baden-Württemberg 1,Keinem Bereich zugeordnet,Förderschulen,4177,weiblich,ausland
+Bayern,Primarbereich,Grundschulen,28475,weiblich,ausland
+Bayern,Primarbereich,Freie Waldorfschulen,31,weiblich,ausland
+Bayern,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,79,weiblich,ausland
+Bayern,Sekundarbereich I,Hauptschulen,21616,weiblich,ausland
+Bayern,Sekundarbereich I,Realschulen,7797,weiblich,ausland
+Bayern,Sekundarbereich I,Gymnasien,6357,weiblich,ausland
+Bayern,Sekundarbereich I,Integrierte Gesamtschulen,96,weiblich,ausland
+Bayern,Sekundarbereich I,Freie Waldorfschulen,44,weiblich,ausland
+Bayern,Sekundarbereich I,Abendrealschulen,57,weiblich,ausland
+Bayern,Sekundarbereich II,Gymnasien,2562,weiblich,ausland
+Bayern,Sekundarbereich II,Freie Waldorfschulen,17,weiblich,ausland
+Bayern,Sekundarbereich II,Abendgymnasien,78,weiblich,ausland
+Bayern,Sekundarbereich II,Kollegs,96,weiblich,ausland
+Bayern,Keinem Bereich zugeordnet,Förderschulen,3443,weiblich,ausland
+Berlin,Primarbereich,Grundschulen,11636,weiblich,ausland
+Berlin,Primarbereich,Integrierte Gesamtschulen,1014,weiblich,ausland
+Berlin,Primarbereich,Freie Waldorfschulen,34,weiblich,ausland
+Berlin,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,5507,weiblich,ausland
+Berlin,Sekundarbereich I,Gymnasien,2418,weiblich,ausland
+Berlin,Sekundarbereich I,Integrierte Gesamtschulen,6453,weiblich,ausland
+Berlin,Sekundarbereich I,Freie Waldorfschulen,49,weiblich,ausland
+Berlin,Sekundarbereich I,Abendhauptschulen,56,weiblich,ausland
+Berlin,Sekundarbereich I,Abendrealschulen,66,weiblich,ausland
+Berlin,Sekundarbereich II,Gymnasien,1702,weiblich,ausland
+Berlin,Sekundarbereich II,Integrierte Gesamtschulen,941,weiblich,ausland
+Berlin,Sekundarbereich II,Freie Waldorfschulen,18,weiblich,ausland
+Berlin,Sekundarbereich II,Abendgymnasien,23,weiblich,ausland
+Berlin,Sekundarbereich II,Kollegs,215,weiblich,ausland
+Berlin,Keinem Bereich zugeordnet,Förderschulen,480,weiblich,ausland
+Brandenburg,Primarbereich,Grundschulen,2890,weiblich,ausland
+Brandenburg,Primarbereich,Integrierte Gesamtschulen,15,weiblich,ausland
+Brandenburg,Primarbereich,Freie Waldorfschulen,4,weiblich,ausland
+Brandenburg,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,1336,weiblich,ausland
+Brandenburg,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,1281,weiblich,ausland
+Brandenburg,Sekundarbereich I,Gymnasien,589,weiblich,ausland
+Brandenburg,Sekundarbereich I,Integrierte Gesamtschulen,438,weiblich,ausland
+Brandenburg,Sekundarbereich I,Freie Waldorfschulen,10,weiblich,ausland
+Brandenburg,Sekundarbereich I,Abendrealschulen,124,weiblich,ausland
+Brandenburg,Sekundarbereich II,Gymnasien,391,weiblich,ausland
+Brandenburg,Sekundarbereich II,Integrierte Gesamtschulen,91,weiblich,ausland
+Brandenburg,Sekundarbereich II,Freie Waldorfschulen,4,weiblich,ausland
+Brandenburg,Sekundarbereich II,Abendgymnasien,21,weiblich,ausland
+Brandenburg,Sekundarbereich II,Kollegs,19,weiblich,ausland
+Brandenburg,Keinem Bereich zugeordnet,Förderschulen,141,weiblich,ausland
+Bremen,Vorschulbereich,Vorklassen,2,weiblich,ausland
+Bremen,Primarbereich,Grundschulen,2621,weiblich,ausland
+Bremen,Primarbereich,Freie Waldorfschulen,3,weiblich,ausland
+Bremen,Sekundarbereich I,Gymnasien,439,weiblich,ausland
+Bremen,Sekundarbereich I,Integrierte Gesamtschulen,2960,weiblich,ausland
+Bremen,Sekundarbereich I,Freie Waldorfschulen,10,weiblich,ausland
+Bremen,Sekundarbereich I,Abendhauptschulen,47,weiblich,ausland
+Bremen,Sekundarbereich I,Abendrealschulen,49,weiblich,ausland
+Bremen,Sekundarbereich II,Gymnasien,138,weiblich,ausland
+Bremen,Sekundarbereich II,Integrierte Gesamtschulen,221,weiblich,ausland
+Bremen,Sekundarbereich II,Freie Waldorfschulen,3,weiblich,ausland
+Bremen,Sekundarbereich II,Abendgymnasien,7,weiblich,ausland
+Bremen,Sekundarbereich II,Kollegs,15,weiblich,ausland
+Bremen,Keinem Bereich zugeordnet,Förderschulen,42,weiblich,ausland
+Hamburg,Vorschulbereich,Vorklassen,917,weiblich,ausland
+Hamburg,Primarbereich,Grundschulen,4611,weiblich,ausland
+Hamburg,Primarbereich,Integrierte Gesamtschulen,396,weiblich,ausland
+Hamburg,Primarbereich,Freie Waldorfschulen,10,weiblich,ausland
+Hamburg,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,61,weiblich,ausland
+Hamburg,Sekundarbereich I,Gymnasien,1548,weiblich,ausland
+Hamburg,Sekundarbereich I,Integrierte Gesamtschulen,4712,weiblich,ausland
+Hamburg,Sekundarbereich I,Freie Waldorfschulen,18,weiblich,ausland
+Hamburg,Sekundarbereich I,Abendrealschulen 2,119,weiblich,ausland
+Hamburg,Sekundarbereich II,Gymnasien,582,weiblich,ausland
+Hamburg,Sekundarbereich II,Integrierte Gesamtschulen,659,weiblich,ausland
+Hamburg,Sekundarbereich II,Freie Waldorfschulen,5,weiblich,ausland
+Hamburg,Sekundarbereich II,Abendgymnasien,48,weiblich,ausland
+Hamburg,Sekundarbereich II,Kollegs,8,weiblich,ausland
+Hamburg,Keinem Bereich zugeordnet,Förderschulen,297,weiblich,ausland
+Hessen,Vorschulbereich,Schulkindergärten,586,weiblich,ausland
+Hessen,Primarbereich,Grundschulen 3,14838,weiblich,ausland
+Hessen,Primarbereich,Freie Waldorfschulen,7,weiblich,ausland
+Hessen,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,1200,weiblich,ausland
+Hessen,Sekundarbereich I,Hauptschulen,2382,weiblich,ausland
+Hessen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,707,weiblich,ausland
+Hessen,Sekundarbereich I,Realschulen,4334,weiblich,ausland
+Hessen,Sekundarbereich I,Gymnasien,5434,weiblich,ausland
+Hessen,Sekundarbereich I,Integrierte Gesamtschulen,5641,weiblich,ausland
+Hessen,Sekundarbereich I,Freie Waldorfschulen,16,weiblich,ausland
+Hessen,Sekundarbereich I,Abendhauptschulen,88,weiblich,ausland
+Hessen,Sekundarbereich I,Abendrealschulen,314,weiblich,ausland
+Hessen,Sekundarbereich II,Gymnasien 4,2168,weiblich,ausland
+Hessen,Sekundarbereich II,Freie Waldorfschulen,15,weiblich,ausland
+Hessen,Sekundarbereich II,Abendgymnasien,82,weiblich,ausland
+Hessen,Sekundarbereich II,Kollegs,25,weiblich,ausland
+Hessen,Keinem Bereich zugeordnet,Förderschulen,1325,weiblich,ausland
+Hessen,Keinem Bereich zugeordnet,Keine Zuordnung zu einer Schulart möglich 5,3976,weiblich,ausland
+Mecklenburg-Vorpommern,Primarbereich,Grundschulen,1602,weiblich,ausland
+Mecklenburg-Vorpommern,Primarbereich,Freie Waldorfschulen,2,weiblich,ausland
+Mecklenburg-Vorpommern,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,1427,weiblich,ausland
+Mecklenburg-Vorpommern,Sekundarbereich I,Gymnasien,443,weiblich,ausland
+Mecklenburg-Vorpommern,Sekundarbereich I,Integrierte Gesamtschulen,283,weiblich,ausland
+Mecklenburg-Vorpommern,Sekundarbereich I,Freie Waldorfschulen,4,weiblich,ausland
+Mecklenburg-Vorpommern,Sekundarbereich II,Gymnasien,382,weiblich,ausland
+Mecklenburg-Vorpommern,Sekundarbereich II,Integrierte Gesamtschulen,42,weiblich,ausland
+Mecklenburg-Vorpommern,Sekundarbereich II,Freie Waldorfschulen,2,weiblich,ausland
+Mecklenburg-Vorpommern,Sekundarbereich II,Abendgymnasien,23,weiblich,ausland
+Mecklenburg-Vorpommern,Keinem Bereich zugeordnet,Förderschulen,143,weiblich,ausland
+Niedersachsen,Vorschulbereich,Schulkindergärten,368,weiblich,ausland
+Niedersachsen,Primarbereich,Grundschulen,19040,weiblich,ausland
+Niedersachsen,Primarbereich,Integrierte Gesamtschulen,101,weiblich,ausland
+Niedersachsen,Primarbereich,Freie Waldorfschulen,13,weiblich,ausland
+Niedersachsen,Sekundarbereich I,Hauptschulen,2507,weiblich,ausland
+Niedersachsen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,6954,weiblich,ausland
+Niedersachsen,Sekundarbereich I,Realschulen,3503,weiblich,ausland
+Niedersachsen,Sekundarbereich I,Gymnasien,5049,weiblich,ausland
+Niedersachsen,Sekundarbereich I,Integrierte Gesamtschulen,3917,weiblich,ausland
+Niedersachsen,Sekundarbereich I,Freie Waldorfschulen,19,weiblich,ausland
+Niedersachsen,Sekundarbereich II,Gymnasien,1303,weiblich,ausland
+Niedersachsen,Sekundarbereich II,Integrierte Gesamtschulen,412,weiblich,ausland
+Niedersachsen,Sekundarbereich II,Freie Waldorfschulen,8,weiblich,ausland
+Niedersachsen,Sekundarbereich II,Abendgymnasien,30,weiblich,ausland
+Niedersachsen,Sekundarbereich II,Kollegs,31,weiblich,ausland
+Niedersachsen,Keinem Bereich zugeordnet,Förderschulen,1010,weiblich,ausland
+Nordrhein-Westfalen,Vorschulbereich,Schulkindergärten,114,weiblich,ausland
+Nordrhein-Westfalen,Primarbereich,Grundschulen,48393,weiblich,ausland
+Nordrhein-Westfalen,Primarbereich,Integrierte Gesamtschulen,120,weiblich,ausland
+Nordrhein-Westfalen,Primarbereich,Freie Waldorfschulen,54,weiblich,ausland
+Nordrhein-Westfalen,Sekundarbereich I,Hauptschulen,8748,weiblich,ausland
+Nordrhein-Westfalen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,3903,weiblich,ausland
+Nordrhein-Westfalen,Sekundarbereich I,Realschulen,13332,weiblich,ausland
+Nordrhein-Westfalen,Sekundarbereich I,Gymnasien,11391,weiblich,ausland
+Nordrhein-Westfalen,Sekundarbereich I,Integrierte Gesamtschulen,19641,weiblich,ausland
+Nordrhein-Westfalen,Sekundarbereich I,Freie Waldorfschulen,93,weiblich,ausland
+Nordrhein-Westfalen,Sekundarbereich I,Abendrealschulen,1881,weiblich,ausland
+Nordrhein-Westfalen,Sekundarbereich II,Gymnasien,4887,weiblich,ausland
+Nordrhein-Westfalen,Sekundarbereich II,Integrierte Gesamtschulen,2619,weiblich,ausland
+Nordrhein-Westfalen,Sekundarbereich II,Freie Waldorfschulen,30,weiblich,ausland
+Nordrhein-Westfalen,Sekundarbereich II,Abendgymnasien,342,weiblich,ausland
+Nordrhein-Westfalen,Sekundarbereich II,Kollegs,579,weiblich,ausland
+Nordrhein-Westfalen,Keinem Bereich zugeordnet,Förderschulen,4185,weiblich,ausland
+Rheinland-Pfalz,Vorschulbereich,Schulkindergärten,3,weiblich,ausland
+Rheinland-Pfalz,Primarbereich,Grundschulen 6,8342,weiblich,ausland
+Rheinland-Pfalz,Primarbereich,Freie Waldorfschulen,12,weiblich,ausland
+Rheinland-Pfalz,Sekundarbereich I,Hauptschulen,0,weiblich,ausland
+Rheinland-Pfalz,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,6091,weiblich,ausland
+Rheinland-Pfalz,Sekundarbereich I,Realschulen,147,weiblich,ausland
+Rheinland-Pfalz,Sekundarbereich I,Gymnasien,2361,weiblich,ausland
+Rheinland-Pfalz,Sekundarbereich I,Integrierte Gesamtschulen,1456,weiblich,ausland
+Rheinland-Pfalz,Sekundarbereich I,Freie Waldorfschulen,8,weiblich,ausland
+Rheinland-Pfalz,Sekundarbereich II,Gymnasien,867,weiblich,ausland
+Rheinland-Pfalz,Sekundarbereich II,Integrierte Gesamtschulen,307,weiblich,ausland
+Rheinland-Pfalz,Sekundarbereich II,Freie Waldorfschulen,9,weiblich,ausland
+Rheinland-Pfalz,Sekundarbereich II,Abendgymnasien,7,weiblich,ausland
+Rheinland-Pfalz,Sekundarbereich II,Kollegs,24,weiblich,ausland
+Rheinland-Pfalz,Keinem Bereich zugeordnet,Förderschulen,733,weiblich,ausland
+Saarland,Vorschulbereich,Schulkindergärten,7,weiblich,ausland
+Saarland,Primarbereich,Grundschulen,2803,weiblich,ausland
+Saarland,Primarbereich,Freie Waldorfschulen,3,weiblich,ausland
+Saarland,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,0,weiblich,ausland
+Saarland,Sekundarbereich I,Realschulen,34,weiblich,ausland
+Saarland,Sekundarbereich I,Gymnasien,685,weiblich,ausland
+Saarland,Sekundarbereich I,Integrierte Gesamtschulen,2329,weiblich,ausland
+Saarland,Sekundarbereich I,Freie Waldorfschulen,4,weiblich,ausland
+Saarland,Sekundarbereich I,Abendrealschulen,11,weiblich,ausland
+Saarland,Sekundarbereich II,Gymnasien,241,weiblich,ausland
+Saarland,Sekundarbereich II,Integrierte Gesamtschulen,273,weiblich,ausland
+Saarland,Sekundarbereich II,Freie Waldorfschulen,3,weiblich,ausland
+Saarland,Sekundarbereich II,Abendgymnasien,7,weiblich,ausland
+Saarland,Sekundarbereich II,Kollegs,0,weiblich,ausland
+Saarland,Keinem Bereich zugeordnet,Förderschulen,199,weiblich,ausland
+Sachsen,Primarbereich,Grundschulen,4909,weiblich,ausland
+Sachsen,Primarbereich,Freie Waldorfschulen,37,weiblich,ausland
+Sachsen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,3817,weiblich,ausland
+Sachsen,Sekundarbereich I,Gymnasien,1588,weiblich,ausland
+Sachsen,Sekundarbereich I,Freie Waldorfschulen,44,weiblich,ausland
+Sachsen,Sekundarbereich I,Abendrealschulen,147,weiblich,ausland
+Sachsen,Sekundarbereich II,Gymnasien,643,weiblich,ausland
+Sachsen,Sekundarbereich II,Freie Waldorfschulen,13,weiblich,ausland
+Sachsen,Sekundarbereich II,Abendgymnasien,20,weiblich,ausland
+Sachsen,Sekundarbereich II,Kollegs,149,weiblich,ausland
+Sachsen,Keinem Bereich zugeordnet,Förderschulen,445,weiblich,ausland
+Sachsen-Anhalt,Primarbereich,Grundschulen,2958,weiblich,ausland
+Sachsen-Anhalt,Primarbereich,Freie Waldorfschulen,6,weiblich,ausland
+Sachsen-Anhalt,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,1161,weiblich,ausland
+Sachsen-Anhalt,Sekundarbereich I,Gymnasien,702,weiblich,ausland
+Sachsen-Anhalt,Sekundarbereich I,Integrierte Gesamtschulen,792,weiblich,ausland
+Sachsen-Anhalt,Sekundarbereich I,Freie Waldorfschulen,9,weiblich,ausland
+Sachsen-Anhalt,Sekundarbereich I,Abendrealschulen,12,weiblich,ausland
+Sachsen-Anhalt,Sekundarbereich II,Gymnasien,198,weiblich,ausland
+Sachsen-Anhalt,Sekundarbereich II,Integrierte Gesamtschulen,15,weiblich,ausland
+Sachsen-Anhalt,Sekundarbereich II,Freie Waldorfschulen,3,weiblich,ausland
+Sachsen-Anhalt,Sekundarbereich II,Abendgymnasien,0,weiblich,ausland
+Sachsen-Anhalt,Sekundarbereich II,Kollegs,15,weiblich,ausland
+Sachsen-Anhalt,Keinem Bereich zugeordnet,Förderschulen,162,weiblich,ausland
+Schleswig-Holstein,Primarbereich,Grundschulen,5574,weiblich,ausland
+Schleswig-Holstein,Primarbereich,Freie Waldorfschulen,6,weiblich,ausland
+Schleswig-Holstein,Sekundarbereich I,Gymnasien,1147,weiblich,ausland
+Schleswig-Holstein,Sekundarbereich I,Integrierte Gesamtschulen,4953,weiblich,ausland
+Schleswig-Holstein,Sekundarbereich I,Freie Waldorfschulen,11,weiblich,ausland
+Schleswig-Holstein,Sekundarbereich II,Gymnasien,363,weiblich,ausland
+Schleswig-Holstein,Sekundarbereich II,Integrierte Gesamtschulen,170,weiblich,ausland
+Schleswig-Holstein,Sekundarbereich II,Freie Waldorfschulen,4,weiblich,ausland
+Schleswig-Holstein,Sekundarbereich II,Abendgymnasien,8,weiblich,ausland
+Schleswig-Holstein,Keinem Bereich zugeordnet,Förderschulen,219,weiblich,ausland
+Thüringen,Primarbereich,Grundschulen,2538,weiblich,ausland
+Thüringen,Primarbereich,Integrierte Gesamtschulen,211,weiblich,ausland
+Thüringen,Primarbereich,Freie Waldorfschulen,5,weiblich,ausland
+Thüringen,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,1636,weiblich,ausland
+Thüringen,Sekundarbereich I,Gymnasien,643,weiblich,ausland
+Thüringen,Sekundarbereich I,Integrierte Gesamtschulen,562,weiblich,ausland
+Thüringen,Sekundarbereich I,Freie Waldorfschulen,8,weiblich,ausland
+Thüringen,Sekundarbereich II,Gymnasien,222,weiblich,ausland
+Thüringen,Sekundarbereich II,Integrierte Gesamtschulen,50,weiblich,ausland
+Thüringen,Sekundarbereich II,Freie Waldorfschulen,1,weiblich,ausland
+Thüringen,Sekundarbereich II,Kollegs,1,weiblich,ausland
+Thüringen,Keinem Bereich zugeordnet,Förderschulen,102,weiblich,ausland
+Deutschland,Vorschulbereich,Vorklassen,918,weiblich,ausland
+Deutschland,Vorschulbereich,Schulkindergärten,1944,weiblich,ausland
+Deutschland,Primarbereich,Grundschulen,184335,weiblich,ausland
+Deutschland,Primarbereich,Integrierte Gesamtschulen,5616,weiblich,ausland
+Deutschland,Primarbereich,Freie Waldorfschulen,327,weiblich,ausland
+Deutschland,Sekundarbereich I,Schulartunabhängige Orientierungsstufe,8184,weiblich,ausland
+Deutschland,Sekundarbereich I,Hauptschulen,41835,weiblich,ausland
+Deutschland,Sekundarbereich I,Schularten mit mehreren Bildungsgängen,26976,weiblich,ausland
+Deutschland,Sekundarbereich I,Realschulen,40545,weiblich,ausland
+Deutschland,Sekundarbereich I,Gymnasien,47523,weiblich,ausland
+Deutschland,Sekundarbereich I,Integrierte Gesamtschulen,63048,weiblich,ausland
+Deutschland,Sekundarbereich I,Freie Waldorfschulen,540,weiblich,ausland
+Deutschland,Sekundarbereich I,Abendhauptschulen,192,weiblich,ausland
+Deutschland,Sekundarbereich I,Abendrealschulen,2865,weiblich,ausland
+Deutschland,Sekundarbereich II,Gymnasien,19260,weiblich,ausland
+Deutschland,Sekundarbereich II,Integrierte Gesamtschulen,5841,weiblich,ausland
+Deutschland,Sekundarbereich II,Freie Waldorfschulen,210,weiblich,ausland
+Deutschland,Sekundarbereich II,Abendgymnasien,897,weiblich,ausland
+Deutschland,Sekundarbereich II,Kollegs,1191,weiblich,ausland
+Deutschland,Keinem Bereich zugeordnet,Förderschulen,17103,weiblich,ausland
+Deutschland,Keinem Bereich zugeordnet,Keine Zuordnung zu einer Schulart möglich 5,3975,weiblich,ausland
