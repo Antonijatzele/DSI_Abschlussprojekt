@@ -1,5 +1,6 @@
 streamlit
 pandas
+geopandas
 matplotlib
 seaborn
 scikit-learn
