@@ -14,7 +14,7 @@ import matplotlib.lines as mlines
 
 @st.cache_data
 def load_data():
-    df = pd.read_csv("../Daten/Integration/Arbeitsmarktintegration/zusammengefuegt.csv", sep=";")
+    df = pd.read_csv("https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Arbeitsmarktintegration/zusammengefuegt.csv", sep=";")
     return df
 
 df = load_data()
