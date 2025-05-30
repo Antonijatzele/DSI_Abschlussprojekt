@@ -9,5 +9,5 @@ def show():
     """)
 
      # Bild über direkte URL laden
-    image_url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/images/Tableau_Karte_Anteil_ausl_Schueler.png"
+    image_url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/images/Bildung_Tableau_Karte.png"
     st.image(image_url, caption="Anteil ausländischer Schüler:innen", use_column_width=True)
