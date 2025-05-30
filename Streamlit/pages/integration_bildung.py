@@ -9,7 +9,7 @@ def show():
     """)
 
     # Bild laden
-    img = Image.open("C:/Users/alexa/Desktop/Antonija/DSI_Weiterbildung/Abschlussprojekt/Migration/01_Bildung/Allgemeinbildende Schulen/Tableau_Karte_Anteil_ausl_Schueler.png")
+    img = Image.open("images/Tableau_Karte_Anteil_ausl_Schueler.png")
     
     # Bild anzeigen
-    st.image(img, caption="Mein Bild", use_column_width=True)
+    st.image(img, caption="Anteil ausländischer Schüler pro Bundesland", use_column_width=True)
