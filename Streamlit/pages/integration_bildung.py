@@ -4,7 +4,7 @@ from PIL import Image
 def show():
     st.title("🎓 Integration: Bildung")
     st.image("https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/images/Bildung_Tableau_Karte.png")
-
+    st.markdown("Test")
 
     # Tableau Dashboard URL
     tableau_url = "https://public.tableau.com/views/DeinDashboardName/DeinSheetName"
