@@ -10,7 +10,7 @@ def show():
 
     # Tableau Public Dashboard anzeigen
     tableau_html = """
-    <iframe src="https://public.tableau.com/views/Bildungsintegration/Blatt1?:language=de&:display_count=yes&:toolbar=yes"
+    <iframe src="https://public.tableau.com/views/Bildungsintegration/Blatt1?:embed=y&:showVizHome=no"
     width="1000" height="800" frameborder="0"></iframe>
     """
     
