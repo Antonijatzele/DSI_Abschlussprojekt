@@ -3,19 +3,11 @@ from PIL import Image
 
 def show():
     st.title("🎓 Integration: Bildung")
-    st.image("https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/images/Bildung_Tableau_Karte.png")
-    st.markdown("Test")
 
-    # Tableau Dashboard URL
-    tableau_url = "https://public.tableau.com/views/DeinDashboardName/DeinSheetName"
-    
-    # Iframe mit Streamlit anzeigen
-    st.components.v1.html(
-        f"""
-        <iframe src="{tableau_url}" width="1000" height="800" frameborder="0"></iframe>
-        """,
-        height=800,
-    )
+
+import streamlit as st
+tableau_url = "https://public.tableau.com/app/profile/antonija.tzelepidis/viz/Bildungsintegration/Blatt1"
+st.markdown(f"[Zum Tableau Dashboard]({tableau_url})")
 
 
 # Funktion aufrufen
