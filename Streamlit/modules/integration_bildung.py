@@ -5,7 +5,7 @@ import folium
 import branca.colormap as cm
 from streamlit_folium import folium_static
 
-st.set_page_config(layout="wide")  
+# st.set_page_config(layout="wide")
 
 def show():
     st.title("🎓 Integration: Bildung")
@@ -21,16 +21,26 @@ def show():
     df = df.rename(columns={'Staatsangehoerigkeit_clean': 'Staatsangehoerigkeit'})
     
     # Auswahl Schuljahr
-    jahr = st.selectbox("Wähle ein Schuljahr", sorted(df["Schuljahr"].unique()), index=0)
-    
+    schuljahre = sorted(df["Schuljahr"].unique(), reverse=True)
+    default_index = schuljahre.index("2023/24") if "2023/24" in schuljahre else 0
+    jahr = st.selectbox("Wähle ein Schuljahr", schuljahre, index=default_index)
+
+    # Auswahl Schulart
+    schularten = ["Alle"] + sorted(df["Schulart"].dropna().unique())
+    ausgewaehlte_schulart = st.selectbox("Wähle eine Schulart", schularten)
+
     # Filter
     df_filtered = df[
         (df['Geschlecht'].isin(['männlich', 'weiblich'])) &
         (df['Bundesland'] != 'Deutschland') &
         (df['Schuljahr'] == jahr) &
         (df['Staatsangehoerigkeit'].isin(['deutsche Schüler/innen', 'ausländische Schüler/innen']))
-    ]
-    
+        ]
+
+    if ausgewaehlte_schulart != "Alle":
+        df_filtered = df_filtered[df_filtered['Schulart'] == ausgewaehlte_schulart]
+
+
     # Pivot
     pivot = df_filtered.pivot_table(
         index=['Bundesland', 'Geschlecht'],
