@@ -19,4 +19,5 @@ def show():
     </a>
     """,
     unsafe_allow_html=True
-)
+    )
+show()
