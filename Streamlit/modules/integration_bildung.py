@@ -89,13 +89,13 @@ def show():
     m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB positron')
     
     def style_function(feature):
-    anteil = feature['properties']['Anteil (%)']
-    return {
-        'fillOpacity': 0.7,
-        'weight': 1,
-        'color': 'black',
-        'fillColor': colormap(anteil) if anteil is not None else 'gray'
-    }
+        anteil = feature['properties']['Anteil (%)']
+        return {
+            'fillOpacity': 0.7,
+            'weight': 1,
+            'color': 'black',
+            'fillColor': colormap(anteil) if anteil is not None else 'gray'
+        }
 
     # Neuer Tooltip mit einem Template-String (custom)
     tooltip = folium.GeoJsonTooltip(
