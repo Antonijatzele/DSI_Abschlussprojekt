@@ -1,16 +1,18 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
 import geopandas as gpd
+import folium
+from streamlit_folium import folium_static
 
 st.set_page_config(layout="wide")
 
 def show():
-    st.title("🎓 Integration: Bildung (Interaktive Karte)")
+    st.title("🎓 Integration: Bildung – Interaktive Karte mit Prozentwerten")
 
-    # Daten laden
+    # CSV-Daten einlesen
     url_csv = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Bildungsintegration/Destatis_21111-03_allgemeinbildende_schulen_2021_2024_zusammengefuegt.csv"
     df = pd.read_csv(url_csv, sep=",")
+
     df = df.drop(columns=["Staatsangehoerigkeit"])
     df = df.rename(columns={"Staatsangehoerigkeit_clean": "Staatsangehoerigkeit"})
 
@@ -32,34 +34,52 @@ def show():
     ).reset_index()
 
     pivot["Anteil (%)"] = (
-        pivot["ausländische Schüler/innen"] / (pivot["deutsche Schüler/innen"] + pivot["ausländische Schüler/innen"])
+        pivot["ausländische Schüler/innen"] /
+        (pivot["deutsche Schüler/innen"] + pivot["ausländische Schüler/innen"])
     ) * 100
 
     # GeoJSON laden
     url_geo = "https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/2_bundeslaender/2_hoch.geo.json"
     geojson = gpd.read_file(url_geo)
 
-    # Bundeslandnamen normalisieren
-    geojson["id"] = geojson["name"]
-    pivot["id"] = pivot["Bundesland"]
+    # Merge vorbereiten
+    pivot = pivot.rename(columns={"Bundesland": "name"})
+    merged = geojson.merge(pivot, on="name")
 
-    # Interaktive Karte erstellen
-    fig = px.choropleth(
-        pivot,
-        geojson=geojson,
-        locations="id",
-        featureidkey="properties.name",
-        color="Anteil (%)",
-        hover_name="Bundesland",
-        hover_data={
-            "Anteil (%)": True,
-            "ausländische Schüler/innen": True,
-            "deutsche Schüler/innen": True
+    # Viridis colormap (kein Legendenobjekt nötig)
+    import branca.colormap as cm
+    colormap = cm.linear.Viridis_09.scale(merged["Anteil (%)"].min(), merged["Anteil (%)"].max())
+
+    # Karte erstellen
+    m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles="CartoDB Positron")
+
+    # GeoJSON mit Styling
+    folium.GeoJson(
+        data=merged,
+        style_function=lambda feature: {
+            'fillColor': colormap(feature["properties"]["Anteil (%)"]),
+            'color': 'black',
+            'weight': 1,
+            'fillOpacity': 0.8,
         },
-        color_continuous_scale="Blues",
-        title=f"Anteil ausländischer Schüler/innen pro Bundesland ({jahr})"
-    )
-    fig.update_geos(fitbounds="locations", visible=False)
-    fig.update_layout(margin={"r":0,"t":40,"l":0,"b":0})
+        highlight_function=lambda x: {'weight': 3, 'fillOpacity': 0.9},
+    ).add_to(m)
 
-    st.plotly_chart(fig, use_container_width=True)
+    # Prozentwerte als Label direkt in der Karte anzeigen
+    for _, row in merged.iterrows():
+        if row['geometry'].centroid.is_empty:
+            continue
+        lat = row['geometry'].centroid.y
+        lon = row['geometry'].centroid.x
+        value = round(row['Anteil (%)'], 1)
+        folium.map.Marker(
+            [lat, lon],
+            icon=folium.DivIcon(
+                html=f'<div style="font-size:10pt; color:black; font-weight:bold; text-align:center;">{value:.1f}%</div>'
+            )
+        ).add_to(m)
+
+    # Karte anzeigen
+    folium_static(m, width=1200, height=700)
+
+show()
