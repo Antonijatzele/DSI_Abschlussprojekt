@@ -8,8 +8,6 @@ def show():
     - Unterschiede zwischen den Bundesländern  
     """)
 
-    # Bild laden
-    img = Image.open("images/Bildung_Tableau_Karte.png")
-    
-    # Bild anzeigen
-    st.image(img, caption="Anteil ausländischer Schüler pro Bundesland", use_column_width=True)
+     # Bild über direkte URL laden
+    image_url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/images/Tableau_Karte_Anteil_ausl_Schueler.png"
+    st.image(image_url, caption="Anteil ausländischer Schüler:innen", use_column_width=True)
