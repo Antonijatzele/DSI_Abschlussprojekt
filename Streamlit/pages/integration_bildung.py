@@ -1,4 +1,5 @@
 import streamlit as st
+from PIL import Image
 
 def show():
     st.title("🎓 Integration: Bildung")
@@ -7,6 +8,8 @@ def show():
     - Unterschiede zwischen den Bundesländern  
     """)
 
-    url = "https://public.tableau.com/static/images/Bi/Bildungsintegration/Blatt1/1.png"
-
-    st.image(url, caption="Tableau Dashboard Vorschau", use_column_width=True)
+    # Bild laden
+    img = Image.open("C:/Users/alexa/Desktop/Antonija/DSI_Weiterbildung/Abschlussprojekt/Migration/01_Bildung/Allgemeinbildende Schulen/Tableau_Karte_Anteil_ausl_Schueler.png")
+    
+    # Bild anzeigen
+    st.image(img, caption="Mein Bild", use_column_width=True)
