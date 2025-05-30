@@ -1,5 +1,5 @@
 import streamlit as st
-from pages import (
+from modules import (
     start,
     migration,
     integration_arbeitsmarkt,
