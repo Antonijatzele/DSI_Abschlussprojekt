@@ -4,6 +4,7 @@ def show():
     st.title("🎓 Integration: Bildung")
 
     st.markdown("Test")
+    st.markdown("Test 2")
 
 
 
