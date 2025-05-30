@@ -97,30 +97,30 @@ def show():
         'fillColor': colormap(anteil) if anteil is not None else 'gray'
     }
 
-# Neuer Tooltip mit einem Template-String (custom)
-tooltip = folium.GeoJsonTooltip(
-    fields=['name', 'Anteil (%)'],
-    aliases=['', ''],
-    labels=False,
-    sticky=False,
-    localize=True,
-    style="""
-        background-color: #F0EFEF;
-        border: 1px solid black;
-        border-radius: 3px;
-        box-shadow: 3px;
-    """
-)
-
-folium.GeoJson(
-    bundeslaender,
-    style_function=style_function,
-    tooltip=tooltip
-).add_to(m)
-
-# Mit etwas JS im Tooltip (optional), kannst du den Text formatieren,
-# aber Folium Tooltip nimmt keine Kombi von Feldern als 1 String,
-# deshalb etwas tricksen oder Tooltip weglassen und stattdessen Popup benutzen.
-
-# Karte anzeigen
-folium_static(m)
+    # Neuer Tooltip mit einem Template-String (custom)
+    tooltip = folium.GeoJsonTooltip(
+        fields=['name', 'Anteil (%)'],
+        aliases=['', ''],
+        labels=False,
+        sticky=False,
+        localize=True,
+        style="""
+            background-color: #F0EFEF;
+            border: 1px solid black;
+            border-radius: 3px;
+            box-shadow: 3px;
+        """
+    )
+    
+    folium.GeoJson(
+        bundeslaender,
+        style_function=style_function,
+        tooltip=tooltip
+    ).add_to(m)
+    
+    # Mit etwas JS im Tooltip (optional), kannst du den Text formatieren,
+    # aber Folium Tooltip nimmt keine Kombi von Feldern als 1 String,
+    # deshalb etwas tricksen oder Tooltip weglassen und stattdessen Popup benutzen.
+    
+    # Karte anzeigen
+    folium_static(m)
