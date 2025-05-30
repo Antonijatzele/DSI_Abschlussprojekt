@@ -1,10 +1,9 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-import matplotlib.ticker as mticker
-import numpy as np
 import geopandas as gpd
+import folium
+import branca.colormap as cm
+from streamlit_folium import folium_static
 
 st.set_page_config(layout="wide")  
 
@@ -19,7 +18,7 @@ def show():
     df = df.drop(columns=['Staatsangehoerigkeit'])
     df = df.rename(columns={'Staatsangehoerigkeit_clean': 'Staatsangehoerigkeit'})
     
-    # Auswahl für Schuljahr
+    # Auswahl Schuljahr
     jahr = st.selectbox("Wähle ein Schuljahr", sorted(df["Schuljahr"].unique()), index=0)
     
     # Filter
@@ -45,7 +44,7 @@ def show():
     )
     anteile = (gesamt_bundesland['ausländische Schüler/innen'] / gesamt_bundesland['gesamt_gesamt']) * 100
     
-    # Namensmapping
+    # Namensmapping (falls notwendig)
     name_mapping = {
         'Baden-Württemberg': 'Baden-Württemberg',
         'Bayern': 'Bayern',
@@ -66,40 +65,57 @@ def show():
     }
     anteile.index = anteile.index.map(name_mapping)
     
-    # GeoJSON laden
-    url = "https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/2_bundeslaender/2_hoch.geo.json"
-    bundeslaender = gpd.read_file(url)
+    # GeoJSON Bundesländer laden
+    url_geojson = "https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/2_bundeslaender/2_hoch.geo.json"
+    bundeslaender = gpd.read_file(url_geojson)
     bundeslaender['Anteil (%)'] = bundeslaender['name'].map(anteile)
     
-    # Plot vorbereiten
-    fig, ax = plt.subplots(1, 1, figsize=(12, 10))
-    bundeslaender.plot(
-        column='Anteil (%)',
-        cmap='Blues',
-        linewidth=0.8,
-        edgecolor='0.8',
-        legend=True,
-        legend_kwds={'label': "Anteil ausländischer Schüler/innen (%)"},
-        ax=ax
+    # Werte für Farbskala
+    vmin = bundeslaender['Anteil (%)'].min()
+    vmax = bundeslaender['Anteil (%)'].max()
+    
+    # Navy-Farbskala (hell nach dunkel)
+    blue_colors = ['#cbcef5', '#9fa4e0', '#494e91', '#111654', '#000430']
+    colormap = cm.LinearColormap(
+        colors=blue_colors,
+        vmin=vmin,
+        vmax=vmax,
+        caption='Anteil ausländischer Schüler/innen (%)'
     )
     
-    # Beschriftung
-    for idx, row in bundeslaender.iterrows():
-        if pd.notna(row['Anteil (%)']):
-            x = row['geometry'].centroid.x
-            y = row['geometry'].centroid.y
-            ax.text(
-                x, y, row['name'],
-                horizontalalignment='center',
-                fontsize=8,
-                color='black',
-                weight='bold'
-            )
+    # Folium-Karte erstellen
+    m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB positron')
     
-    ax.set_title(f"Anteil ausländischer Schüler/innen pro Bundesland ({jahr})", fontsize=14)
-    ax.axis("off")
-    plt.tight_layout()
+    def style_function(feature):
+        anteil = feature['properties']['Anteil (%)']
+        return {
+            'fillOpacity': 0.7,
+            'weight': 1,
+            'color': 'black',
+            'fillColor': colormap(anteil) if anteil is not None else 'gray'
+        }
     
-    # In Streamlit anzeigen
-    st.pyplot(fig)
-
+    tooltip = folium.GeoJsonTooltip(
+        fields=['name', 'Anteil (%)'],
+        aliases=['Bundesland:', 'Anteil (%):'],
+        localize=True,
+        labels=True,
+        sticky=False,
+        style="""
+            background-color: #F0EFEF;
+            border: 1px solid black;
+            border-radius: 3px;
+            box-shadow: 3px;
+        """
+    )
+    
+    folium.GeoJson(
+        bundeslaender,
+        style_function=style_function,
+        tooltip=tooltip
+    ).add_to(m)
+    
+    colormap.add_to(m)
+    
+    # Karte in Streamlit anzeigen
+    folium_static(m)
