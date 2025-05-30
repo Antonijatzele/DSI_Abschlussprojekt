@@ -6,9 +6,10 @@ import matplotlib.ticker as mticker
 import numpy as np
 import geopandas as gpd
 
+st.set_page_config(layout="wide")  
+
 def show():
     st.title("🎓 Integration: Bildung")
-    st.set_page_config(layout="wide")
     
     # Daten einlesen
     url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Bildungsintegration/Destatis_21111-03_allgemeinbildende_schulen_2021_2024_zusammengefuegt.csv"
