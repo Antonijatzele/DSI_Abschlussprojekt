@@ -9,6 +9,8 @@ st.set_page_config(layout="wide")
 
 def show():
     st.title("🎓 Integration: Bildung")
+    st.header("Anteil ausländischer Schüler pro Bundesland")
+
     
     # Daten einlesen
     url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Bildungsintegration/Destatis_21111-03_allgemeinbildende_schulen_2021_2024_zusammengefuegt.csv"
@@ -87,35 +89,38 @@ def show():
     m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB positron')
     
     def style_function(feature):
-        anteil = feature['properties']['Anteil (%)']
-        return {
-            'fillOpacity': 0.7,
-            'weight': 1,
-            'color': 'black',
-            'fillColor': colormap(anteil) if anteil is not None else 'gray'
-        }
-    
-    tooltip = folium.GeoJsonTooltip(
-        fields=['name', 'Anteil (%)'],
-        aliases=['Bundesland:', 'Anteil (%):'],
-        localize=True,
-        labels=True,
-        sticky=False,
-        style="""
-            background-color: #F0EFEF;
-            border: 1px solid black;
-            border-radius: 3px;
-            box-shadow: 3px;
-        """
-    )
-    
-    folium.GeoJson(
-        bundeslaender,
-        style_function=style_function,
-        tooltip=tooltip
-    ).add_to(m)
-    
-    colormap.add_to(m)
-    
-    # Karte in Streamlit anzeigen
-    folium_static(m)
+    anteil = feature['properties']['Anteil (%)']
+    return {
+        'fillOpacity': 0.7,
+        'weight': 1,
+        'color': 'black',
+        'fillColor': colormap(anteil) if anteil is not None else 'gray'
+    }
+
+# Neuer Tooltip mit einem Template-String (custom)
+tooltip = folium.GeoJsonTooltip(
+    fields=['name', 'Anteil (%)'],
+    aliases=['', ''],
+    labels=False,
+    sticky=False,
+    localize=True,
+    style="""
+        background-color: #F0EFEF;
+        border: 1px solid black;
+        border-radius: 3px;
+        box-shadow: 3px;
+    """
+)
+
+folium.GeoJson(
+    bundeslaender,
+    style_function=style_function,
+    tooltip=tooltip
+).add_to(m)
+
+# Mit etwas JS im Tooltip (optional), kannst du den Text formatieren,
+# aber Folium Tooltip nimmt keine Kombi von Feldern als 1 String,
+# deshalb etwas tricksen oder Tooltip weglassen und stattdessen Popup benutzen.
+
+# Karte anzeigen
+folium_static(m)
