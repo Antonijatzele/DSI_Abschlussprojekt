@@ -41,8 +41,8 @@ parsed_cols = [p for p in parsed_cols if p is not None]
 indikator_options = sorted(set(p['indikator'] for p in parsed_cols))
 merkmal_options = sorted(set(p['merkmal'] for p in parsed_cols))
 
-indikator = st.sidebar.selectbox("Indikator", indikator_options)
-merkmal = st.sidebar.selectbox("Merkmal", merkmal_options)
+indikator = st.selectbox("Indikator", indikator_options)
+merkmal = st.selectbox("Merkmal", merkmal_options)
 
 jahr_col = df.columns[0]
 
