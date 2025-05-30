@@ -11,7 +11,8 @@ def show():
     st.set_page_config(layout="wide")
     
     # Daten einlesen
-    df = pd.read_csv('Destatis_21111-03_allgemeinbildende_schulen_2021_2024_zusammengefuegt.csv', sep=',')
+    url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Bildungsintegration/Destatis_21111-03_allgemeinbildende_schulen_2021_2024_zusammengefuegt.csv"
+    df = pd.read_csv(url, sep=',')
     
     # Vorverarbeitung
     df = df.drop(columns=['Staatsangehoerigkeit'])
