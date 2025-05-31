@@ -7,7 +7,7 @@ from streamlit_folium import st_folium
 
 
 def show():
-    st.title("🎓 Integration: Bildung")
+    st.title("🎓 Bildungs-Integration")
 
     # Daten einlesen
     url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Bildungsintegration/Destatis_21111-03_allgemeinbildende_schulen_2021_2024_zusammengefuegt.csv"
@@ -22,7 +22,44 @@ def show():
     default_index = schuljahre.index("2023/24") if "2023/24" in schuljahre else 0
     jahr = st.selectbox("Wähle ein Schuljahr", schuljahre, index=default_index)
 
-    # Berechne sortierte Schularten basierend auf Anteil ausländischer Schüler/innen (für 2023/24)
+    # Nur relevante Daten für Filterung vorbereiten
+    df_filter_basis = df[
+        (df['Geschlecht'].isin(['männlich', 'weiblich'])) &
+        (df['Bundesland'] != 'Deutschland') &
+        (df['Schuljahr'] == jahr) &
+        (df['Staatsangehoerigkeit'].isin(['deutsche Schüler/innen', 'ausländische Schüler/innen']))
+    ]
+
+    # Dynamische Filterlogik
+    alle_bildungsbereiche = sorted(df_filter_basis["Bildungsbereich"].dropna().unique().tolist())
+    alle_schularten = sorted(df_filter_basis["Schulart"].dropna().unique().tolist())
+
+    ausgewaehlter_bildungsbereich = st.selectbox("Wähle einen Bildungsbereich", ["Alle"] + alle_bildungsbereiche)
+
+    # Schularten abhängig vom Bildungsbereich
+    if ausgewaehlter_bildungsbereich == "Alle":
+        verfuegbare_schularten = sorted(df_filter_basis["Schulart"].dropna().unique())
+    else:
+        verfuegbare_schularten = sorted(df_filter_basis[df_filter_basis["Bildungsbereich"] == ausgewaehlter_bildungsbereich]["Schulart"].dropna().unique())
+
+    ausgewaehlte_schulart = st.selectbox("Wähle eine Schulart", ["Alle"] + verfuegbare_schularten)
+
+    # Optional: Re-Filter Bildungsbereiche basierend auf Schulart
+    if ausgewaehlte_schulart != "Alle":
+        verfuegbare_bildungsbereiche = sorted(df_filter_basis[df_filter_basis["Schulart"] == ausgewaehlte_schulart]["Bildungsbereich"].dropna().unique())
+        if ausgewaehlter_bildungsbereich != "Alle" and ausgewaehlter_bildungsbereich not in verfuegbare_bildungsbereiche:
+            st.warning("Der ausgewählte Bildungsbereich passt nicht zur Schulart. Bitte anpassen.")
+
+    # Filter anwenden
+    df_filtered = df_filter_basis.copy()
+
+    if ausgewaehlter_bildungsbereich != "Alle":
+        df_filtered = df_filtered[df_filtered['Bildungsbereich'] == ausgewaehlter_bildungsbereich]
+
+    if ausgewaehlte_schulart != "Alle":
+        df_filtered = df_filtered[df_filtered['Schulart'] == ausgewaehlte_schulart]
+
+    # Pivot-Tabelle für Schularten-Ranking (nur für 2023/24)
     df_temp = df[
         (df['Geschlecht'].isin(['männlich', 'weiblich'])) &
         (df['Bundesland'] != 'Deutschland') &
@@ -45,21 +82,7 @@ def show():
     else:
         sortierte_schularten = []
 
-    schularten = ["Alle"] + sortierte_schularten
-    ausgewaehlte_schulart = st.selectbox("Wähle eine Schulart", schularten)
-
-    # Filter
-    df_filtered = df[
-        (df['Geschlecht'].isin(['männlich', 'weiblich'])) &
-        (df['Bundesland'] != 'Deutschland') &
-        (df['Schuljahr'] == jahr) &
-        (df['Staatsangehoerigkeit'].isin(['deutsche Schüler/innen', 'ausländische Schüler/innen']))
-    ]
-
-    if ausgewaehlte_schulart != "Alle":
-        df_filtered = df_filtered[df_filtered['Schulart'] == ausgewaehlte_schulart]
-
-    # Pivot-Tabelle gesamt
+    # Pivot-Tabelle
     pivot = df_filtered.pivot_table(
         index=['Bundesland', 'Geschlecht'],
         columns='Staatsangehoerigkeit',
@@ -150,7 +173,7 @@ def show():
     def style_function(feature):
         anteil = feature['properties']['Anteil (%)']
         return {
-            'fillOpacity': 0.7,  # Opazität auf 70%
+            'fillOpacity': 0.7,
             'weight': 1,
             'color': 'black',
             'fillColor': colormap(anteil) if anteil is not None else 'lightgray'
@@ -181,10 +204,10 @@ def show():
         tooltip=tooltip
     ).add_to(m)
 
-    # Hinweis: Bundesland-Beschriftungen wurden entfernt
-
     colormap.add_to(m)
 
     # In Streamlit anzeigen
     st.subheader(f"Anteil ausländischer Schüler/innen nach Bundesland ({jahr})")
     st_data = st_folium(m, width=1000, height=700)
+
+
