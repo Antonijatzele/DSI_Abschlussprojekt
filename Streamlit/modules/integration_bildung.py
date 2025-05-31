@@ -211,3 +211,57 @@ def show():
     st_data = st_folium(m, width=1000, height=700)
 
 
+    # Balkendiagramm: Schulart vs. Schüleranzahl (nach Nationalität)
+    st.subheader("Schüleranzahl nach Schulart und Staatsangehörigkeit")
+
+    # Daten für den Plot vorbereiten
+    df_plot = df_filtered.groupby(['Schulart', 'Staatsangehoerigkeit'])['Schueler_innen_Anzahl'].sum().reset_index()
+
+    # 'Insgesamt' entfernen und nur gültige Schularten behalten
+    df_plot = df_plot[(df_plot['Schulart'].notna()) & (df_plot['Schulart'] != 'Insgesamt')]
+
+    # Farben aus Set2 definieren (manuell wegen schwarzem Hintergrund)
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+
+    farben = sns.color_palette("Set2", 2)
+
+    fig, ax = plt.subplots(figsize=(12, 6))
+    fig.patch.set_facecolor('black')
+    ax.set_facecolor('black')
+
+    # Balken plotten
+    schularten = df_plot['Schulart'].unique()
+    x = range(len(schularten))
+
+    # Aufteilen nach Nationalität
+    for i, staatsangehoerigkeit in enumerate(['deutsche Schüler/innen', 'ausländische Schüler/innen']):
+        werte = []
+        for schulart in schularten:
+            row = df_plot[
+                (df_plot['Schulart'] == schulart) &
+                (df_plot['Staatsangehoerigkeit'] == staatsangehoerigkeit)
+            ]
+            werte.append(row['Schueler_innen_Anzahl'].values[0] if not row.empty else 0)
+
+        ax.bar(
+            [p + i * 0.4 for p in x],
+            werte,
+            width=0.4,
+            label=staatsangehoerigkeit,
+            color=farben[i]
+        )
+
+    # Achsen und Beschriftung
+    ax.set_xticks([p + 0.2 for p in x])
+    ax.set_xticklabels(schularten, rotation=45, ha='right', color='white')
+    ax.set_ylabel("Anzahl Schüler/innen", color='white')
+    ax.set_xlabel("Schulart", color='white')
+    ax.set_title("Schülerzahlen nach Schulart und Staatsangehörigkeit", color='white')
+    ax.legend(facecolor='black', edgecolor='white', labelcolor='white')
+    ax.tick_params(colors='white')
+
+    # Gitterlinien (optional)
+    ax.grid(axis='y', linestyle='--', alpha=0.3, color='white')
+
+    st.pyplot(fig)
