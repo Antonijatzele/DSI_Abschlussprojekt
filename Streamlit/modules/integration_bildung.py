@@ -152,16 +152,19 @@ def show():
     vmin = bundeslaender['Anteil (%)'].min()
     vmax = bundeslaender['Anteil (%)'].max()
 
-    blue_colors = [
-        '#b1bcfa',
-        '#91a1fa',
-        '#2b3fab',
-        '#111e63',
-        '#081661'
+
+    colors = [
+       # '#fff5f0',  # sehr helles Rot
+        '#fee0d2',
+        '#fcbba1',
+        #'#fc9272',
+        '#fb6a4a',
+        '#cb181d' ,  # dunkleres Rot
+        '#2e2828'
     ]
 
     colormap = cm.LinearColormap(
-        colors=blue_colors,
+        colors=colors,
         vmin=vmin,
         vmax=vmax
     )
