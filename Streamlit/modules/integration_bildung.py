@@ -268,3 +268,69 @@ def show():
     ax.grid(axis='y', linestyle='--', alpha=0.3, color='white')
 
     st.pyplot(fig)
+
+    # Daten vorbereiten
+    df_plot = df_filtered.groupby(['Schulart', 'Staatsangehoerigkeit'])['Schueler_innen_Anzahl'].sum().reset_index()
+    df_plot = df_plot[(df_plot['Schulart'].notna()) & (df_plot['Schulart'] != 'Insgesamt')]
+
+    # Gesamtanzahl pro Schulart berechnen
+    df_total = df_plot.groupby('Schulart')['Schueler_innen_Anzahl'].sum().reset_index().rename(
+        columns={'Schueler_innen_Anzahl': 'Gesamt'})
+
+    # Mit den ursprünglichen Werten zusammenführen
+    df_plot = df_plot.merge(df_total, on='Schulart')
+    df_plot['Anteil'] = df_plot['Schueler_innen_Anzahl'] / df_plot['Gesamt'] * 100
+
+    # Nur ausländische Schüler/innen behalten
+    df_auslaendisch = df_plot[df_plot['Staatsangehoerigkeit'] == 'ausländische Schüler/innen']
+
+    # Nach Anteil absteigend sortieren
+    df_auslaendisch = df_auslaendisch.sort_values(by='Anteil', ascending=False)
+
+    # Farben definieren
+    farben = sns.color_palette("Set2")
+    orange = farben[1]  # Index 1 = Orange
+
+    # Plot erstellen
+    fig, ax = plt.subplots(figsize=(12, 6))
+    fig.patch.set_facecolor('black')
+    ax.set_facecolor('black')
+
+    x = range(len(df_auslaendisch))
+    werte = df_auslaendisch['Anteil'].values
+    schularten = df_auslaendisch['Schulart'].values
+
+    # Balken zeichnen
+    bars = ax.bar(x, werte, width=0.6, label='ausländische Schüler/innen', color=orange)
+
+    # Prozentwerte über Balken anzeigen
+    for bar, wert in zip(bars, werte):
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + 1,  # etwas über dem Balken
+            f"{wert:.1f}%",
+            ha='center',
+            va='bottom',
+            color='white',
+            fontsize=10,
+            fontweight='bold'
+        )
+
+    # Achsenbeschriftungen
+    ax.set_xticks(x)
+    ax.set_xticklabels(schularten, rotation=45, ha='right', color='white')
+    ax.set_ylabel("Anteil in %", color='white')
+    ax.set_xlabel("Schulart", color='white')
+    ax.set_title("Anteil ausländischer Schüler/innen pro Schulart", color='white')
+    ax.legend(facecolor='black', edgecolor='white', labelcolor='white')
+    ax.tick_params(colors='white')
+
+    # Gitterlinien
+    ax.grid(axis='y', linestyle='--', alpha=0.3, color='white')
+
+    # Y-Achse in Prozent
+    ax.set_ylim(0, 100)
+    ax.set_yticklabels([f"{int(t)}%" for t in ax.get_yticks()])
+
+    # Plot anzeigen
+    st.pyplot(fig)
