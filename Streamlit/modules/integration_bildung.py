@@ -54,7 +54,7 @@ def show():
         with col1:
             schuljahre = sorted(df["Schuljahr"].unique())
             default_index = schuljahre.index("2023/24") if "2023/24" in schuljahre else 0
-            jahr = st.selectbox("Schuljahr", schuljahre, index=default_index)
+            jahr = st.selectbox("📅 Schuljahr", schuljahre, index=default_index)
 
         with col2:
             # Nur relevante Daten
@@ -66,14 +66,14 @@ def show():
                 ]
 
             alle_bildungsbereiche = sorted(df_filter_basis["Bildungsbereich"].dropna().unique().tolist())
-            ausgewaehlter_bildungsbereich = st.selectbox("Bildungsbereich", alle_bildungsbereiche)
+            ausgewaehlter_bildungsbereich = st.selectbox("🎓 Bildungsbereich", alle_bildungsbereiche)
 
 
 
         with col3:
             bundesland_options = df['Bundesland'].unique()
             selected_bundesland = st.selectbox(
-                "Bundesland",
+                "🗺️ Bundesland",
                 bundesland_options,
                 index=list(bundesland_options).index('Deutschland') if 'Deutschland' in bundesland_options else 0
             )
@@ -336,7 +336,7 @@ def show():
 
         with col1:
             st.subheader("Anteil ausländischer Schüler nach Bundesland")
-            fig1 = st_folium(m, width=1000, height=700)
+            fig1 = st_folium(m, width=500, height=600)
 
         with col2:
             st.subheader("Anteil ausländischer Schüler nach Schulart")
@@ -357,7 +357,8 @@ def show():
         # 'Syrien, Arabische Republik' in 'Syrien' umbenennen
         df['Staatsangehoerigkeit'] = df['Staatsangehoerigkeit'].replace('Syrien, Arabische Republik', 'Syrien')
 
-        # Filter als Dropdowns (selectbox) ohne Sidebar
+        # Filter als Dropdowns (selectbox)
+
         bundesland_options_2 = df['Bundesland'].unique()
         selected_bundesland_2 = st.selectbox(
             "Bundesland auswählen 2",
@@ -453,15 +454,19 @@ def show():
         #########################################################################################
         # Diagramm 4 Prozentualer Anteil der deutschen/ausländischen Absolventen nach Abschluss #
         #########################################################################################
-        #df = df[df['Abschluss'] != 'ohne Hauptschulabschluss']
+        df = df[df['Abschluss'] != 'ohne Hauptschulabschluss']
         df['Abschluss'] = df['Abschluss'].replace('mittlerer Abschluss', 'Mittlerer Abschluss')
 
+        Abgangsjahr = df['Abgangsjahr'].unique()
+        selected_Abgangsjahr = st.selectbox("Abgangsjahr", Abgangsjahr)
+        df_filtered_12 = df[df['Abgangsjahr'] == selected_Abgangsjahr]
+
         # Deutsche Absolventen berechnen
-        df['deutsche_Absolvierende'] = df['Absolvierende_und_Abgehende_Anzahl'] - df[
+        df_filtered_12['deutsche_Absolvierende'] = df_filtered_12['Absolvierende_und_Abgehende_Anzahl'] - df_filtered_12[
             'auslaendische_Absolvierende_und_Abgehende_Anzahl']
 
         # Gruppierung nach Abschluss
-        df_grouped = df.groupby('Abschluss').agg({
+        df_grouped = df_filtered_12.groupby('Abschluss').agg({
             'deutsche_Absolvierende': 'sum',
             'auslaendische_Absolvierende_und_Abgehende_Anzahl': 'sum'
         }).reset_index()
