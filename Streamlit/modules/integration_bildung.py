@@ -1,3 +1,5 @@
+
+
 import streamlit as st
 import pandas as pd
 import geopandas as gpd
@@ -19,6 +21,7 @@ def show():
     # Vorverarbeitung
     df = df.drop(columns=['Staatsangehoerigkeit'])
     df = df.rename(columns={'Staatsangehoerigkeit_clean': 'Staatsangehoerigkeit'})
+
 
     ######################################################################################################
     # Viz 1: Karte Deutschlands
@@ -184,7 +187,7 @@ def show():
     def style_function(feature):
         anteil = feature['properties']['Anteil (%)']
         return {
-            'fillOpacity': 0.7,
+            'fillOpacity': 0.8,
             'weight': 1,
             'color': 'black',
             'fillColor': colormap(anteil) if anteil is not None else 'lightgray'
@@ -218,48 +221,41 @@ def show():
     colormap.add_to(m)
 
     # In Streamlit anzeigen
-    st.subheader(f"Anteil ausländischer Schüler/innen nach Bundesland ({jahr})")
-    st_data = st_folium(m, width=1000, height=700)
+    #st.subheader(f"Anteil ausländischer Schüler/innen nach Bundesland ({jahr})")
+    #fig1 = st_folium(m, width=1000, height=700)
 
     #############################################################################
     # Viz 2: Balkendiagramm: Anteil ausländischer Schüler pro Schulart (horizontal)
     #############################################################################
 
-    # Daten vorbereiten
+    # Daten vorbereiten (wie in deinem Originalcode)
     df_plot = df_filtered.groupby(['Schulart', 'Staatsangehoerigkeit'])['Schueler_innen_Anzahl'].sum().reset_index()
     df_plot = df_plot[(df_plot['Schulart'].notna()) & (df_plot['Schulart'] != 'Insgesamt')]
     df_plot = df_plot[df_plot['Schulart'] != 'Keine Zuordnung zu einer Schulart möglich']
 
-    # Gesamtanzahl pro Schulart berechnen
     df_total = df_plot.groupby('Schulart')['Schueler_innen_Anzahl'].sum().reset_index().rename(
         columns={'Schueler_innen_Anzahl': 'Gesamt'})
-
-    # Mit den ursprünglichen Werten zusammenführen
     df_plot = df_plot.merge(df_total, on='Schulart')
     df_plot['Anteil'] = df_plot['Schueler_innen_Anzahl'] / df_plot['Gesamt'] * 100
 
-    # Nur ausländische Schüler/innen behalten
     df_auslaendisch = df_plot[df_plot['Staatsangehoerigkeit'] == 'ausländische Schüler/innen']
+    df_auslaendisch = df_auslaendisch.sort_values(by='Anteil', ascending=True)  # Für horizontalen Plot aufsteigend
 
-    # Nach Anteil aufsteigend sortieren (für horizontalen Balken)
-    df_auslaendisch = df_auslaendisch.sort_values(by='Anteil', ascending=True)
-
-    # Farben definieren
+    # Farben
     farben = sns.color_palette("Set2")
-    orange = farben[1]  # Index 1 = Orange
+    orange = farben[1]
 
-    # Plot erstellen
-    fig, ax = plt.subplots(figsize=(10, 8), edgecolor='none')  # Rand der Figure entfernen
-    fig.patch.set_facecolor('black')
-    fig.patch.set_linewidth(0)  # Figure Rahmen entfernen
+    # Horizontalen Balkendiagramm-Plot erstellen
+    fig2, ax = plt.subplots(figsize=(8, 8), edgecolor='none')
+    fig2.patch.set_facecolor('black')
+    fig2.patch.set_linewidth(0)
     ax.set_facecolor('black')
 
     y = range(len(df_auslaendisch))
     werte = df_auslaendisch['Anteil'].values
     schularten = df_auslaendisch['Schulart'].values
 
-    # Horizontale Balken zeichnen (etwas breiter)
-    bars = ax.barh(y, werte, height=0.6, label='ausländische Schüler/innen', color=orange)
+    bars = ax.barh(y, werte, height=0.8, color=orange, label='ausländische Schüler/innen')  # breitere Balken
 
     # Prozentwerte rechts neben den Balken anzeigen
     for bar, wert in zip(bars, werte):
@@ -274,32 +270,26 @@ def show():
             fontweight='bold'
         )
 
-    # Weiße Rahmenlinien (Spines) entfernen
+    # Achsen und Beschriftungen
+    ax.set_yticks(y)
+    ax.set_yticklabels(schularten, color='white', fontsize=10)
+    ax.set_ylabel('')
+    ax.set_xlabel('')
+    #ax.set_title("Anteil ausländischer Schüler/innen pro Schulart", color='white')
+
+    # Rahmen entfernen
     for spine in ax.spines.values():
         spine.set_visible(False)
 
-    # Achsenbeschriftungen
-    ax.set_yticks(y)
-    ax.set_yticklabels(schularten, color='white', fontsize=10)
-    ax.set_ylabel("")  # Y-Achsentitel entfernen
-    ax.set_xlabel("")  # X-Achsentitel entfernen
-    ax.set_title("Anteil ausländischer Schüler/innen pro Schulart", color='white')
-
-    # Legende ohne weißen Rahmen
-    #ax.legend(facecolor='black', edgecolor='none', labelcolor='white')
-
-    ax.tick_params(colors='white')
-
-    # Gitterlinien auf der x-Achse
+    # Gitterlinien auf der x-Achse (optional)
     ax.grid(axis='x', linestyle='--', alpha=0.3, color='white')
 
-    # X-Achse ausblenden
-    ax.xaxis.set_visible(False)
+    # Achsenticks und Rahmenfarbe anpassen
+    # ax.tick_params(colors='white')
 
     plt.tight_layout()
 
-    # Plot anzeigen (Streamlit)
-    st.pyplot(fig)
+    # st.pyplot(fig2)
 
 
     ###############################################################################
@@ -352,7 +342,7 @@ def show():
     ########################################################################
     # Viz 4: Kreisdiagramm
     plt.style.use('dark_background')
-    plt.figure(figsize=(8, 8))
+    fig3, ax = plt.subplots(figsize=(8, 8))
     plt.pie(
         df_top10['Prozent'],
         labels=df_top10['Staatsangehoerigkeit'],
@@ -362,9 +352,8 @@ def show():
         wedgeprops={'edgecolor': 'black', 'linewidth': 2},  # Schwarze Trennlinien mit Breite 2
         textprops={'color': "white", 'fontsize': 10}
     )
-    plt.title(f'Top 10 Staatsangehörigkeiten im Bundesland {selected_bundesland} (in %)', color='white')
-    plt.tight_layout()
-    st.pyplot(plt)
+    ax.set_title(f'Top 10 Staatsangehörigkeiten im Bundesland {selected_bundesland} (in %)', color='white')
+    fig3.tight_layout()
 
     ##################################################################
     # Daten einlesen: Destatis 21111-12
@@ -397,35 +386,63 @@ def show():
     df_grouped['Prozent'] = (df_grouped['auslaendische_Absolvierende_und_Abgehende_Anzahl'] / gesamt_auslaender) * 100
     df_grouped = df_grouped.sort_values(by='Prozent', ascending=False)
 
-    plt.figure(figsize=(10, 6))
-    ax = plt.gca()
+    # Figure und Achse erstellen
+    fig4, ax = plt.subplots(figsize=(8, 8))
 
-    # Balken schmaler machen mit 'height'
-    bars = ax.barh(df_grouped['Abschluss'], df_grouped['Prozent'], color='#fc8d62', height=0.5)
+    # Vertikales Balkendiagramm
+    bars = ax.bar(df_grouped['Abschluss'], df_grouped['Prozent'], color='#fc8d62', width=0.5)
 
-    # Prozentwerte auf die Balken schreiben
+    # Prozentwerte über den Balken
     for bar in bars:
-        width = bar.get_width()
-        plt.text(width + 0.5, bar.get_y() + bar.get_height() / 2,
-                 f'{width:.1f}%', va='center', ha='left', fontsize=10)
+        height = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width() / 2, height + 0.5,
+                f'{height:.1f}%', ha='center', va='bottom', fontsize=10)
 
-    # y-Achsentitel entfernen, y-Ticks anzeigen
-    ax.set_ylabel('')
+    # x-Achse mit Abschlussnamen, gedreht
+    ax.set_xticks(range(len(df_grouped['Abschluss'])))
+    ax.set_xticklabels(df_grouped['Abschluss'], rotation=45, ha='right')
 
-    # x-Achse ausblenden
+    # y-Achse ausblenden (keine Ticks, kein Label)
+    ax.yaxis.set_visible(False)
+
+    # Achsentitel ausblenden
     ax.set_xlabel('')
-    ax.set_xticks([])
+    ax.set_ylabel('')
 
     # Rahmen (Spines) entfernen
     for spine in ax.spines.values():
         spine.set_visible(False)
 
-    # Hintergrundfarbe transparent (oder passend zum Streamlit dark mode)
+    # Hintergrundfarbe transparent (für Streamlit dark mode passend)
     ax.set_facecolor('none')
-    plt.gcf().set_facecolor('none')
+    fig4.patch.set_facecolor('none')
 
     plt.title('Prozentualer Anteil der ausländischen Absolventen nach Abschluss')
-    plt.gca().invert_yaxis()  # Größte Werte oben
     plt.tight_layout()
 
-    st.pyplot(plt)
+    # st.pyplot(fig4)
+    ###############################################################
+    # die Diagramme in 2x2 Columns anzeigen
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Anteil ausländischer Schüler nach Bundesland")
+        fig1 = st_folium(m, width=1000, height=700)
+
+    with col2:
+        st.subheader("Anteil ausländischer Schüler nach Schulart")
+        # Diagramm 2 anzeigen
+        st.pyplot(fig2)
+
+    # zweite Zeile (nochmal 2 Spalten)
+    col3, col4 = st.columns(2)
+
+    with col3:
+        st.subheader("Top 10 Staatsangehörigkeiten")
+        # Diagramm 3 anzeigen
+        st.pyplot(fig3)
+
+    with col4:
+        st.subheader("Anteil ausländischer Absolventen/Abgänger")
+        # Diagramm 4 anzeigen
+        st.pyplot(fig4)
