@@ -4,6 +4,8 @@ import geopandas as gpd
 import folium
 import branca.colormap as cm
 from streamlit_folium import st_folium
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 
 def show():
@@ -16,6 +18,10 @@ def show():
     # Vorverarbeitung
     df = df.drop(columns=['Staatsangehoerigkeit'])
     df = df.rename(columns={'Staatsangehoerigkeit_clean': 'Staatsangehoerigkeit'})
+
+    ######################################################################################################
+    # Viz 1: Karte Deutschlands
+    # Wie verteilen sich die ausländischen Schüler auf die Bundesländer?
 
     # Auswahl für Schuljahr – Standard: 2023/24
     schuljahre = sorted(df["Schuljahr"].unique())
@@ -213,65 +219,14 @@ def show():
     st.subheader(f"Anteil ausländischer Schüler/innen nach Bundesland ({jahr})")
     st_data = st_folium(m, width=1000, height=700)
 
-
-    # Balkendiagramm: Schulart vs. Schüleranzahl (nach Nationalität)
-    st.subheader("Schüleranzahl nach Schulart und Staatsangehörigkeit")
-
-    # Daten für den Plot vorbereiten
-    df_plot = df_filtered.groupby(['Schulart', 'Staatsangehoerigkeit'])['Schueler_innen_Anzahl'].sum().reset_index()
-
-    # 'Insgesamt' entfernen und nur gültige Schularten behalten
-    df_plot = df_plot[(df_plot['Schulart'].notna()) & (df_plot['Schulart'] != 'Insgesamt')]
-
-    # Farben aus Set2 definieren (manuell wegen schwarzem Hintergrund)
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-
-    farben = sns.color_palette("Set2", 2)
-
-    fig, ax = plt.subplots(figsize=(12, 6))
-    fig.patch.set_facecolor('black')
-    ax.set_facecolor('black')
-
-    # Balken plotten
-    schularten = df_plot['Schulart'].unique()
-    x = range(len(schularten))
-
-    # Aufteilen nach Nationalität
-    for i, staatsangehoerigkeit in enumerate(['deutsche Schüler/innen', 'ausländische Schüler/innen']):
-        werte = []
-        for schulart in schularten:
-            row = df_plot[
-                (df_plot['Schulart'] == schulart) &
-                (df_plot['Staatsangehoerigkeit'] == staatsangehoerigkeit)
-            ]
-            werte.append(row['Schueler_innen_Anzahl'].values[0] if not row.empty else 0)
-
-        ax.bar(
-            [p + i * 0.4 for p in x],
-            werte,
-            width=0.4,
-            label=staatsangehoerigkeit,
-            color=farben[i]
-        )
-
-    # Achsen und Beschriftung
-    ax.set_xticks([p + 0.2 for p in x])
-    ax.set_xticklabels(schularten, rotation=45, ha='right', color='white')
-    ax.set_ylabel("Anzahl Schüler/innen", color='white')
-    ax.set_xlabel("Schulart", color='white')
-    ax.set_title("Schülerzahlen nach Schulart und Staatsangehörigkeit", color='white')
-    ax.legend(facecolor='black', edgecolor='white', labelcolor='white')
-    ax.tick_params(colors='white')
-
-    # Gitterlinien (optional)
-    ax.grid(axis='y', linestyle='--', alpha=0.3, color='white')
-
-    st.pyplot(fig)
+    #############################################################################
+    # Viz 2: Balkendiagramm: Anteil ausländischer Schüler pro Schulart (horizontal)
+    #############################################################################
 
     # Daten vorbereiten
     df_plot = df_filtered.groupby(['Schulart', 'Staatsangehoerigkeit'])['Schueler_innen_Anzahl'].sum().reset_index()
     df_plot = df_plot[(df_plot['Schulart'].notna()) & (df_plot['Schulart'] != 'Insgesamt')]
+    df_plot = df_plot[df_plot['Schulart'] != 'Keine Zuordnung zu einer Schulart möglich']
 
     # Gesamtanzahl pro Schulart berechnen
     df_total = df_plot.groupby('Schulart')['Schueler_innen_Anzahl'].sum().reset_index().rename(
@@ -284,53 +239,52 @@ def show():
     # Nur ausländische Schüler/innen behalten
     df_auslaendisch = df_plot[df_plot['Staatsangehoerigkeit'] == 'ausländische Schüler/innen']
 
-    # Nach Anteil absteigend sortieren
-    df_auslaendisch = df_auslaendisch.sort_values(by='Anteil', ascending=False)
+    # Nach Anteil aufsteigend sortieren (für horizontalen Balken)
+    df_auslaendisch = df_auslaendisch.sort_values(by='Anteil', ascending=True)
 
     # Farben definieren
     farben = sns.color_palette("Set2")
     orange = farben[1]  # Index 1 = Orange
 
     # Plot erstellen
-    fig, ax = plt.subplots(figsize=(12, 6))
+    fig, ax = plt.subplots(figsize=(10, 8))
     fig.patch.set_facecolor('black')
     ax.set_facecolor('black')
 
-    x = range(len(df_auslaendisch))
+    y = range(len(df_auslaendisch))
     werte = df_auslaendisch['Anteil'].values
     schularten = df_auslaendisch['Schulart'].values
 
-    # Balken zeichnen
-    bars = ax.bar(x, werte, width=0.6, label='ausländische Schüler/innen', color=orange)
+    # Horizontale Balken zeichnen
+    bars = ax.barh(y, werte, height=0.6, label='ausländische Schüler/innen', color=orange)
 
-    # Prozentwerte über Balken anzeigen
+    # Prozentwerte rechts neben den Balken anzeigen
     for bar, wert in zip(bars, werte):
         ax.text(
-            bar.get_x() + bar.get_width() / 2,
-            bar.get_height() + 1,  # etwas über dem Balken
+            bar.get_width() + 1,
+            bar.get_y() + bar.get_height() / 2,
             f"{wert:.1f}%",
-            ha='center',
-            va='bottom',
+            va='center',
+            ha='left',
             color='white',
             fontsize=10,
             fontweight='bold'
         )
 
     # Achsenbeschriftungen
-    ax.set_xticks(x)
-    ax.set_xticklabels(schularten, rotation=45, ha='right', color='white')
-    ax.set_ylabel("Anteil in %", color='white')
-    ax.set_xlabel("Schulart", color='white')
+    ax.set_yticks(y)
+    ax.set_yticklabels(schularten, color='white', fontsize=10)
+    ax.set_ylabel("")  # Y-Achsentitel entfernen
+    ax.set_xlabel("")  # Optional: X-Achsentitel ebenfalls entfernen
     ax.set_title("Anteil ausländischer Schüler/innen pro Schulart", color='white')
     ax.legend(facecolor='black', edgecolor='white', labelcolor='white')
     ax.tick_params(colors='white')
 
     # Gitterlinien
-    ax.grid(axis='y', linestyle='--', alpha=0.3, color='white')
+    ax.grid(axis='x', linestyle='--', alpha=0.3, color='white')
 
-    # Y-Achse in Prozent
-    ax.set_ylim(0, 100)
-    ax.set_yticklabels([f"{int(t)}%" for t in ax.get_yticks()])
+    # X-Achse entfernen
+    ax.xaxis.set_visible(False)
 
     # Plot anzeigen
     st.pyplot(fig)
