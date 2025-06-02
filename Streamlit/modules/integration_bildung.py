@@ -183,12 +183,12 @@ def show():
 
     colors = [
        # '#fff5f0',  # sehr helles Rot
-        '#fee0d2',
-        '#fcbba1',
-        #'#fc9272',
-        '#fb6a4a',
-        '#cb181d' ,  # dunkleres Rot
-        '#2e2828'
+        '#FDD8C7',
+        '#FDB79D',
+        '#FC8D62',
+        '#E67654',
+        '#CC6140',  # dunkleres Rot
+        '#A84B2E'
     ]
 
     colormap = cm.LinearColormap(
