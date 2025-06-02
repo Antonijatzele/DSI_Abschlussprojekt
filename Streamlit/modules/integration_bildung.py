@@ -11,7 +11,8 @@ import matplotlib.pyplot as plt
 def show():
     st.title("🎓 Bildungs-Integration")
 
-    # Daten einlesen
+    # Daten einlesen: Destatis 21111-03
+    # Schüler/-innen (Deutsche, Ausländer/-innen) nach Bildungsbereichen, rechtlichem Status der Schule, Schularten und Geschlecht
     url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Bildungsintegration/Destatis_21111-03_allgemeinbildende_schulen_2021_2024_zusammengefuegt.csv"
     df = pd.read_csv(url, sep=',')
 
@@ -289,3 +290,67 @@ def show():
 
     # Plot anzeigen
     st.pyplot(fig)
+
+
+    ###############################################################################
+    # Daten einlesen: Destatis 21111-08
+    # Ausländische Schüler/-innen nach Schularten, Staatsangehörigkeit und Geschlecht
+    url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Bildungsintegration/Destatis_21111-08_allgemeinbildende_schulen_2021_2024_zusammengefuegt.csv"
+    df = pd.read_csv(url, sep=',')
+
+    # Die ersten zwei Spalten löschen
+    df = df.drop(df.columns[:2], axis=1)
+
+    # 'Syrien, Arabische Republik' in 'Syrien' umbenennen
+    df['Staatsangehoerigkeit'] = df['Staatsangehoerigkeit'].replace('Syrien, Arabische Republik', 'Syrien')
+
+    # Filter als Dropdowns (selectbox) ohne Sidebar
+    bundesland_options = df['Bundesland'].unique()
+    selected_bundesland = st.selectbox(
+        "Bundesland auswählen",
+        bundesland_options,
+        index=list(bundesland_options).index('Deutschland') if 'Deutschland' in bundesland_options else 0
+    )
+
+    # Staatsangehörigkeit Filter entfernt
+
+    schulart_options = df['Schulart'].unique()
+    selected_schulart = st.selectbox("Schulart auswählen (optional)",
+                                     ['Alle'] + list(schulart_options), index=0)
+
+    # Filter anwenden
+    df_filtered = df[df['Bundesland'] == selected_bundesland]
+
+    if selected_schulart != 'Alle':
+        df_filtered = df_filtered[df_filtered['Schulart'] == selected_schulart]
+
+    # 'Insgesamt' rauslassen (falls noch drin)
+    df_filtered = df_filtered[df_filtered['Staatsangehoerigkeit'] != 'Insgesamt']
+
+    # Gruppieren und aufsummieren
+    df_grouped = df_filtered.groupby('Staatsangehoerigkeit')['auslaendische_Schueler_innen_Anzahl'].sum().reset_index()
+
+    # Gesamtanzahl für die Prozentrechnung
+    gesamt_anzahl = df_grouped['auslaendische_Schueler_innen_Anzahl'].sum()
+
+    # Prozentanteil berechnen
+    df_grouped['Prozent'] = (df_grouped['auslaendische_Schueler_innen_Anzahl'] / gesamt_anzahl) * 100
+
+    # Top 10 nach Prozentanteil auswählen
+    df_top10 = df_grouped.sort_values(by='Prozent', ascending=False).head(10)
+
+    # --- Kreisdiagramm ---
+    plt.style.use('dark_background')
+    plt.figure(figsize=(8, 8))
+    plt.pie(
+        df_top10['Prozent'],
+        labels=df_top10['Staatsangehoerigkeit'],
+        autopct='%1.1f%%',
+        startangle=140,
+        colors=['#fc8d62'] * len(df_top10),
+        wedgeprops={'edgecolor': 'black', 'linewidth': 2},  # Schwarze Trennlinien mit Breite 2
+        textprops={'color': "white", 'fontsize': 10}
+    )
+    plt.title(f'Top 10 Staatsangehörigkeiten im Bundesland {selected_bundesland} (in %)', color='white')
+    plt.tight_layout()
+    st.pyplot(plt)
