@@ -177,7 +177,8 @@ def show():
     colormap.caption = 'Anteil ausländischer Schüler/innen (%)'
 
     # Karte erstellen
-    m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB positron')
+    # m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB positron')
+    m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB dark_matter')
 
     def style_function(feature):
         anteil = feature['properties']['Anteil (%)']
