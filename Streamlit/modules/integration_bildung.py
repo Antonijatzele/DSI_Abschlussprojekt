@@ -8,6 +8,7 @@ import branca.colormap as cm
 from streamlit_folium import st_folium
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 
 
 def show():
@@ -375,6 +376,24 @@ def show():
     ########################################################################
     # Viz 4: Kreisdiagramm
     plt.style.use('dark_background')
+
+    # Basisfarbe
+    base_color = mcolors.to_rgb('#fc8d62')
+
+    # Normalisieren der Prozentwerte (0 bis 1) – höhere Werte führen zu dunkleren Farben
+    percent_values = df_top10['Prozent'].values
+    norm = (percent_values - percent_values.min()) / (percent_values.max() - percent_values.min())
+    inverted_norm = 1 - norm  # Größere Werte = dunkler
+
+    # Funktion zum Abdunkeln der Farbe
+    def darken_color(color, factor):
+        return tuple(np.clip(np.array(color) * factor, 0, 1))
+
+    # Erzeuge abgestufte Farben
+    colors = [darken_color(base_color, 0.5 + 0.5 * f) for f in inverted_norm]
+
+    # Zeichne das Kreisdiagramm
+    plt.style.use('dark_background')
     fig3, ax = plt.subplots(figsize=(8, 8))
 
     plt.pie(
@@ -382,11 +401,11 @@ def show():
         labels=df_top10['Staatsangehoerigkeit'],
         autopct='%1.1f%%',
         startangle=140,
-        colors=['#fc8d62'] * len(df_top10),
-        wedgeprops={'edgecolor': 'black', 'linewidth': 2},  # Schwarze Trennlinien mit Breite 2
+        colors=colors,
+        wedgeprops={'edgecolor': 'black', 'linewidth': 2},
         textprops={'color': "white", 'fontsize': 12}
     )
-    # ax.set_title(f'Top 10 Staatsangehörigkeiten im Bundesland {selected_bundesland} (in %)', color='white')
+
     fig3.tight_layout()
 
     ##################################################################
@@ -431,7 +450,7 @@ def show():
     gesamt_auslaender = df_grouped['auslaendische_Absolvierende_und_Abgehende_Anzahl'].sum()
     gesamt_deutsche = df_grouped['deutsche_Absolvierende'].sum()
 
-    # Prozentwerte
+    # Prozentwerte berechnen
     df_grouped['Prozent_auslaender'] = (df_grouped[
                                             'auslaendische_Absolvierende_und_Abgehende_Anzahl'] / gesamt_auslaender) * 100
     df_grouped['Prozent_deutsche'] = (df_grouped['deutsche_Absolvierende'] / gesamt_deutsche) * 100
@@ -439,39 +458,38 @@ def show():
     # Sortieren nach Anteil Ausländer absteigend
     grouped_sorted = df_grouped.sort_values(by='Prozent_auslaender', ascending=False).reset_index(drop=True)
 
-    # Plot mit Matplotlib
-    fig4, ax = plt.subplots(figsize=(8, 8))
+    # Transponiertes (horizontal) Balkendiagramm mit Matplotlib
+    fig4, ax = plt.subplots(figsize=(10, 8))
 
-    bars_auslaender = ax.bar(grouped_sorted['Abschluss'], grouped_sorted['Prozent_auslaender'],
-                             label='Ausländisch', color='#fc8d62')
-    bars_deutsche = ax.bar(grouped_sorted['Abschluss'], grouped_sorted['Prozent_deutsche'],
-                           bottom=grouped_sorted['Prozent_auslaender'], label='Deutsch', color='#66c2a5')
+    bars_auslaender = ax.barh(grouped_sorted['Abschluss'], grouped_sorted['Prozent_auslaender'],
+                              label='Ausländisch', color='#fc8d62')
+    bars_deutsche = ax.barh(grouped_sorted['Abschluss'], grouped_sorted['Prozent_deutsche'],
+                            left=grouped_sorted['Prozent_auslaender'], label='Deutsch', color='#66c2a5')
 
     # Prozentwerte in die Balken schreiben, nur wenn größer 5% für bessere Lesbarkeit
     for bar, wert in zip(bars_auslaender, grouped_sorted['Prozent_auslaender']):
         if wert > 5:
-            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() / 2,
-                    f'{wert:.1f}%', ha='center', va='center', color='white', fontsize=9)
+            ax.text(bar.get_width() / 2, bar.get_y() + bar.get_height() / 2,
+                    f'{wert:.1f}%', va='center', ha='center', color='white', fontsize=13)
 
-    for bar, wert, bottom in zip(bars_deutsche, grouped_sorted['Prozent_deutsche'],
-                                 grouped_sorted['Prozent_auslaender']):
+    for bar, wert, left in zip(bars_deutsche, grouped_sorted['Prozent_deutsche'], grouped_sorted['Prozent_auslaender']):
         if wert > 5:
-            ax.text(bar.get_x() + bar.get_width() / 2, bottom + bar.get_height() / 2,
-                    f'{wert:.1f}%', ha='center', va='center', color='black', fontsize=9)
+            ax.text(left + bar.get_width() / 2, bar.get_y() + bar.get_height() / 2,
+                    f'{wert:.1f}%', va='center', ha='center', color='white', fontsize=13)
 
-    # Y-Achse und Titel entfernen
-    ax.yaxis.set_visible(False)
-    ax.set_title('')  # Leer, damit nichts angezeigt wird
+    # Achsen und Stil anpassen
+    ax.xaxis.set_visible(False)  # Optional: x-Achse ausblenden
+    # größere Beschriftung
+    ax.set_yticklabels(grouped_sorted['Abschluss'], fontsize=15)
+    ax.set_title('')  # Kein Titel
+    ax.invert_yaxis()  # Höchster Wert oben
 
-    # X-Achsenbeschriftung drehen
-    ax.set_xticks(range(len(grouped_sorted['Abschluss'])))
-    ax.set_xticklabels(grouped_sorted['Abschluss'], rotation=45, ha='right')
+    # Rahmen entfernen
+    for spine in ax.spines.values():
+        spine.set_visible(False)
 
     # Legende anzeigen
     ax.legend()
-    # **Weißer Rahmen entfernen:**
-    for spine in ax.spines.values():
-        spine.set_visible(False)
 
     plt.tight_layout()
 
