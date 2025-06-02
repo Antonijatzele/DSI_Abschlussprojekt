@@ -22,22 +22,24 @@ def show():
     # Vorverarbeitung
     df = df.drop(columns=['Staatsangehoerigkeit'])
     df = df.rename(columns={'Staatsangehoerigkeit_clean': 'Staatsangehoerigkeit'})
+    df = df[df['Bildungsbereich'] != 'Bereich unbekannt']
 
 
 
-    ######################################################################################################
-    # Viz 1: Karte Deutschlands
+    ####################################
+    # Diagramm 1: Karte Deutschlands   #
+    ####################################
     # Wie verteilen sich die ausländischen Schüler auf die Bundesländer?
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
         schuljahre = sorted(df["Schuljahr"].unique())
         default_index = schuljahre.index("2023/24") if "2023/24" in schuljahre else 0
-        jahr = st.selectbox("Wähle ein Schuljahr", schuljahre, index=default_index)
+        jahr = st.selectbox("Schuljahr", schuljahre, index=default_index)
 
     with col2:
-        # Nur relevante Daten für Filterung vorbereiten
+        # Nur relevante Daten
         df_filter_basis = df[
             (df['Geschlecht'].isin(['männlich', 'weiblich'])) &
             (df['Bundesland'] != 'Deutschland') &
@@ -46,32 +48,14 @@ def show():
             ]
 
         alle_bildungsbereiche = sorted(df_filter_basis["Bildungsbereich"].dropna().unique().tolist())
-        ausgewaehlter_bildungsbereich = st.selectbox("Wähle einen Bildungsbereich", ["Alle"] + alle_bildungsbereiche)
+        ausgewaehlter_bildungsbereich = st.selectbox("Bildungsbereich", alle_bildungsbereiche)
+
+
 
     with col3:
-        if ausgewaehlter_bildungsbereich == "Alle":
-            verfuegbare_schularten = sorted(df_filter_basis["Schulart"].dropna().unique())
-        else:
-            verfuegbare_schularten = sorted(
-                df_filter_basis[df_filter_basis["Bildungsbereich"] == ausgewaehlter_bildungsbereich][
-                    "Schulart"].dropna().unique()
-            )
-        ausgewaehlte_schulart = st.selectbox("Wähle eine Schulart", ["Alle"] + verfuegbare_schularten)
-
-        # Optional: Re-Filter Bildungsbereiche basierend auf Schulart
-        if ausgewaehlte_schulart != "Alle":
-            verfuegbare_bildungsbereiche = sorted(
-                df_filter_basis[df_filter_basis["Schulart"] == ausgewaehlte_schulart][
-                    "Bildungsbereich"].dropna().unique()
-            )
-            if ausgewaehlter_bildungsbereich != "Alle" and ausgewaehlter_bildungsbereich not in verfuegbare_bildungsbereiche:
-                st.warning("Der ausgewählte Bildungsbereich passt nicht zur Schulart. Bitte anpassen.")
-
-    with col4:
-        # Filter als Dropdowns (selectbox) ohne Sidebar
         bundesland_options = df['Bundesland'].unique()
         selected_bundesland = st.selectbox(
-            "Bundesland auswählen",
+            "Bundesland",
             bundesland_options,
             index=list(bundesland_options).index('Deutschland') if 'Deutschland' in bundesland_options else 0
         )
@@ -80,12 +64,6 @@ def show():
 
     # Filter anwenden
     df_filtered = df_filter_basis.copy()
-
-    if ausgewaehlter_bildungsbereich != "Alle":
-        df_filtered = df_filtered[df_filtered['Bildungsbereich'] == ausgewaehlter_bildungsbereich]
-
-    if ausgewaehlte_schulart != "Alle":
-        df_filtered = df_filtered[df_filtered['Schulart'] == ausgewaehlte_schulart]
 
 
     # Pivot-Tabelle für Schularten-Ranking (nur für 2023/24)
@@ -237,15 +215,36 @@ def show():
         tooltip=tooltip
     ).add_to(m)
 
+    # Prozentwerte als Text auf der Karte anzeigen
+    for _, row in bundeslaender.iterrows():
+        if pd.notna(row['Anteil (%)']):
+            folium.map.Marker(
+                [row['geometry'].centroid.y, row['geometry'].centroid.x],
+                icon=folium.DivIcon(
+                    html=f"""
+                    <div style="
+                        font-size: 12px; 
+                        color: white; 
+                        font-weight: bold;
+                        text-align: center;
+                        background-color: rgba(0,0,0,0.5);
+                        padding: 2px 4px;
+                        border-radius: 4px;">
+                        {row['Anteil (%)']}%
+                    </div>
+                    """
+                )
+            ).add_to(m)
+
     colormap.add_to(m)
 
     # In Streamlit anzeigen
     #st.subheader(f"Anteil ausländischer Schüler/innen nach Bundesland ({jahr})")
     #fig1 = st_folium(m, width=1000, height=700)
 
-    #############################################################################
-    # Viz 2: Balkendiagramm: Anteil ausländischer Schüler pro Schulart (horizontal)
-    #############################################################################
+    #########################################################
+    # Diagramm 2: Anteil ausländischer Schüler pro Schulart #
+    #########################################################
 
     # Daten vorbereiten (wie in deinem Originalcode)
     df_plot = df_filtered.groupby(['Schulart', 'Staatsangehoerigkeit'])['Schueler_innen_Anzahl'].sum().reset_index()
@@ -325,6 +324,16 @@ def show():
         # Diagramm 2 anzeigen
         st.pyplot(fig2)
 
+    ##########test
+    ############
+
+    tab1, tab2 = st.tabs(["🌍 Karte", "📊 Schulartenvergleich"])
+    with tab1:
+        st.subheader(f"Anteil ausländischer Schüler/innen nach Bundesland ({jahr})")
+        st_folium(m, width=1000, height=700)
+    with tab2:
+        st.subheader("Anteil ausländischer Schüler/innen nach Schulart")
+        st.pyplot(fig)
 
     ###############################################################################
     # Daten einlesen: Destatis 21111-08
@@ -346,7 +355,6 @@ def show():
         index=list(bundesland_options_2).index('Deutschland') if 'Deutschland' in bundesland_options_2 else 0
     )
 
-    # Staatsangehörigkeit Filter entfernt
 
     schulart_options_2 = df['Schulart'].unique()
     selected_schulart_2 = st.selectbox("Schulart auswählen 2",
@@ -373,8 +381,9 @@ def show():
     # Top 10 nach Prozentanteil auswählen
     df_top10 = df_grouped.sort_values(by='Prozent', ascending=False).head(10)
 
-    ########################################################################
-    # Viz 4: Kreisdiagramm
+    ########################################################
+    # Diagramm 3: Kreisdiagramm Top 10 Staatsangehörigkeit #
+    ########################################################
     plt.style.use('dark_background')
 
     # Basisfarbe
@@ -431,9 +440,10 @@ def show():
         df['auslaendische_Absolvierende_und_Abgehende_Anzahl'], errors='coerce'
     )
 
-    #####################################################
-    # Balkendiagramm: Prozentualer Anteil der ausländischen Absolventen nach Abschluss
-    df = df[df['Abschluss'] != 'ohne Hauptschulabschluss']
+    #########################################################################################
+    # Diagramm 4 Prozentualer Anteil der deutschen/ausländischen Absolventen nach Abschluss #
+    #########################################################################################
+    #df = df[df['Abschluss'] != 'ohne Hauptschulabschluss']
     df['Abschluss'] = df['Abschluss'].replace('mittlerer Abschluss', 'Mittlerer Abschluss')
 
     # Deutsche Absolventen berechnen
@@ -493,7 +503,6 @@ def show():
 
     plt.tight_layout()
 
-    # Streamlit Ausgabe
     #st.pyplot(fig4)
     ###############################################################
 
