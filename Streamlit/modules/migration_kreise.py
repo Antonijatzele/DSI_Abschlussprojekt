@@ -3,7 +3,6 @@ import folium
 import branca.colormap as cm
 import geopandas as gpd
 from pathlib import Path
-from shapely.geometry import Point
 from streamlit_folium import st_folium
 
 
@@ -28,7 +27,6 @@ def lade_geodaten():
 
 
 # Karte erstellen
-@st.cache_resource
 def erstelle_karte(geojson_str):
     m = folium.Map(location=[51.0, 10.0], zoom_start=6)
     folium.GeoJson(

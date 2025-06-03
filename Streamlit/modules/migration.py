@@ -6,7 +6,8 @@ import plotly.graph_objects as go
 def simple_timeline(file, group_col, default_groups=None):
     csv_path = f"data/migration/{file}"
     df = pd.read_csv(csv_path, sep=None, engine='python')
-    df["STAG"] = pd.to_datetime(df["STAG"])
+    if 'STAG' in df.columns:
+        df["Jahr"] = pd.to_datetime(df["STAG"])
     df["Value_Mio"] = df["Value"] / 1_000_000
 
     fig = go.Figure()
@@ -26,7 +27,7 @@ def simple_timeline(file, group_col, default_groups=None):
     for group in sel_groups:
         subset = df[df[group_col] == group]
         fig.add_trace(go.Scatter(
-            x=subset["STAG"],
+            x=subset["Jahr"],
             y=subset["Value_Mio"],
             mode="lines+markers",
             name=group,
@@ -135,4 +136,6 @@ def show():
     default_groups = ['Befristete AE, besondere Gründe und nationale Visa', 'Befristete AE, völkerrechtl., human., pol. Gründe', 'Befristete Aufenthaltserlaubnis, Erwerbstätigkeit', 'Aufenthaltsrecht nach FreizügG/EU', 'Unbefristete Niederlassungserlaubnis']
     simple_timeline("historisch_titel.csv", "Ausgewählte Aufenthaltstitel")
 
-
+    st.header("Einbürgerung: Staatsangehörigkeit")
+    default_groups = ['Türkei', 'Italien', 'Ukraine', 'Syrien', 'Afghanistan']
+    simple_timeline("einbürg_staaten.csv", "Staatsangehörigkeit", default_groups)
