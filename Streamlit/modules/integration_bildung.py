@@ -10,6 +10,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import plotly.express as px
+import plotly.graph_objects as go
 
 
 def show():
@@ -217,15 +218,15 @@ def show():
             def style_function(feature):
                 anteil = feature['properties']['Anteil (%)']
                 return {
-                    'fillOpacity': 0.8,
+                    'fillOpacity': 0.9,
                     'weight': 1,
                     'color': 'black',
                     'fillColor': colormap(anteil) if anteil is not None else 'lightgrey'
                 }
 
             tooltip = folium.GeoJsonTooltip(
-                fields=['name'],
-                aliases=[''],
+                fields=['name', 'Anteil (%)'],
+                aliases=['Bundesland', 'Anteil (%)'],
                 localize=True,
                 labels=True,
                 sticky=False,
@@ -234,9 +235,9 @@ def show():
                     border: 1px solid black;
                     border-radius: 3px;
                     box-shadow: 3px;
+                    color: black;
                 """
             )
-
             folium.GeoJson(
                 bundeslaender,
                 style_function=style_function,
@@ -255,16 +256,16 @@ def show():
                                 color: white; 
                                 font-weight: bold;
                                 text-align: center;
-                                background-color: rgba(0,0,0,0.5);
-                                padding: 2px 4px;
-                                border-radius: 4px;">
+                                background-color: transparent;  /* Kein Hintergrund */
+                                padding: 0;                   /* Kein Padding */
+                                border: none;                 /* Keine Rahmen */
+                                ">
                                 {row['Anteil (%)']}%
                             </div>
                             """
                         )
                     ).add_to(m)
-
-            colormap.add_to(m)
+            #colormap.add_to(m)
 
             # In Streamlit anzeigen
             #st.subheader(f"Anteil ausländischer Schüler/innen nach Bundesland ({jahr})")
@@ -593,113 +594,89 @@ def show():
             #########################################################################################
             # Diagramm 4 Prozentualer Anteil der deutschen/ausländischen Absolventen nach Abschluss #
             #########################################################################################
-            df = df[df['Abschluss'] != 'ohne Hauptschulabschluss']
             df['Abschluss'] = df['Abschluss'].replace('mittlerer Abschluss', 'Mittlerer Abschluss')
+            df.loc[df[
+                       'Abschluss2'] == 'dar.: mit schulischem Teil der Fachhochschulreife', 'Abschluss'] = 'Fachhochschulreife'
 
             Abgangsjahr = df['Abgangsjahr'].unique()
             selected_Abgangsjahr = st.selectbox("Abgangsjahr", Abgangsjahr)
             df_filtered_12 = df[df['Abgangsjahr'] == selected_Abgangsjahr]
 
-            # Deutsche Absolventen berechnen
-            df_filtered_12['deutsche_Absolvierende'] = df_filtered_12['Absolvierende_und_Abgehende_Anzahl'] - df_filtered_12[
-                'auslaendische_Absolvierende_und_Abgehende_Anzahl']
+            df_filtered_12['deutsche_Absolvierende'] = df_filtered_12['Absolvierende_und_Abgehende_Anzahl'] - \
+                                                       df_filtered_12[
+                                                           'auslaendische_Absolvierende_und_Abgehende_Anzahl']
 
-            # Gruppierung nach Abschluss
-            df_grouped = df_filtered_12.groupby('Abschluss').agg({
-                'deutsche_Absolvierende': 'sum',
-                'auslaendische_Absolvierende_und_Abgehende_Anzahl': 'sum'
+            grouped = df_filtered_12.groupby("Abschluss").agg({
+                "Absolvierende_und_Abgehende_Anzahl": "sum",
+                "auslaendische_Absolvierende_und_Abgehende_Anzahl": "sum"
             }).reset_index()
 
-            # Gesamtsummen für Prozentberechnung
-            gesamt_auslaender = df_grouped['auslaendische_Absolvierende_und_Abgehende_Anzahl'].sum()
-            gesamt_deutsche = df_grouped['deutsche_Absolvierende'].sum()
+            sum_auslaender = grouped["auslaendische_Absolvierende_und_Abgehende_Anzahl"].sum()
+            sum_deutsch = grouped["Absolvierende_und_Abgehende_Anzahl"].sum() - sum_auslaender
 
-            # Prozentwerte berechnen
-            df_grouped['Prozent_auslaender'] = (df_grouped[
-                                                    'auslaendische_Absolvierende_und_Abgehende_Anzahl'] / gesamt_auslaender) * 100
-            df_grouped['Prozent_deutsche'] = (df_grouped['deutsche_Absolvierende'] / gesamt_deutsche) * 100
+            grouped["auslaender_prozent_norm"] = grouped[
+                                                     "auslaendische_Absolvierende_und_Abgehende_Anzahl"] / sum_auslaender * 100
+            grouped["deutsch_anzahl"] = grouped["Absolvierende_und_Abgehende_Anzahl"] - grouped[
+                "auslaendische_Absolvierende_und_Abgehende_Anzahl"]
+            grouped["deutsch_prozent_norm"] = grouped["deutsch_anzahl"] / sum_deutsch * 100
 
-            # Sortieren nach Anteil Ausländer absteigend
-            grouped_sorted = df_grouped.sort_values(by='Prozent_auslaender', ascending=False).reset_index(drop=True)
+            # *** Hier sortieren nach Ausländeranteil absteigend ***
+            grouped = grouped.sort_values(by="auslaender_prozent_norm", ascending=False).reset_index(drop=True)
 
-            # Transponiertes (horizontal) Balkendiagramm mit Matplotlib
-            fig4, ax = plt.subplots(figsize=(10, 8))
+            #########################################################################################
+            # Gruppiertes Balkendiagramm
+            #########################################################################################
 
-            # Weißer Hintergrund
-            fig4.patch.set_facecolor('white')
+            labels = grouped["Abschluss"]
+            x = np.arange(len(labels))  # Positionen auf der x-Achse für jeden Abschluss
+            breite = 0.4  # Breite der Balken
+
+            fig, ax = plt.subplots(figsize=(12, 7))
+            fig.patch.set_facecolor('white')
             ax.set_facecolor('white')
 
-            # Balken zeichnen
-            bars_auslaender = ax.barh(
-                grouped_sorted['Abschluss'],
-                grouped_sorted['Prozent_auslaender'],
-                label='Ausländisch',
-                color='#fc8d62'
-            )
+            # Balken für Ausländer
+            balken_auslaender = ax.bar(x - breite / 2, grouped["auslaender_prozent_norm"], breite,
+                                       color='#fc8d62', label='Ausländisch')
 
-            bars_deutsche = ax.barh(
-                grouped_sorted['Abschluss'],
-                grouped_sorted['Prozent_deutsche'],
-                left=grouped_sorted['Prozent_auslaender'],
-                label='Deutsch',
-                color='#66c2a5'
-            )
+            # Balken für Deutsche
+            balken_deutsch = ax.bar(x + breite / 2, grouped["deutsch_prozent_norm"], breite,
+                                    color='#66c2a5', label='Deutsch')
 
-            # Prozentwerte in die Balken schreiben, nur wenn größer 5%
-            for bar, wert in zip(bars_auslaender, grouped_sorted['Prozent_auslaender']):
-                if wert > 5:
-                    ax.text(
-                        bar.get_width() / 2,
-                        bar.get_y() + bar.get_height() / 2,
-                        f'{wert:.1f}%',
-                        va='center',
-                        ha='center',
-                        color='black',  # Schwarze Schrift
-                        fontsize=13
-                    )
+            # Prozentwerte auf die Balken schreiben
+            for i in range(len(labels)):
+                # Ausländer-Wert
+                ax.text(x=i - breite / 2, y=grouped["auslaender_prozent_norm"][i] + 1,
+                        s=f"{grouped['auslaender_prozent_norm'][i]:.1f}%", ha='center', va='bottom',
+                        fontsize=9, fontweight='bold', color='black')
+                # Deutsch-Wert
+                ax.text(x=i + breite / 2, y=grouped["deutsch_prozent_norm"][i] + 1,
+                        s=f"{grouped['deutsch_prozent_norm'][i]:.1f}%", ha='center', va='bottom',
+                        fontsize=9, fontweight='bold', color='black')
 
-            for bar, wert, left in zip(bars_deutsche, grouped_sorted['Prozent_deutsche'],
-                                       grouped_sorted['Prozent_auslaender']):
-                if wert > 5:
-                    ax.text(
-                        left + bar.get_width() / 2,
-                        bar.get_y() + bar.get_height() / 2,
-                        f'{wert:.1f}%',
-                        va='center',
-                        ha='center',
-                        color='black',  # Schwarze Schrift
-                        fontsize=13
-                    )
+            # Achsenticks und -labels
+            ax.set_xticks(x)
+            ax.set_xticklabels(labels, fontsize=11, color='black')
 
-            # Achsen und Stil anpassen
-            ax.xaxis.set_visible(False)
-            ax.set_yticklabels(grouped_sorted['Abschluss'], fontsize=15, color='black')  # Schwarze Y-Achsenbeschriftung
-            ax.set_title('', color='black')
-            ax.invert_yaxis()
+            # Achsentitel entfernen
+            ax.set_xlabel('')
+            ax.set_ylabel('')
 
-            # Rahmen entfernen
-            for spine in ax.spines.values():
-                spine.set_visible(False)
+            # y-Achse Beschriftung optional
+            ax.set_ylabel('Prozentualer Anteil (%)')
 
-            # Legende mit schwarzem Text
-            ax.legend(facecolor='white', edgecolor='white', labelcolor='black')
+            # Legende
+            ax.legend()
+
+            # Optische Anpassungen
+            ax.spines['top'].set_visible(False)
+            ax.spines['right'].set_visible(False)
+            ax.spines['left'].set_visible(True)
+            ax.spines['bottom'].set_visible(True)
+            ax.yaxis.grid(True, linestyle='--', alpha=0.7)
 
             plt.tight_layout()
-            #st.pyplot(fig4)
-
-            # Diagramme in 2 Spalten
-            col5, col6 = st.columns(2)
-
-            with col5:
-                st.subheader("Anteil Absolventen")
-                st.pyplot(fig4)
-
-            with col6:
-                st.subheader("...")
-                # st.pyplot(fig4)
-
-
-
+            st.pyplot(fig)
             ###############################################################
 
 
