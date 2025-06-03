@@ -9,6 +9,7 @@ from streamlit_folium import st_folium
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+import plotly.express as px
 
 
 def show():
@@ -446,21 +447,67 @@ def show():
             )
 
             fig3.tight_layout()
-            #st.pyplot(fig3)
+            st.pyplot(fig3)
+
+            ##########################################
+            # Datensatz laden: Schüler, Staatsangehörigkeiten, Bundesländer, Jahre 1992-2000
+
+            url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Bildungsintegration/auslaendische_Schueler_Staatsangehoerigkeit_1992_2020_aufbereitet.csv"
+            df = pd.read_csv(url, sep=";")
+            # Mapping anwenden
+            df["Geschlecht"] = df["Geschlecht"].map({
+                "z": "insgesamt",
+                "m": "männlich",
+                "w": "weiblich"
+            })
+
+            df = df[df['Geschlecht'] != 'insgesamt']
+            df = df[df['Anzahl'] != 0]
+
+            df = df[df["Kontinent"] != "Alle"]
+            df = df[df["Kontinent"] != "Keine Angabe und ungeklärt"]
+
+            # 🧾 Bundesland-Filter (Multiselect)
+            bundeslaender = df["Bundesland"].unique().tolist()
+            # 'Deutschland' als Default setzen, falls vorhanden
+            default_value = ["Deutschland"] if "Deutschland" in bundeslaender else []
+            selected_bundeslaender = st.multiselect("Bundesland auswählen", bundeslaender, default=default_value)
+
+            # 🔍 Daten filtern
+            filtered_df = df[df["Bundesland"].isin(selected_bundeslaender)]
+
+            with st.expander("DataFrame anzeigen"):
+                st.dataframe(df)
+
+            # Gruppierung nach Jahr und Kontinent (du kannst hier auch nach Geschlecht oder Land filtern)
+            grouped = filtered_df.groupby(["Jahr", "Kontinent"], as_index=False)["Anzahl"].sum()
+
+            # Plot erstellen mit Plotly
+            fig = px.line(
+                grouped,
+                x="Jahr",
+                y="Anzahl",
+                color="Kontinent",
+                title="Anzahl ausländischer Schüler nach Kontinent",
+            )
+
+            # Weißer Hintergrund, schwarze Schrift
+            fig.update_layout(
+                plot_bgcolor="white",
+                paper_bgcolor="white",
+                font=dict(color="black"),
+                xaxis=dict(title="Jahr", color="black"),
+                yaxis=dict(title="Anzahl", color="black"),
+            )
+
+            # Streamlit Ausgabe
+            # st.title("Anzahl ausländischer Schüler nach Kontinent")
+            st.plotly_chart(fig)
 
 
-            # Diagramme in 2 Spalten
-            col3, col4 = st.columns(2)
 
-            with col3:
-                st.subheader("Top 10 Staatsangehörigkeiten")
-                # Diagramm 3 anzeigen
-                st.pyplot(fig3)
 
-            with col4:
-                st.subheader("...")
-                # Diagramm 4 anzeigen
-                #st.pyplot(fig4)
+
         with tab5:
             ##################################################################
             # Daten einlesen: Destatis 21111-12
@@ -595,6 +642,9 @@ def show():
             with col6:
                 st.subheader("...")
                 # st.pyplot(fig4)
+
+
+
             ###############################################################
 
 
@@ -607,21 +657,83 @@ def show():
         url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Bildungsintegration/Destatis_12211-0206_Bildungsabschluss_Mikrozensus_aufbereitet.csv"
         df = pd.read_csv(url, sep=";")
 
+        df['Anzahl'] = pd.to_numeric(df['Anzahl'], errors='coerce')
+        print(df['Anzahl'].isna().sum())
+        df = df.dropna(subset=['Anzahl'])
+
         with st.expander("DataFrame anzeigen"):
             st.dataframe(df)
 
-        # Plot
-        plt.figure(figsize=(8, 5))
-        sns.barplot(
-            data=df,
-            x="Beruflicher Bildungsabschluss",
-            y="Anzahl",
-            hue="Migrationsstatus",
-            palette=farben
-        )
-        plt.title("Beruflicher Bildungsabschluss nach Migrationsstatus")
-        plt.ylabel("Anzahl (in 1000)")
-        plt.xlabel("Abschluss")
-        plt.legend(title="Migrationsstatus")
+        # Streamlit Filter
+        jahre = df['Jahr'].unique()
+        selected_jahr = st.selectbox("Wähle das Jahr", sorted(jahre))
+
+        migrations_status = ['Mit Migrationshintergrund', 'Ohne Migrationshintergrund']
+        selected_status = st.multiselect("Migrationsstatus", migrations_status, default=migrations_status)
+
+        # Daten filtern
+        df_filtered = df[(df['Jahr'] == selected_jahr) & (df['Migrationsstatus'].isin(selected_status))]
+
+        # 'Insgesamt' aus 'Beruflicher Bildungsabschluss' entfernen
+        df_filtered = df_filtered[df_filtered['Beruflicher Bildungsabschluss'] != 'Insgesamt']
+
+        # Nur spezifische Abschlüsse (keine Oberkategorien)
+        df_filtered = df_filtered[df_filtered['Beruflicher Bildungsabschluss'].isin([
+            'Bachelor', 'Diplom', 'Master'
+        ])]
+
+        # Gesamtzahl aller Personen für das ausgewählte Jahr und beide Migrationsstatus
+        gesamt = df_filtered['Anzahl'].sum()
+
+        # Prozentwerte berechnen - Anteil jeder Gruppe (Bildungsabschluss + Migrationsstatus) am Gesamtwert
+        grouped = df_filtered.groupby(['Beruflicher Bildungsabschluss', 'Migrationsstatus'])[
+            'Anzahl'].sum().reset_index()
+        grouped['Prozent'] = 100 * grouped['Anzahl'] / gesamt
+
+        # Pivot für gestapeltes Balkendiagramm
+        df_pivot = grouped.pivot(index='Beruflicher Bildungsabschluss', columns='Migrationsstatus',
+                                 values='Prozent').fillna(0)
+
+        # Plot horizontal
+        fig, ax = plt.subplots(figsize=(10, 6), facecolor='white')
+        ax.set_facecolor('white')
+
+        left = pd.Series([0] * len(df_pivot), index=df_pivot.index)
+        colors = ['#fc8d62', '#66c2a5']
+
+        for i, status in enumerate(df_pivot.columns):
+            bars = ax.barh(df_pivot.index, df_pivot[status], left=left, label=status, color=colors[i])
+            # Prozentwerte auf die Balken schreiben – jetzt schwarz
+            for bar, wert in zip(bars, df_pivot[status]):
+                if wert > 3:
+                    ax.text(
+                        bar.get_x() + bar.get_width() / 2,
+                        bar.get_y() + bar.get_height() / 2,
+                        f'{wert:.1f}%',
+                        ha='center',
+                        va='center',
+                        color='black',  # Schwarz statt weiß
+                        fontsize=12
+                    )
+            left += df_pivot[status]
+
+        # Achsenticks schwarz machen
+        ax.tick_params(axis='y', colors='black', labelsize=12)
+
+        # Achsentitel entfernen (oder falls vorhanden, schwarz setzen)
+        ax.set_xlabel('')
+        ax.set_ylabel('')
+
+        # X-Achse ausblenden
+        ax.xaxis.set_visible(False)
+
+        # Titel schwarz
+        # ax.set_title(f'Prozentuale Anteile nach Bildungsabschluss im Jahr {selected_jahr}', color='black')
+
+        # Legende schwarz (Text & Titel)
+        leg = ax.legend([])
+        plt.setp(leg.get_texts(), color='black')
+        leg.get_title().set_color('black')
+
         plt.tight_layout()
-        plt.show()
+        st.pyplot(fig)
