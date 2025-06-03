@@ -25,6 +25,7 @@ def parse_column(col):
 
 def show():
     st.title("💼 Integration: Arbeitsmarkt")
+    st.subheader("Test")
     st.markdown("""
     - Beschäftigungsquote im Vergleich zur Gesamtbevölkerung  
     - Typische Berufsfelder und Branchen  
