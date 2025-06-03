@@ -1,5 +1,8 @@
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
 
-
+# Titel & Einführung
 def show():
     st.title("💼 Integration: Arbeitsmarkt")
     st.markdown("""
@@ -8,11 +11,7 @@ def show():
     - Einflussfaktoren: Herkunftsregion, Aufenthaltsdauer, Bildungsniveau  
     """)
 
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.lines as mlines
-
+# Daten laden
 @st.cache_data
 def load_data():
     df = pd.read_csv("../Daten/Integration/Arbeitsmarktintegration/zusammengefuegt.csv", sep=";")
@@ -20,8 +19,9 @@ def load_data():
 
 df = load_data()
 
-st.title("Arbeitsmarktintegration von Migranten — Deutsch vs. Ausländer (visualisiert)")
+st.title("Arbeitsmarktintegration von Migranten — Vergleich nach Gruppen")
 
+# Spalten analysieren
 def parse_column(col):
     parts = col.split("_")
     if len(parts) == 4:
@@ -41,12 +41,16 @@ parsed_cols = [p for p in parsed_cols if p is not None]
 
 indikator_options = sorted(set(p['indikator'] for p in parsed_cols))
 merkmal_options = sorted(set(p['merkmal'] for p in parsed_cols))
+gruppen_options = ['Ausländer', 'Deutsch', 'Insgesamt']
 
+# UI: Auswahlfelder
 indikator = st.sidebar.selectbox("Indikator", indikator_options)
 merkmal = st.sidebar.selectbox("Merkmal", merkmal_options)
+gruppen_auswahl = st.sidebar.multiselect("Anzuzeigende Gruppen", gruppen_options, default=gruppen_options)
 
 jahr_col = df.columns[0]
 
+# Relevante Spalten extrahieren
 relevante_spalten = [p for p in parsed_cols if p['indikator'] == indikator and p['merkmal'] == merkmal]
 
 if not relevante_spalten:
@@ -65,38 +69,39 @@ else:
             if p['auspraegung'] == auspraegung:
                 if p['staat'].lower() == 'insgesamt':
                     sp_insgesamt = p['full']
-                elif p['staat'].lower() == 'ausländer' or p['staat'].lower() == 'auslaender':
+                elif p['staat'].lower() in ['ausländer', 'auslaender']:
                     sp_auslaender = p['full']
 
+        if sp_insgesamt:
+            data_plot[f"Insgesamt_{auspraegung}"] = df[sp_insgesamt]
+        if sp_auslaender:
+            data_plot[f"Ausländer_{auspraegung}"] = df[sp_auslaender]
         if sp_insgesamt and sp_auslaender:
-            data_plot[f"Ausländer_{auspraegung}"] = df[sp_auslaender]
             data_plot[f"Deutsch_{auspraegung}"] = df[sp_insgesamt] - df[sp_auslaender]
-        elif sp_auslaender:
-            data_plot[f"Ausländer_{auspraegung}"] = df[sp_auslaender]
-        elif sp_insgesamt:
-            data_plot[f"Deutsch_{auspraegung}"] = df[sp_insgesamt]
 
+    # Plot erstellen
     fig, ax = plt.subplots(figsize=(12, 7))
-    
-    # Farbpalette für Ausprägungen
+
+    # Farbpalette & Linienstile
     colors = plt.cm.get_cmap('tab10', len(auspraegungen))
-    linestyles = {'Ausländer': '-', 'Deutsch': '--'}
+    linestyles = {'Ausländer': '-', 'Deutsch': '--', 'Insgesamt': ':'}
 
     for i, auspraegung in enumerate(auspraegungen):
-        for gruppe in ['Ausländer', 'Deutsch']:
+        for gruppe in gruppen_auswahl:
             col_name = f"{gruppe}_{auspraegung}"
             if col_name in data_plot.columns:
                 ax.plot(
-                    data_plot[jahr_col], data_plot[col_name], 
-                    linestyle=linestyles[gruppe], 
+                    data_plot[jahr_col], data_plot[col_name],
+                    linestyle=linestyles[gruppe],
                     color=colors(i),
                     marker='o',
                     label=f"{gruppe} - {auspraegung}"
                 )
 
-    ax.set_title(f"Vergleich Deutsch vs. Ausländer für {indikator} - {merkmal}")
+    ax.set_title(f"Vergleich der Gruppen für {indikator} - {merkmal}")
     ax.set_xlabel("Jahr")
     ax.set_ylabel("Anzahl")
     ax.legend(title="Gruppe - Ausprägung", bbox_to_anchor=(1.05, 1), loc='upper left')
     ax.grid(True)
+
     st.pyplot(fig)
