@@ -9,6 +9,8 @@ from streamlit_folium import st_folium
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+import plotly.express as px
+import plotly.graph_objects as go
 
 
 def show():
@@ -31,7 +33,7 @@ def show():
     tab1, tab2 = st.tabs(["Schulen", "Beruflicher Bildungsabschluss"])
     with tab1:
 
-        tab3, tab4, tab5 = st.tabs(["Übersicht", "Herkunft", "Abschluss"])
+        tab3, tab4, tab5 = st.tabs(["Übersicht", "Staatsangehörigkeit", "Abschluss"])
         with tab3:
 
 
@@ -216,15 +218,15 @@ def show():
             def style_function(feature):
                 anteil = feature['properties']['Anteil (%)']
                 return {
-                    'fillOpacity': 0.8,
+                    'fillOpacity': 0.9,
                     'weight': 1,
                     'color': 'black',
                     'fillColor': colormap(anteil) if anteil is not None else 'lightgrey'
                 }
 
             tooltip = folium.GeoJsonTooltip(
-                fields=['name'],
-                aliases=[''],
+                fields=['name', 'Anteil (%)'],
+                aliases=['Bundesland', 'Anteil (%)'],
                 localize=True,
                 labels=True,
                 sticky=False,
@@ -233,9 +235,9 @@ def show():
                     border: 1px solid black;
                     border-radius: 3px;
                     box-shadow: 3px;
+                    color: black;
                 """
             )
-
             folium.GeoJson(
                 bundeslaender,
                 style_function=style_function,
@@ -254,16 +256,16 @@ def show():
                                 color: white; 
                                 font-weight: bold;
                                 text-align: center;
-                                background-color: rgba(0,0,0,0.5);
-                                padding: 2px 4px;
-                                border-radius: 4px;">
+                                background-color: transparent;  /* Kein Hintergrund */
+                                padding: 0;                   /* Kein Padding */
+                                border: none;                 /* Keine Rahmen */
+                                ">
                                 {row['Anteil (%)']}%
                             </div>
                             """
                         )
                     ).add_to(m)
-
-            colormap.add_to(m)
+            #colormap.add_to(m)
 
             # In Streamlit anzeigen
             #st.subheader(f"Anteil ausländischer Schüler/innen nach Bundesland ({jahr})")
@@ -333,17 +335,13 @@ def show():
             # plt.tight_layout()
             #st.pyplot(fig2)
 
-            # die Diagramme in 2x2 Columns anzeigen
-            col1, col2 = st.columns(2)
+            # Plot Karte anzeigen
+            st.subheader("Anteil ausländischer Schüler nach Bundesland")
+            fig1 = st_folium(m, width=500, height=600)
 
-            with col1:
-                st.subheader("Anteil ausländischer Schüler nach Bundesland")
-                fig1 = st_folium(m, width=500, height=600)
-
-            with col2:
-                st.subheader("Anteil ausländischer Schüler nach Schulart")
-                # Diagramm 2 anzeigen
-                st.pyplot(fig2)
+            # Plot Anteil pro Schulart
+            st.subheader("Anteil ausländischer Schüler nach Schulart")
+            st.pyplot(fig2)
 
 
         with tab4:
@@ -412,55 +410,160 @@ def show():
             df_top10 = df_grouped.sort_values(by='Prozent', ascending=False).head(10)
 
             ########################################################
-            # Diagramm 3: Kreisdiagramm Top 10 Staatsangehörigkeit #
+            # Plot: top 10 staatsangehörigkeite ab 2021 ausländischer schüler #
             ########################################################
 
-            # Basisfarbe
-            base_color = mcolors.to_rgb('#fc8d62')
+            # Schuljahr in ganzes Jahr umwandeln, z.B. "2021/22" → 2021
+            df['Jahr'] = df['Schuljahr'].str[:4].astype(int)
 
-            # Normalisieren der Prozentwerte (0 bis 1)
-            percent_values = df_top10['Prozent'].values
-            norm = (percent_values - percent_values.min()) / (percent_values.max() - percent_values.min())
-            inverted_norm = 1 - norm
+            # Filter: nur einzelne Herkunftsländer (kein "Insgesamt")
+            df_filtered = df[df['Staatsangehoerigkeit'] != "Insgesamt"]
 
-            # Funktion zum Abdunkeln der Farbe
-            def darken_color(color, factor):
-                return tuple(np.clip(np.array(color) * factor, 0, 1))
+            # Gruppieren nach Jahr und Staatsangehoerigkeit, Anzahl summieren
+            df_grouped = df_filtered.groupby(['Jahr', 'Staatsangehoerigkeit'], as_index=False)[
+                'auslaendische_Schueler_innen_Anzahl'].sum()
 
-            # Abgestufte Farben erzeugen
-            colors = [darken_color(base_color, 0.5 + 0.5 * f) for f in inverted_norm]
+            # Top 10 Länder nach Gesamtanzahl (über alle Jahre)
+            top10_länder = df_grouped.groupby('Staatsangehoerigkeit')[
+                'auslaendische_Schueler_innen_Anzahl'].sum().nlargest(10).index
 
-            # Zeichne das Kreisdiagramm
-            fig3, ax = plt.subplots(figsize=(8, 8))
-            fig3.patch.set_facecolor('white')  # Figure-Hintergrund weiß
-            ax.set_facecolor('white')  # Axes-Hintergrund weiß
+            # Filter auf Top 10 Länder
+            df_top10 = df_grouped[df_grouped['Staatsangehoerigkeit'].isin(top10_länder)]
 
-            plt.pie(
-                df_top10['Prozent'],
-                labels=df_top10['Staatsangehoerigkeit'],
-                autopct='%1.1f%%',
-                startangle=140,
-                colors=colors,
-                wedgeprops={'edgecolor': 'white', 'linewidth': 2},  # optional: weißer Rand
-                textprops={'color': "black", 'fontsize': 12}  # schwarze Schrift
+            # Plot erstellen
+            fig = px.line(
+                df_top10,
+                x='Jahr',
+                y='auslaendische_Schueler_innen_Anzahl',
+                color='Staatsangehoerigkeit',
+                markers=True,
+                title='Anzahl ausländischer Schüler (Top 10 Herkunftsländer) nach Jahr',
+                labels={
+                    'Jahr': 'Jahr',
+                    'auslaendische_Schueler_innen_Anzahl': 'Anzahl ausländischer Schüler',
+                    'Staatsangehoerigkeit': 'Herkunftsland'
+                }
             )
 
-            fig3.tight_layout()
-            #st.pyplot(fig3)
+            fig.update_layout(
+                plot_bgcolor='white',
+                paper_bgcolor='white',
+                font=dict(color='black'),
+                xaxis=dict(tickmode='linear')  # Ganze Jahre auf der x-Achse erzwingen
+            )
+
+            # Plot in Streamlit anzeigen
+            st.plotly_chart(fig)
+            ##########################################
+            # Datensatz laden: Schüler, Staatsangehörigkeiten, Bundesländer, Jahre 1992-2000
+
+            url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Bildungsintegration/auslaendische_Schueler_Staatsangehoerigkeit_1992_2020_aufbereitet.csv"
+            df = pd.read_csv(url, sep=";")
+            # Spalte umbenennen
+            df.rename(columns={"Land der Staatsangehörigkeit": "Staatsangehörigkeit"}, inplace=True)
+            # Daten filtern
+            df = df[df["Staatsangehörigkeit"].notna()]
+            df = df[~df["Staatsangehörigkeit"].isin(["insgesamt", "Keine Angabe und ungeklärt"])]
+            df = df[df["Jahr"].notna()]
+
+            # Mapping anwenden
+            df["Geschlecht"] = df["Geschlecht"].map({
+                "z": "insgesamt",
+                "m": "männlich",
+                "w": "weiblich"
+            })
+
+            df = df[df['Geschlecht'] != 'insgesamt']
+            df = df[df['Anzahl'] != 0]
+
+            df = df[df["Kontinent"] != "Alle"]
+            df = df[df["Kontinent"] != "Keine Angabe und ungeklärt"]
+
+            # 🧾 Bundesland-Filter (Multiselect)
+            bundeslaender = df["Bundesland"].unique().tolist()
+            # 'Deutschland' als Default setzen, falls vorhanden
+            default_value = ["Deutschland"] if "Deutschland" in bundeslaender else []
+            selected_bundeslaender = st.multiselect("Bundesland auswählen", bundeslaender, default=default_value)
+
+            # 🔍 Daten filtern
+            filtered_df = df[df["Bundesland"].isin(selected_bundeslaender)]
+
+            with st.expander("DataFrame anzeigen"):
+                st.dataframe(filtered_df)
+
+            # Gruppierung nach Jahr und Kontinent (du kannst hier auch nach Geschlecht oder Land filtern)
+            grouped = filtered_df.groupby(["Jahr", "Kontinent"], as_index=False)["Anzahl"].sum()
+
+            # Plot erstellen mit Plotly
+            fig = px.line(
+                grouped,
+                x="Jahr",
+                y="Anzahl",
+                color="Kontinent",
+                title="Anzahl ausländischer Schüler nach Kontinent",
+                markers = True
+            )
+
+            # Weißer Hintergrund, schwarze Schrift
+            fig.update_layout(
+                plot_bgcolor="white",
+                paper_bgcolor="white",
+                font=dict(color="black"),
+                xaxis=dict(title="", color="black"),  # Titel ausblenden
+                yaxis=dict(title="", color="black")  # Titel ausblenden
+            )
+
+            # Streamlit Ausgabe
+            # st.title("Anzahl ausländischer Schüler nach Kontinent")
+            st.plotly_chart(fig)
+
+            # Plot Anzahl ausländischer Schüler (Top 10 Staatsangehörigkeiten)
+            # Daten filtern (keine 'insgesamt', keine NaNs)
+            filtered_df = filtered_df[filtered_df["Staatsangehörigkeit"].notna()]
+            filtered_df = filtered_df[filtered_df["Staatsangehörigkeit"] != "insgesamt"]
+            filtered_df = filtered_df[filtered_df["Jahr"].notna()]
+
+            # Top 10 Staatsangehörigkeiten nach Gesamtanzahl (über alle Geschlechter)
+            top10 = (
+                filtered_df.groupby("Staatsangehörigkeit")["Anzahl"]
+                .sum()
+                .nlargest(10)
+                .index
+            )
+
+            # Nach Jahr und Staatsangehörigkeit aggregieren, Summe über Geschlechter
+            df_agg = (
+                filtered_df[filtered_df["Staatsangehörigkeit"].isin(top10)]
+                .groupby(["Jahr", "Staatsangehörigkeit"], as_index=False)
+                .agg({"Anzahl": "sum"})
+            )
+
+            # Plot erstellen
+            fig = px.line(
+                df_agg,
+                x="Jahr",
+                y="Anzahl",
+                color="Staatsangehörigkeit",
+                title="Anzahl ausländischer Schüler (Top 10 Staatsangehörigkeiten)",
+                markers=True
+            )
+
+            # Layout anpassen (weißer Hintergrund, schwarze Schrift)
+            fig.update_layout(
+                plot_bgcolor="white",
+                paper_bgcolor="white",
+                font=dict(color="black"),
+                xaxis_title = "",  # Achsentitel X ausblenden
+                yaxis_title = ""  # Achsentitel Y ausblenden
+            )
+
+            # In Streamlit anzeigen
+            st.plotly_chart(fig)
 
 
-            # Diagramme in 2 Spalten
-            col3, col4 = st.columns(2)
 
-            with col3:
-                st.subheader("Top 10 Staatsangehörigkeiten")
-                # Diagramm 3 anzeigen
-                st.pyplot(fig3)
 
-            with col4:
-                st.subheader("...")
-                # Diagramm 4 anzeigen
-                #st.pyplot(fig4)
+
         with tab5:
             ##################################################################
             # Daten einlesen: Destatis 21111-12
@@ -491,110 +594,89 @@ def show():
             #########################################################################################
             # Diagramm 4 Prozentualer Anteil der deutschen/ausländischen Absolventen nach Abschluss #
             #########################################################################################
-            df = df[df['Abschluss'] != 'ohne Hauptschulabschluss']
             df['Abschluss'] = df['Abschluss'].replace('mittlerer Abschluss', 'Mittlerer Abschluss')
+            df.loc[df[
+                       'Abschluss2'] == 'dar.: mit schulischem Teil der Fachhochschulreife', 'Abschluss'] = 'Fachhochschulreife'
 
             Abgangsjahr = df['Abgangsjahr'].unique()
             selected_Abgangsjahr = st.selectbox("Abgangsjahr", Abgangsjahr)
             df_filtered_12 = df[df['Abgangsjahr'] == selected_Abgangsjahr]
 
-            # Deutsche Absolventen berechnen
-            df_filtered_12['deutsche_Absolvierende'] = df_filtered_12['Absolvierende_und_Abgehende_Anzahl'] - df_filtered_12[
-                'auslaendische_Absolvierende_und_Abgehende_Anzahl']
+            df_filtered_12['deutsche_Absolvierende'] = df_filtered_12['Absolvierende_und_Abgehende_Anzahl'] - \
+                                                       df_filtered_12[
+                                                           'auslaendische_Absolvierende_und_Abgehende_Anzahl']
 
-            # Gruppierung nach Abschluss
-            df_grouped = df_filtered_12.groupby('Abschluss').agg({
-                'deutsche_Absolvierende': 'sum',
-                'auslaendische_Absolvierende_und_Abgehende_Anzahl': 'sum'
+            grouped = df_filtered_12.groupby("Abschluss").agg({
+                "Absolvierende_und_Abgehende_Anzahl": "sum",
+                "auslaendische_Absolvierende_und_Abgehende_Anzahl": "sum"
             }).reset_index()
 
-            # Gesamtsummen für Prozentberechnung
-            gesamt_auslaender = df_grouped['auslaendische_Absolvierende_und_Abgehende_Anzahl'].sum()
-            gesamt_deutsche = df_grouped['deutsche_Absolvierende'].sum()
+            sum_auslaender = grouped["auslaendische_Absolvierende_und_Abgehende_Anzahl"].sum()
+            sum_deutsch = grouped["Absolvierende_und_Abgehende_Anzahl"].sum() - sum_auslaender
 
-            # Prozentwerte berechnen
-            df_grouped['Prozent_auslaender'] = (df_grouped[
-                                                    'auslaendische_Absolvierende_und_Abgehende_Anzahl'] / gesamt_auslaender) * 100
-            df_grouped['Prozent_deutsche'] = (df_grouped['deutsche_Absolvierende'] / gesamt_deutsche) * 100
+            grouped["auslaender_prozent_norm"] = grouped[
+                                                     "auslaendische_Absolvierende_und_Abgehende_Anzahl"] / sum_auslaender * 100
+            grouped["deutsch_anzahl"] = grouped["Absolvierende_und_Abgehende_Anzahl"] - grouped[
+                "auslaendische_Absolvierende_und_Abgehende_Anzahl"]
+            grouped["deutsch_prozent_norm"] = grouped["deutsch_anzahl"] / sum_deutsch * 100
 
-            # Sortieren nach Anteil Ausländer absteigend
-            grouped_sorted = df_grouped.sort_values(by='Prozent_auslaender', ascending=False).reset_index(drop=True)
+            # *** Hier sortieren nach Ausländeranteil absteigend ***
+            grouped = grouped.sort_values(by="auslaender_prozent_norm", ascending=False).reset_index(drop=True)
 
-            # Transponiertes (horizontal) Balkendiagramm mit Matplotlib
-            fig4, ax = plt.subplots(figsize=(10, 8))
+            #########################################################################################
+            # Gruppiertes Balkendiagramm
+            #########################################################################################
 
-            # Weißer Hintergrund
-            fig4.patch.set_facecolor('white')
+            labels = grouped["Abschluss"]
+            x = np.arange(len(labels))  # Positionen auf der x-Achse für jeden Abschluss
+            breite = 0.4  # Breite der Balken
+
+            fig, ax = plt.subplots(figsize=(12, 7))
+            fig.patch.set_facecolor('white')
             ax.set_facecolor('white')
 
-            # Balken zeichnen
-            bars_auslaender = ax.barh(
-                grouped_sorted['Abschluss'],
-                grouped_sorted['Prozent_auslaender'],
-                label='Ausländisch',
-                color='#fc8d62'
-            )
+            # Balken für Ausländer
+            balken_auslaender = ax.bar(x - breite / 2, grouped["auslaender_prozent_norm"], breite,
+                                       color='#fc8d62', label='Ausländisch')
 
-            bars_deutsche = ax.barh(
-                grouped_sorted['Abschluss'],
-                grouped_sorted['Prozent_deutsche'],
-                left=grouped_sorted['Prozent_auslaender'],
-                label='Deutsch',
-                color='#66c2a5'
-            )
+            # Balken für Deutsche
+            balken_deutsch = ax.bar(x + breite / 2, grouped["deutsch_prozent_norm"], breite,
+                                    color='#66c2a5', label='Deutsch')
 
-            # Prozentwerte in die Balken schreiben, nur wenn größer 5%
-            for bar, wert in zip(bars_auslaender, grouped_sorted['Prozent_auslaender']):
-                if wert > 5:
-                    ax.text(
-                        bar.get_width() / 2,
-                        bar.get_y() + bar.get_height() / 2,
-                        f'{wert:.1f}%',
-                        va='center',
-                        ha='center',
-                        color='black',  # Schwarze Schrift
-                        fontsize=13
-                    )
+            # Prozentwerte auf die Balken schreiben
+            for i in range(len(labels)):
+                # Ausländer-Wert
+                ax.text(x=i - breite / 2, y=grouped["auslaender_prozent_norm"][i] + 1,
+                        s=f"{grouped['auslaender_prozent_norm'][i]:.1f}%", ha='center', va='bottom',
+                        fontsize=9, fontweight='bold', color='black')
+                # Deutsch-Wert
+                ax.text(x=i + breite / 2, y=grouped["deutsch_prozent_norm"][i] + 1,
+                        s=f"{grouped['deutsch_prozent_norm'][i]:.1f}%", ha='center', va='bottom',
+                        fontsize=9, fontweight='bold', color='black')
 
-            for bar, wert, left in zip(bars_deutsche, grouped_sorted['Prozent_deutsche'],
-                                       grouped_sorted['Prozent_auslaender']):
-                if wert > 5:
-                    ax.text(
-                        left + bar.get_width() / 2,
-                        bar.get_y() + bar.get_height() / 2,
-                        f'{wert:.1f}%',
-                        va='center',
-                        ha='center',
-                        color='black',  # Schwarze Schrift
-                        fontsize=13
-                    )
+            # Achsenticks und -labels
+            ax.set_xticks(x)
+            ax.set_xticklabels(labels, fontsize=11, color='black')
 
-            # Achsen und Stil anpassen
-            ax.xaxis.set_visible(False)
-            ax.set_yticklabels(grouped_sorted['Abschluss'], fontsize=15, color='black')  # Schwarze Y-Achsenbeschriftung
-            ax.set_title('', color='black')
-            ax.invert_yaxis()
+            # Achsentitel entfernen
+            ax.set_xlabel('')
+            ax.set_ylabel('')
 
-            # Rahmen entfernen
-            for spine in ax.spines.values():
-                spine.set_visible(False)
+            # y-Achse Beschriftung optional
+            ax.set_ylabel('Prozentualer Anteil (%)')
 
-            # Legende mit schwarzem Text
-            ax.legend(facecolor='white', edgecolor='white', labelcolor='black')
+            # Legende
+            ax.legend()
+
+            # Optische Anpassungen
+            ax.spines['top'].set_visible(False)
+            ax.spines['right'].set_visible(False)
+            ax.spines['left'].set_visible(True)
+            ax.spines['bottom'].set_visible(True)
+            ax.yaxis.grid(True, linestyle='--', alpha=0.7)
 
             plt.tight_layout()
-            #st.pyplot(fig4)
-
-            # Diagramme in 2 Spalten
-            col5, col6 = st.columns(2)
-
-            with col5:
-                st.subheader("Anteil Absolventen")
-                st.pyplot(fig4)
-
-            with col6:
-                st.subheader("...")
-                # st.pyplot(fig4)
+            st.pyplot(fig)
             ###############################################################
 
 
@@ -607,21 +689,83 @@ def show():
         url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Bildungsintegration/Destatis_12211-0206_Bildungsabschluss_Mikrozensus_aufbereitet.csv"
         df = pd.read_csv(url, sep=";")
 
+        df['Anzahl'] = pd.to_numeric(df['Anzahl'], errors='coerce')
+        print(df['Anzahl'].isna().sum())
+        df = df.dropna(subset=['Anzahl'])
+
         with st.expander("DataFrame anzeigen"):
             st.dataframe(df)
 
-        # Plot
-        plt.figure(figsize=(8, 5))
-        sns.barplot(
-            data=df,
-            x="Beruflicher Bildungsabschluss",
-            y="Anzahl",
-            hue="Migrationsstatus",
-            palette=farben
-        )
-        plt.title("Beruflicher Bildungsabschluss nach Migrationsstatus")
-        plt.ylabel("Anzahl (in 1000)")
-        plt.xlabel("Abschluss")
-        plt.legend(title="Migrationsstatus")
+        # Streamlit Filter
+        jahre = df['Jahr'].unique()
+        selected_jahr = st.selectbox("Wähle das Jahr", sorted(jahre))
+
+        migrations_status = ['Mit Migrationshintergrund', 'Ohne Migrationshintergrund']
+        selected_status = st.multiselect("Migrationsstatus", migrations_status, default=migrations_status)
+
+        # Daten filtern
+        df_filtered = df[(df['Jahr'] == selected_jahr) & (df['Migrationsstatus'].isin(selected_status))]
+
+        # 'Insgesamt' aus 'Beruflicher Bildungsabschluss' entfernen
+        df_filtered = df_filtered[df_filtered['Beruflicher Bildungsabschluss'] != 'Insgesamt']
+
+        # Nur spezifische Abschlüsse (keine Oberkategorien)
+        df_filtered = df_filtered[df_filtered['Beruflicher Bildungsabschluss'].isin([
+            'Bachelor', 'Diplom', 'Master'
+        ])]
+
+        # Gesamtzahl aller Personen für das ausgewählte Jahr und beide Migrationsstatus
+        gesamt = df_filtered['Anzahl'].sum()
+
+        # Prozentwerte berechnen - Anteil jeder Gruppe (Bildungsabschluss + Migrationsstatus) am Gesamtwert
+        grouped = df_filtered.groupby(['Beruflicher Bildungsabschluss', 'Migrationsstatus'])[
+            'Anzahl'].sum().reset_index()
+        grouped['Prozent'] = 100 * grouped['Anzahl'] / gesamt
+
+        # Pivot für gestapeltes Balkendiagramm
+        df_pivot = grouped.pivot(index='Beruflicher Bildungsabschluss', columns='Migrationsstatus',
+                                 values='Prozent').fillna(0)
+
+        # Plot horizontal
+        fig, ax = plt.subplots(figsize=(10, 6), facecolor='white')
+        ax.set_facecolor('white')
+
+        left = pd.Series([0] * len(df_pivot), index=df_pivot.index)
+        colors = ['#fc8d62', '#66c2a5']
+
+        for i, status in enumerate(df_pivot.columns):
+            bars = ax.barh(df_pivot.index, df_pivot[status], left=left, label=status, color=colors[i])
+            # Prozentwerte auf die Balken schreiben – jetzt schwarz
+            for bar, wert in zip(bars, df_pivot[status]):
+                if wert > 3:
+                    ax.text(
+                        bar.get_x() + bar.get_width() / 2,
+                        bar.get_y() + bar.get_height() / 2,
+                        f'{wert:.1f}%',
+                        ha='center',
+                        va='center',
+                        color='black',  # Schwarz statt weiß
+                        fontsize=12
+                    )
+            left += df_pivot[status]
+
+        # Achsenticks schwarz machen
+        ax.tick_params(axis='y', colors='black', labelsize=12)
+
+        # Achsentitel entfernen (oder falls vorhanden, schwarz setzen)
+        ax.set_xlabel('')
+        ax.set_ylabel('')
+
+        # X-Achse ausblenden
+        ax.xaxis.set_visible(False)
+
+        # Titel schwarz
+        # ax.set_title(f'Prozentuale Anteile nach Bildungsabschluss im Jahr {selected_jahr}', color='black')
+
+        # Legende schwarz (Text & Titel)
+        leg = ax.legend([])
+        plt.setp(leg.get_texts(), color='black')
+        leg.get_title().set_color('black')
+
         plt.tight_layout()
-        plt.show()
+        st.pyplot(fig)
