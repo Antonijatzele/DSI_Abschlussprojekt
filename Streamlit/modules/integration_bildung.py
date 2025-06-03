@@ -292,15 +292,15 @@ def show():
 
             # Horizontalen Balkendiagramm-Plot erstellen
             fig2, ax = plt.subplots(figsize=(8, 8), edgecolor='none')
-            fig2.patch.set_facecolor('black')
+            fig2.patch.set_facecolor('white')  # Figure-Hintergrund weiß
             fig2.patch.set_linewidth(0)
-            ax.set_facecolor('black')
+            ax.set_facecolor('white')  # Plot-Hintergrund weiß
 
             y = range(len(df_auslaendisch))
             werte = df_auslaendisch['Anteil'].values
             schularten = df_auslaendisch['Schulart'].values
 
-            bars = ax.barh(y, werte, height=0.8, color=orange, label='ausländische Schüler/innen')  # breitere Balken
+            bars = ax.barh(y, werte, height=0.8, color=orange, label='ausländische Schüler/innen')
 
             # Prozentwerte rechts neben den Balken anzeigen
             for bar, wert in zip(bars, werte):
@@ -310,7 +310,7 @@ def show():
                     f"{wert:.1f}%",
                     va='center',
                     ha='left',
-                    color='white',
+                    color='black',  # Text schwarz
                     fontsize=10,
                     fontweight='bold'
                 )
@@ -318,24 +318,20 @@ def show():
             # Achsen und Beschriftungen
             ax.set_yticks(y)
             ax.set_xticks([])
-            ax.set_yticklabels(schularten, color='white', fontsize=10)
+            ax.set_yticklabels(schularten, color='black', fontsize=10)
             ax.set_ylabel('')
             ax.set_xlabel('')
-            #ax.set_title("Anteil ausländischer Schüler/innen pro Schulart", color='white')
+            # ax.set_title("Anteil ausländischer Schüler/innen pro Schulart", color='black')
 
             # Rahmen entfernen
             for spine in ax.spines.values():
                 spine.set_visible(False)
 
             # Gitterlinien auf der x-Achse (optional)
-            ax.grid(axis='x', linestyle='--', alpha=0.3, color='white')
+            ax.grid(axis='x', linestyle='--', alpha=0.3, color='gray')  # hellgraue Gitterlinien
 
-            # Achsenticks und Rahmenfarbe anpassen
-            # ax.tick_params(colors='white')
-
-            plt.tight_layout()
-
-            # st.pyplot(fig2)
+            # plt.tight_layout()
+            #st.pyplot(fig2)
 
             # die Diagramme in 2x2 Columns anzeigen
             col1, col2 = st.columns(2)
@@ -418,26 +414,26 @@ def show():
             ########################################################
             # Diagramm 3: Kreisdiagramm Top 10 Staatsangehörigkeit #
             ########################################################
-            plt.style.use('dark_background')
 
             # Basisfarbe
             base_color = mcolors.to_rgb('#fc8d62')
 
-            # Normalisieren der Prozentwerte (0 bis 1) – höhere Werte führen zu dunkleren Farben
+            # Normalisieren der Prozentwerte (0 bis 1)
             percent_values = df_top10['Prozent'].values
             norm = (percent_values - percent_values.min()) / (percent_values.max() - percent_values.min())
-            inverted_norm = 1 - norm  # Größere Werte = dunkler
+            inverted_norm = 1 - norm
 
             # Funktion zum Abdunkeln der Farbe
             def darken_color(color, factor):
                 return tuple(np.clip(np.array(color) * factor, 0, 1))
 
-            # Erzeuge abgestufte Farben
+            # Abgestufte Farben erzeugen
             colors = [darken_color(base_color, 0.5 + 0.5 * f) for f in inverted_norm]
 
             # Zeichne das Kreisdiagramm
-            plt.style.use('dark_background')
             fig3, ax = plt.subplots(figsize=(8, 8))
+            fig3.patch.set_facecolor('white')  # Figure-Hintergrund weiß
+            ax.set_facecolor('white')  # Axes-Hintergrund weiß
 
             plt.pie(
                 df_top10['Prozent'],
@@ -445,11 +441,13 @@ def show():
                 autopct='%1.1f%%',
                 startangle=140,
                 colors=colors,
-                wedgeprops={'edgecolor': 'black', 'linewidth': 2},
-                textprops={'color': "white", 'fontsize': 12}
+                wedgeprops={'edgecolor': 'white', 'linewidth': 2},  # optional: weißer Rand
+                textprops={'color': "black", 'fontsize': 12}  # schwarze Schrift
             )
 
             fig3.tight_layout()
+            #st.pyplot(fig3)
+
 
             # Diagramme in 2 Spalten
             col3, col4 = st.columns(2)
@@ -525,37 +523,67 @@ def show():
             # Transponiertes (horizontal) Balkendiagramm mit Matplotlib
             fig4, ax = plt.subplots(figsize=(10, 8))
 
-            bars_auslaender = ax.barh(grouped_sorted['Abschluss'], grouped_sorted['Prozent_auslaender'],
-                                      label='Ausländisch', color='#fc8d62')
-            bars_deutsche = ax.barh(grouped_sorted['Abschluss'], grouped_sorted['Prozent_deutsche'],
-                                    left=grouped_sorted['Prozent_auslaender'], label='Deutsch', color='#66c2a5')
+            # Weißer Hintergrund
+            fig4.patch.set_facecolor('white')
+            ax.set_facecolor('white')
 
-            # Prozentwerte in die Balken schreiben, nur wenn größer 5% für bessere Lesbarkeit
+            # Balken zeichnen
+            bars_auslaender = ax.barh(
+                grouped_sorted['Abschluss'],
+                grouped_sorted['Prozent_auslaender'],
+                label='Ausländisch',
+                color='#fc8d62'
+            )
+
+            bars_deutsche = ax.barh(
+                grouped_sorted['Abschluss'],
+                grouped_sorted['Prozent_deutsche'],
+                left=grouped_sorted['Prozent_auslaender'],
+                label='Deutsch',
+                color='#66c2a5'
+            )
+
+            # Prozentwerte in die Balken schreiben, nur wenn größer 5%
             for bar, wert in zip(bars_auslaender, grouped_sorted['Prozent_auslaender']):
                 if wert > 5:
-                    ax.text(bar.get_width() / 2, bar.get_y() + bar.get_height() / 2,
-                            f'{wert:.1f}%', va='center', ha='center', color='white', fontsize=13)
+                    ax.text(
+                        bar.get_width() / 2,
+                        bar.get_y() + bar.get_height() / 2,
+                        f'{wert:.1f}%',
+                        va='center',
+                        ha='center',
+                        color='black',  # Schwarze Schrift
+                        fontsize=13
+                    )
 
-            for bar, wert, left in zip(bars_deutsche, grouped_sorted['Prozent_deutsche'], grouped_sorted['Prozent_auslaender']):
+            for bar, wert, left in zip(bars_deutsche, grouped_sorted['Prozent_deutsche'],
+                                       grouped_sorted['Prozent_auslaender']):
                 if wert > 5:
-                    ax.text(left + bar.get_width() / 2, bar.get_y() + bar.get_height() / 2,
-                            f'{wert:.1f}%', va='center', ha='center', color='white', fontsize=13)
+                    ax.text(
+                        left + bar.get_width() / 2,
+                        bar.get_y() + bar.get_height() / 2,
+                        f'{wert:.1f}%',
+                        va='center',
+                        ha='center',
+                        color='black',  # Schwarze Schrift
+                        fontsize=13
+                    )
 
             # Achsen und Stil anpassen
-            ax.xaxis.set_visible(False)  # Optional: x-Achse ausblenden
-            # größere Beschriftung
-            ax.set_yticklabels(grouped_sorted['Abschluss'], fontsize=15)
-            ax.set_title('')  # Kein Titel
-            ax.invert_yaxis()  # Höchster Wert oben
+            ax.xaxis.set_visible(False)
+            ax.set_yticklabels(grouped_sorted['Abschluss'], fontsize=15, color='black')  # Schwarze Y-Achsenbeschriftung
+            ax.set_title('', color='black')
+            ax.invert_yaxis()
 
             # Rahmen entfernen
             for spine in ax.spines.values():
                 spine.set_visible(False)
 
-            # Legende anzeigen
-            ax.legend()
+            # Legende mit schwarzem Text
+            ax.legend(facecolor='white', edgecolor='white', labelcolor='black')
 
             plt.tight_layout()
+            #st.pyplot(fig4)
 
             # Diagramme in 2 Spalten
             col5, col6 = st.columns(2)
