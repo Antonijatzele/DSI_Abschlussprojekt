@@ -17,7 +17,9 @@ def load_data():
 @st.cache_data
 def load_data_geschlecht():
     df = pd.read_csv(
-        "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Arbeitsmarktintegration/besch%C3%A4ftigungsquote_afghanisten.csv",
+        "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Arbeitsmarktintegration/besch%C3%A4ftigungsquote_afghanisten.csv",
+
+        
         sep=";",
         decimal=",",
         encoding="utf-8"
