@@ -1,8 +1,10 @@
 from io import StringIO
+import folium
 import requests
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+from streamlit_folium import st_folium
 
 # Original-Datensatz laden
 @st.cache_data
@@ -15,16 +17,30 @@ def load_data():
     )
     return df
 
+@st.cache_data
+def get_country_files():
+    api_url = "https://api.github.com/repos/Antonijatzele/DSI_Abschlussprojekt/contents/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten"
+    res = requests.get(api_url)
+    if res.status_code != 200:
+        st.error("Konnte die Dateiliste nicht laden.")
+        return []
+    files = res.json()
+    return [f["name"].replace(".csv", "") for f in files if f["name"].endswith(".csv")]
+
 # Neuer Datensatz: nach Geschlecht
 @st.cache_data
 def load_data_geschlecht(): 
        # Liste der Ländernamen, die in den Dateinamen verwendet werden
-    laender = ["Afghanistan", "Syrien"]  # Beispiel
+    laender = get_country_files()
+    coords = {
+        "Afghanistan": {"lat": 33.93911, "lon": 67.709953},
+        "Syrien": {"lat": 34.802075, "lon": 38.996815}
+    }
 
     dfs = []  # Liste zum Sammeln der DataFrames
 
     for land in laender:
-        url = f"https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten/{land}.csv"
+        url = f"https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten/{land}.csv"
         
         # CSV-Datei als Text laden
         csv_data = requests.get(url).text
@@ -51,11 +67,18 @@ def load_data_geschlecht():
         
         # Herkunftsspalte
         df["Land"] = land
+        # Koordinaten ergänzen
+        df["lat"] = df["Land"].apply(lambda x: coords[x]["lat"])
+        df["lon"] = df["Land"].apply(lambda x: coords[x]["lon"])
+
+
         
         dfs.append(df)
 
     # Alle DataFrames zusammenfügen
     gesamt_df = pd.concat(dfs, ignore_index=True)
+
+
     return gesamt_df
 
 
@@ -111,6 +134,95 @@ def show():
         ax.legend()
         ax.grid(True)
         st.pyplot(fig)
+
+        ##############################################################
+        #
+        # Weltkarte
+        # Karte erstellen, zentriert irgendwo
+        # Filtere nach Jahr
+        jahr = st.selectbox("Wähle ein Jahr", sorted(df_geschlecht["Jahr"].unique()))
+        df_filtered = df_geschlecht[df_geschlecht["Jahr"] == jahr]
+
+        # Für die Demo nehmen wir eine Spalte als "Wert" – z.B. die erste numerische Spalte nach lat/lon
+        numerische_spalten = df_filtered.select_dtypes(include="number").columns.tolist()
+        numerische_spalten = [col for col in numerische_spalten if col not in ["Jahr", "lat", "lon"]]
+
+        if len(numerische_spalten) == 0:
+            st.error("Keine geeigneten Werte-Spalten gefunden.")
+            st.stop()
+
+        wert_spalte = "Beschäftigungsquote"
+
+        st.write(f"**Färbung basiert auf der Spalte:** {wert_spalte}")
+
+        # Top 3 Länder nach Wert bestimmen
+        top3 = df_filtered.nlargest(3, wert_spalte)
+
+        # Farben für Top 3 (Gold, Silber, Bronze)
+        farben = ["#FFD700", "#C0C0C0", "#CD7F32"]
+
+        col1, col2 = st.columns([2, 1])
+
+        geojson_url = "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/world-countries.json"
+        geojson_data = requests.get(geojson_url).json()
+    
+        with col1:
+            map_center = [df_filtered["lat"].mean(), df_filtered["lon"].mean()]
+            m = folium.Map(location=map_center, zoom_start=5)
+
+            for idx, row in df_filtered.iterrows():
+                if row["Land"] in top3["Land"].values:
+                    farbe = farben[top3["Land"].tolist().index(row["Land"])]
+                    radius = 12
+                else:
+                    farbe = "blue"
+                    radius = 7
+
+                popup_text = (
+                    f"<b>{row['Land']}</b><br>"
+                    f"{wert_spalte}: {row[wert_spalte]:.1f}%"
+                )
+
+                wert = row[wert_spalte]
+
+                # Länder einfärben
+                folium.Choropleth(
+                    geo_data=geojson_data,
+                    data=df_filtered,
+                    columns=["Land", "Beschäftigungsquote"],
+                    key_on="feature.properties.name",
+                    fill_color="YlOrRd",
+                    fill_opacity=0.8,
+                    line_opacity=0.3,
+                    legend_name="Beschäftigungsquote (%)",
+                    nan_fill_color="lightgray"
+                ).add_to(m)
+
+                folium.CircleMarker(
+                    location=[row["lat"], row["lon"]],
+                    radius=radius,
+                    color=farbe,
+                    fill=True,
+                    fill_color=farbe,
+                    fill_opacity=0.7,
+                    popup=folium.Popup(popup_text, max_width=200),
+                    tooltip=f"{wert:.1f}%"  # Tooltip zeigt den Wert
+                ).add_to(m)
+
+                # Text direkt über dem Marker
+                folium.map.Marker(
+                    [row["lat"] + 0.5, row["lon"]],  # leicht versetzt nach oben
+                    icon=folium.DivIcon(html=f"""<div style="font-size: 12px; color: black; text-align: center;">{wert:.1f}%</div>""")
+                ).add_to(m)
+
+
+
+            st_folium(m, width=768, height=1024)
+
+        with col2:
+            st.markdown("### 📋 Länder nach Beschäftigungsquote")
+            df_sorted = df_filtered[["Land", wert_spalte]].sort_values(by=wert_spalte, ascending=False)
+            st.dataframe(df_sorted.set_index("Land"), use_container_width=True)
 
     # Übersicht (Tab 1)
     with tab1:
