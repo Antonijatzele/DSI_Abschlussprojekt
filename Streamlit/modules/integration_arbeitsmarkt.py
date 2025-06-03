@@ -111,24 +111,7 @@ def show():
 
     # Neuer Tab: nach Geschlecht (nicht Staatsangehörigkeit!)
     with tab2:
-        st.subheader("Beschäftigungsquote nach Herkunftsland")
-
-        df_geschlecht = load_data_geschlecht()
-        st.dataframe(df_geschlecht)
-
-        indikator_options = []
-        selected = st.multiselect("Indikatoren wählen", indikator_options, default=indikator_options)
-
-        fig, ax = plt.subplots(figsize=(12, 6))
-        for indikator in selected:
-            ax.plot(df_geschlecht["Jahr"], df_geschlecht[indikator], label=indikator, marker='o')
-
-        ax.set_title("Beschäftigungsquoten nach Geschlecht")
-        ax.set_xlabel("Jahr")
-        ax.set_ylabel("Quote (%)")
-        ax.legend()
-        ax.grid(True)
-        st.pyplot(fig)
+    
 
         ##############################################################
         #
@@ -156,9 +139,7 @@ def show():
     
         with col1:
             m = folium.Map(zoom_start=5)
-            
-            st.dataframe(df_filtered)
-
+            threshold_scale = [0, 10, 20, 30, 40, 50]
             # Länder einfärben
             folium.Choropleth(
                 geo_data=geojson_data,
@@ -166,23 +147,31 @@ def show():
                 columns=["Land", "Beschäftigungsquote"],
                 key_on="feature.properties.name",
                 fill_color="YlOrRd",
-                fill_opacity=0.8,
+                threshold_scale=threshold_scale,
+                fill_opacity=1,
                 line_opacity=0.3,
                 legend_name="Beschäftigungsquote (%)",
                 nan_fill_color="lightgray"
             ).add_to(m)
 
-            for _, row in df_filtered.iterrows():
-                popup_text = f"""
-                <b>Land:</b> {row['Land']}<br>
-                <b>Jahr:</b> {row['Jahr']}<br>
-                <b>Beschäftigungsquote:</b> {row['Beschäftigungsquote']}%
-                """
-                folium.GeoJsonPopup(
-                    fields=[],
-                    labels=False,
-                    html=popup_text
-                )
+            from folium.features import DivIcon
+            from shapely.geometry import shape
+           # Ländernamen als Text hinzufügen
+            for feature in geojson_data['features']:
+                country_name = feature['properties']['name']
+                
+                if country_name in df_filtered["Land"].values:
+                    geom = shape(feature['geometry'])
+                    centroid = geom.centroid
+                    
+                    folium.map.Marker(
+                        [centroid.y, centroid.x],
+                        icon=DivIcon(
+                            icon_size=(150,36),
+                            icon_anchor=(0,0),
+                            html=f'<div style="font-size:10pt; font-weight:bold">{country_name}</div>',
+                        )
+                    ).add_to(m)
 
 
 
