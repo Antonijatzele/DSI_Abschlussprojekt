@@ -1,3 +1,4 @@
+from io import StringIO
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -16,20 +17,43 @@ def load_data():
 # Neuer Datensatz: nach Geschlecht
 @st.cache_data
 def load_data_geschlecht(): 
-    # Liste der Ländernamen, die in den Dateinamen verwendet werden
-    laender = ["Afghanistan", "Syrien"]  # Beispiel: DE für Deutschland, FR für Frankreich, etc.
+       # Liste der Ländernamen, die in den Dateinamen verwendet werden
+    laender = ["Afghanistan", "Syrien"]  # Beispiel
 
     dfs = []  # Liste zum Sammeln der DataFrames
 
     for land in laender:
-        url = f"https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten/{land}.csv"
-        df = pd.read_csv(url, sep=";", decimal=",", encoding="utf-8")
-        df = df.dropna(subset=["Jahr"])  # Letzte leere Zeile entfernen
+        url = f"https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten/{land}.csv"
+        
+        # CSV-Datei als Text laden
+        csv_data = requests.get(url).text
+        
+        # CSV einlesen mit Behandlung von Dezimalen, Quotes, und "x" als NaN
+        df = pd.read_csv(
+            StringIO(csv_data),
+            sep=";",
+            decimal=",",
+            quotechar='"',
+            na_values=["x"],
+            skipinitialspace=True,
+            encoding="utf-8"
+        )
+        
+        # Spaltennamen säubern (Anführungszeichen und Leerzeichen entfernen)
+        df.columns = df.columns.str.strip().str.replace('"', '')
+        
+        # Leere "Jahr"-Zeilen entfernen
+        df = df.dropna(subset=["Jahr"])
+        
+        # "Jahr" als Integer
         df["Jahr"] = df["Jahr"].astype(int)
-        df["Land"] = land  # Optional: Spalte hinzufügen, um die Herkunft des Datensatzes zu kennzeichnen
+        
+        # Herkunftsspalte
+        df["Land"] = land
+        
         dfs.append(df)
 
-    # Alle DataFrames zu einem großen DataFrame zusammenfügen
+    # Alle DataFrames zusammenfügen
     gesamt_df = pd.concat(dfs, ignore_index=True)
     return gesamt_df
 
