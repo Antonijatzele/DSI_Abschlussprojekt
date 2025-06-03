@@ -18,18 +18,6 @@ def show():
     default_groups = ['Türkei', 'Italien', 'Ukraine', 'Syrien', 'Afghanistan']
     simple_timeline("einbürg_staaten.csv", "Staatsangehörigkeit", default_groups)
 
-    st.header("Migration deutscher Staatbürger")
-    default_groups = None
-    simple_timeline("wander_gesamt_de.csv", "Art", default_groups)
-
-    st.header("Migration ausländischer Staatbürger")
-    default_groups = None
-    simple_timeline("wander_gesamt.csv", "Art", default_groups)
-
-    st.header("Wanderungsaldo nach Herkunftsländern")
-    default_groups = ['Türkei', 'Italien', 'Ukraine', 'Syrien', 'Afghanistan']
-    simple_timeline("wander_staaten.csv", "Herkunfts-/Zielländer", default_groups)
-
     st.header("Rechtsgrundlagen")
     default_groups = None
     simple_timeline("einbürg_recht.csv", "Rechtsgrundlagen", default_groups)
