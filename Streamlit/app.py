@@ -1,11 +1,14 @@
 import streamlit as st
-from pages import (
+from modules import (
     start,
-    migration,
     integration_arbeitsmarkt,
     integration_sprache,
     integration_bildung,
     integration_einbuergerung,
+    migration,
+    migration_alter,
+    migration_kreise,
+    migration_kreise_scatter,
     glossar,
 )
 
@@ -16,7 +19,10 @@ st.set_page_config(page_title="Migration & Integration in Deutschland", layout="
 hauptkategorien = {
     "Start": [],
     "Migration": [
-        "Demografische & geografische Analyse"
+        "Übersicht",
+        "Alterstruktur",
+        "Geographie1",
+        "Geographie2",
     ],
     "Integration": [
         "Arbeitsmarkt",
@@ -43,9 +49,21 @@ else:
 if gewaehlte_kategorie == "Start" or not ausgewaehlte_seite:
     start.show()
 
-elif ausgewaehlte_seite == "Demografische & geografische Analyse":
+# Migration
+elif ausgewaehlte_seite == "Übersicht":
     migration.show()
 
+elif ausgewaehlte_seite == "Alterstruktur":
+    migration_alter.show()
+
+elif ausgewaehlte_seite == "Geographie1":
+    migration_kreise.show()
+
+elif ausgewaehlte_seite == "Geographie2":
+    migration_kreise_scatter.show()
+
+
+# Integration
 elif ausgewaehlte_seite == "Arbeitsmarkt":
     integration_arbeitsmarkt.show()
 

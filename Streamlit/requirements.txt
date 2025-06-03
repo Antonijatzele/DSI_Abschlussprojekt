@@ -1,0 +1,10 @@
+streamlit
+pandas
+geopandas
+matplotlib
+seaborn
+scikit-learn
+plotly
+leafmap
+streamlit-folium
+branca
