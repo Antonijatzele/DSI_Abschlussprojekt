@@ -32,7 +32,7 @@ def show():
     tab1, tab2 = st.tabs(["Schulen", "Beruflicher Bildungsabschluss"])
     with tab1:
 
-        tab3, tab4, tab5 = st.tabs(["Übersicht", "Herkunft", "Abschluss"])
+        tab3, tab4, tab5 = st.tabs(["Übersicht", "Staatsangehörigkeit", "Abschluss"])
         with tab3:
 
 
@@ -334,17 +334,13 @@ def show():
             # plt.tight_layout()
             #st.pyplot(fig2)
 
-            # die Diagramme in 2x2 Columns anzeigen
-            col1, col2 = st.columns(2)
+            # Plot Karte anzeigen
+            st.subheader("Anteil ausländischer Schüler nach Bundesland")
+            fig1 = st_folium(m, width=500, height=600)
 
-            with col1:
-                st.subheader("Anteil ausländischer Schüler nach Bundesland")
-                fig1 = st_folium(m, width=500, height=600)
-
-            with col2:
-                st.subheader("Anteil ausländischer Schüler nach Schulart")
-                # Diagramm 2 anzeigen
-                st.pyplot(fig2)
+            # Plot Anteil pro Schulart
+            st.subheader("Anteil ausländischer Schüler nach Schulart")
+            st.pyplot(fig2)
 
 
         with tab4:
@@ -413,47 +409,62 @@ def show():
             df_top10 = df_grouped.sort_values(by='Prozent', ascending=False).head(10)
 
             ########################################################
-            # Diagramm 3: Kreisdiagramm Top 10 Staatsangehörigkeit #
+            # Plot: top 10 staatsangehörigkeite ab 2021 ausländischer schüler #
             ########################################################
 
-            # Basisfarbe
-            base_color = mcolors.to_rgb('#fc8d62')
+            # Schuljahr in ganzes Jahr umwandeln, z.B. "2021/22" → 2021
+            df['Jahr'] = df['Schuljahr'].str[:4].astype(int)
 
-            # Normalisieren der Prozentwerte (0 bis 1)
-            percent_values = df_top10['Prozent'].values
-            norm = (percent_values - percent_values.min()) / (percent_values.max() - percent_values.min())
-            inverted_norm = 1 - norm
+            # Filter: nur einzelne Herkunftsländer (kein "Insgesamt")
+            df_filtered = df[df['Staatsangehoerigkeit'] != "Insgesamt"]
 
-            # Funktion zum Abdunkeln der Farbe
-            def darken_color(color, factor):
-                return tuple(np.clip(np.array(color) * factor, 0, 1))
+            # Gruppieren nach Jahr und Staatsangehoerigkeit, Anzahl summieren
+            df_grouped = df_filtered.groupby(['Jahr', 'Staatsangehoerigkeit'], as_index=False)[
+                'auslaendische_Schueler_innen_Anzahl'].sum()
 
-            # Abgestufte Farben erzeugen
-            colors = [darken_color(base_color, 0.5 + 0.5 * f) for f in inverted_norm]
+            # Top 10 Länder nach Gesamtanzahl (über alle Jahre)
+            top10_länder = df_grouped.groupby('Staatsangehoerigkeit')[
+                'auslaendische_Schueler_innen_Anzahl'].sum().nlargest(10).index
 
-            # Zeichne das Kreisdiagramm
-            fig3, ax = plt.subplots(figsize=(8, 8))
-            fig3.patch.set_facecolor('white')  # Figure-Hintergrund weiß
-            ax.set_facecolor('white')  # Axes-Hintergrund weiß
+            # Filter auf Top 10 Länder
+            df_top10 = df_grouped[df_grouped['Staatsangehoerigkeit'].isin(top10_länder)]
 
-            plt.pie(
-                df_top10['Prozent'],
-                labels=df_top10['Staatsangehoerigkeit'],
-                autopct='%1.1f%%',
-                startangle=140,
-                colors=colors,
-                wedgeprops={'edgecolor': 'white', 'linewidth': 2},  # optional: weißer Rand
-                textprops={'color': "black", 'fontsize': 12}  # schwarze Schrift
+            # Plot erstellen
+            fig = px.line(
+                df_top10,
+                x='Jahr',
+                y='auslaendische_Schueler_innen_Anzahl',
+                color='Staatsangehoerigkeit',
+                markers=True,
+                title='Anzahl ausländischer Schüler (Top 10 Herkunftsländer) nach Jahr',
+                labels={
+                    'Jahr': 'Jahr',
+                    'auslaendische_Schueler_innen_Anzahl': 'Anzahl ausländischer Schüler',
+                    'Staatsangehoerigkeit': 'Herkunftsland'
+                }
             )
 
-            fig3.tight_layout()
-            st.pyplot(fig3)
+            fig.update_layout(
+                plot_bgcolor='white',
+                paper_bgcolor='white',
+                font=dict(color='black'),
+                xaxis=dict(tickmode='linear')  # Ganze Jahre auf der x-Achse erzwingen
+            )
 
+            # Plot in Streamlit anzeigen
+            st.plotly_chart(fig)
             ##########################################
             # Datensatz laden: Schüler, Staatsangehörigkeiten, Bundesländer, Jahre 1992-2000
 
             url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Bildungsintegration/auslaendische_Schueler_Staatsangehoerigkeit_1992_2020_aufbereitet.csv"
             df = pd.read_csv(url, sep=";")
+            # Spalte umbenennen
+            df.rename(columns={"Land der Staatsangehörigkeit": "Staatsangehörigkeit"}, inplace=True)
+            # Daten filtern
+            df = df[df["Staatsangehörigkeit"].notna()]
+            df = df[~df["Staatsangehörigkeit"].isin(["insgesamt", "Keine Angabe und ungeklärt"])]
+            df = df[df["Jahr"].notna()]
+
             # Mapping anwenden
             df["Geschlecht"] = df["Geschlecht"].map({
                 "z": "insgesamt",
@@ -477,7 +488,7 @@ def show():
             filtered_df = df[df["Bundesland"].isin(selected_bundeslaender)]
 
             with st.expander("DataFrame anzeigen"):
-                st.dataframe(df)
+                st.dataframe(filtered_df)
 
             # Gruppierung nach Jahr und Kontinent (du kannst hier auch nach Geschlecht oder Land filtern)
             grouped = filtered_df.groupby(["Jahr", "Kontinent"], as_index=False)["Anzahl"].sum()
@@ -489,6 +500,7 @@ def show():
                 y="Anzahl",
                 color="Kontinent",
                 title="Anzahl ausländischer Schüler nach Kontinent",
+                markers = True
             )
 
             # Weißer Hintergrund, schwarze Schrift
@@ -496,12 +508,55 @@ def show():
                 plot_bgcolor="white",
                 paper_bgcolor="white",
                 font=dict(color="black"),
-                xaxis=dict(title="Jahr", color="black"),
-                yaxis=dict(title="Anzahl", color="black"),
+                xaxis=dict(title="", color="black"),  # Titel ausblenden
+                yaxis=dict(title="", color="black")  # Titel ausblenden
             )
 
             # Streamlit Ausgabe
             # st.title("Anzahl ausländischer Schüler nach Kontinent")
+            st.plotly_chart(fig)
+
+            # Plot Anzahl ausländischer Schüler (Top 10 Staatsangehörigkeiten)
+            # Daten filtern (keine 'insgesamt', keine NaNs)
+            filtered_df = filtered_df[filtered_df["Staatsangehörigkeit"].notna()]
+            filtered_df = filtered_df[filtered_df["Staatsangehörigkeit"] != "insgesamt"]
+            filtered_df = filtered_df[filtered_df["Jahr"].notna()]
+
+            # Top 10 Staatsangehörigkeiten nach Gesamtanzahl (über alle Geschlechter)
+            top10 = (
+                filtered_df.groupby("Staatsangehörigkeit")["Anzahl"]
+                .sum()
+                .nlargest(10)
+                .index
+            )
+
+            # Nach Jahr und Staatsangehörigkeit aggregieren, Summe über Geschlechter
+            df_agg = (
+                filtered_df[filtered_df["Staatsangehörigkeit"].isin(top10)]
+                .groupby(["Jahr", "Staatsangehörigkeit"], as_index=False)
+                .agg({"Anzahl": "sum"})
+            )
+
+            # Plot erstellen
+            fig = px.line(
+                df_agg,
+                x="Jahr",
+                y="Anzahl",
+                color="Staatsangehörigkeit",
+                title="Anzahl ausländischer Schüler (Top 10 Staatsangehörigkeiten)",
+                markers=True
+            )
+
+            # Layout anpassen (weißer Hintergrund, schwarze Schrift)
+            fig.update_layout(
+                plot_bgcolor="white",
+                paper_bgcolor="white",
+                font=dict(color="black"),
+                xaxis_title = "",  # Achsentitel X ausblenden
+                yaxis_title = ""  # Achsentitel Y ausblenden
+            )
+
+            # In Streamlit anzeigen
             st.plotly_chart(fig)
 
 
