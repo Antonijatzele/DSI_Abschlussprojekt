@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 
 
 def simple_timeline(file, group_col, default_groups=None):
-    csv_path = f"data/migration/{file}"
+    csv_path = f"Streamlit/data/migration/{file}"
     df = pd.read_csv(csv_path, sep=None, engine='python')
     if 'STAG' in df.columns:
         df["Jahr"] = pd.to_datetime(df["STAG"])

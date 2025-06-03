@@ -9,7 +9,7 @@ from streamlit_folium import st_folium
 # Geodaten laden
 @st.cache_data
 def lade_geodaten():
-    gdf = gpd.read_file(Path("data/migration/kreise_mit_daten.geojson"))
+    gdf = gpd.read_file(Path("Streamlit/data/migration/kreise_mit_daten.geojson"))
     gdf = gdf.to_crs("EPSG:4326")
 
     # Farbskala erstellen
