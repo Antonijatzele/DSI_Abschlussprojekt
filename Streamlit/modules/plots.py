@@ -14,12 +14,15 @@ def simple_timeline(file, group_col, default_groups=None):
 
     # Auswahl treffen
     all_groups = df[group_col].unique()
-    sel_groups = st.multiselect(
-        label=f"Wählen Sie {group_col} aus",
-        options=all_groups,
-        default=default_groups if default_groups else all_groups[:2],
-        key=file
-    )
+    if default_groups:
+        sel_groups = st.multiselect(
+            label=f"Wählen Sie {group_col} aus",
+            options=all_groups,
+            default=default_groups if default_groups else all_groups,
+            key=file
+        )
+    else:
+        sel_groups = all_groups
 
     st.write(str(sel_groups))
 

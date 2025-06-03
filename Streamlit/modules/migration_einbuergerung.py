@@ -21,3 +21,4 @@ def show():
     st.header("Rechtsgrundlagen")
     default_groups = None
     simple_timeline("einbürg_recht.csv", "Rechtsgrundlagen", default_groups)
+
