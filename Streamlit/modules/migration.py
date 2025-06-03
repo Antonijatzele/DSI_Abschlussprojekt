@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.graph_objects as go
 
 
-def simple_timeline(file, group_col):
+def simple_timeline(file, group_col, default_groups=None):
     csv_path = f"data/migration/{file}"
     df = pd.read_csv(csv_path, sep=None, engine='python')
     df["STAG"] = pd.to_datetime(df["STAG"])
@@ -11,14 +11,26 @@ def simple_timeline(file, group_col):
 
     fig = go.Figure()
 
-    for group in df[group_col].unique():
+    # Auswahl treffen
+    all_groups = df[group_col].unique()
+    sel_groups = st.multiselect(
+        label=f"Wählen Sie {group_col} aus",
+        options=all_groups,
+        default=default_groups if default_groups else all_groups[:2],
+        key=file
+    )
+
+    st.write(str(sel_groups))
+
+    # Diagrame erstllen
+    for group in sel_groups:
         subset = df[df[group_col] == group]
         fig.add_trace(go.Scatter(
             x=subset["STAG"],
             y=subset["Value_Mio"],
             mode="lines+markers",
             name=group,
-            hovertemplate=f"<b>{group}</b><br>Jahr: %{{x}}<br>Bevölkerung: %{{y:.2f}} Mio<extra></extra>"
+            hovertemplate=f"<b>{group}</b><br>Bevölkerung: %{{y:.2f}} Mio<extra></extra>"
         ))
 
     fig.update_layout(
@@ -111,8 +123,16 @@ def show():
     )
     st.plotly_chart(fig, use_container_width=True)
 
-    st.header("Herkunftskontinente")
-    simple_timeline("historisch_kontinente.csv", "Ländergruppierungen")
+    st.header("Ländergruppierungen")
+    default_groups = ["Afrika", "Asien", "Europa", "Amerika"]
+    simple_timeline("historisch_ländergruppen.csv", "Ländergruppierungen", default_groups)
+
+    st.header("Staatsangehörigkeit")
+    default_groups = ['Türkei', 'Italien', 'Ukraine', 'Syrien', 'Afghanistan']
+    simple_timeline("historisch_staaten.csv", "Staatsangehörigkeit", default_groups)
 
     st.header("Aufenthaltstitel")
-    simple_timeline("historisch_titel.csv", "Aufenthaltstitel")
+    default_groups = ['Befristete AE, besondere Gründe und nationale Visa', 'Befristete AE, völkerrechtl., human., pol. Gründe', 'Befristete Aufenthaltserlaubnis, Erwerbstätigkeit', 'Aufenthaltsrecht nach FreizügG/EU', 'Unbefristete Niederlassungserlaubnis']
+    simple_timeline("historisch_titel.csv", "Ausgewählte Aufenthaltstitel")
+
+
