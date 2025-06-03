@@ -22,7 +22,7 @@ def show():
     - Korrelation mit sozioökonomischen Faktoren wie Arbeitslosenquote oder Bevölkerungsdichte  
     """)
 
-    csv_path = "data/migration/historisch_gesamt.csv"
+    csv_path = "Streamlit/data/migration/historisch_gesamt.csv"
     df = pd.read_csv(csv_path, sep=None, engine='python')
     df["STAG"] = pd.to_datetime(df["STAG"])
 
@@ -83,13 +83,13 @@ def show():
 
     st.header("Ländergruppierungen")
     default_groups = ["Afrika", "Asien", "Europa", "Amerika"]
-    #simple_timeline("historisch_ländergruppen.csv", "Ländergruppierungen", default_groups)
+    simple_timeline("historisch_ländergruppen.csv", "Ländergruppierungen", default_groups)
 
     st.header("Staatsangehörigkeit")
     default_groups = ['Türkei', 'Italien', 'Ukraine', 'Syrien', 'Afghanistan']
-    #simple_timeline("historisch_staaten.csv", "Staatsangehörigkeit", default_groups)
+    simple_timeline("historisch_staaten.csv", "Staatsangehörigkeit", default_groups)
 
     st.header("Aufenthaltstitel")
     default_groups = ['Befristete AE, besondere Gründe und nationale Visa', 'Befristete AE, völkerrechtl., human., pol. Gründe', 'Befristete Aufenthaltserlaubnis, Erwerbstätigkeit', 'Aufenthaltsrecht nach FreizügG/EU', 'Unbefristete Niederlassungserlaubnis']
-    #simple_timeline("historisch_titel.csv", "Ausgewählte Aufenthaltstitel")
+    simple_timeline("historisch_titel.csv", "Ausgewählte Aufenthaltstitel")
 
