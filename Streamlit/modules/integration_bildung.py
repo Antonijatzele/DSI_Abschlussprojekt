@@ -28,7 +28,7 @@ def show():
         </style>
     """, unsafe_allow_html=True)
 
-    tab1, tab2 = st.tabs(["Schulen", "Bildungsabschluss"])
+    tab1, tab2 = st.tabs(["Schulen", "Beruflicher Bildungsabschluss"])
     with tab1:
 
         tab3, tab4, tab5 = st.tabs(["Übersicht", "Herkunft", "Abschluss"])
@@ -573,4 +573,11 @@ def show():
 
 
     with tab2:
-        st.subheader("Bildungsabschluss")
+        # Daten einlesen aus Github
+        # Destatis_Einbürgerungsstatistik_12511-0001
+
+        url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Bildungsintegration/Destatis_12211-0206_Bildungsabschluss_Mikrozensus_aufbereitet.csv"
+        df = pd.read_csv(url, sep=";")
+
+        with st.expander("DataFrame anzeigen"):
+            st.dataframe(df)
