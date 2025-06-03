@@ -1,5 +1,5 @@
 
-
+import numpy as np
 import streamlit as st
 import pandas as pd
 import geopandas as gpd
@@ -8,441 +8,532 @@ import branca.colormap as cm
 from streamlit_folium import st_folium
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 
 
 def show():
     st.title("🎓 Bildungs-Integration")
 
-    # Daten einlesen: Destatis 21111-03
-    # Schüler/-innen (Deutsche, Ausländer/-innen) nach Bildungsbereichen, rechtlichem Status der Schule, Schularten und Geschlecht
-    url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Bildungsintegration/Destatis_21111-03_allgemeinbildende_schulen_2021_2024_zusammengefuegt.csv"
-    df = pd.read_csv(url, sep=',')
+    st.markdown("""
+        <style>
+        /* Aktiver Tab: Orange Beschriftung */
+        .stTabs [data-baseweb="tab"] button[aria-selected="true"] {
+            color: orange;
+        }
 
-    # Vorverarbeitung
-    df = df.drop(columns=['Staatsangehoerigkeit'])
-    df = df.rename(columns={'Staatsangehoerigkeit_clean': 'Staatsangehoerigkeit'})
+        /* Inaktive Tabs: Grau (optional) */
+        .stTabs [data-baseweb="tab"] button[aria-selected="false"] {
+            color: #888888;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    tab1, tab2 = st.tabs(["Allgemeinbildende Schulen", "Bildungsabschluss"])
+    with tab1:
 
 
-    ######################################################################################################
-    # Viz 1: Karte Deutschlands
-    # Wie verteilen sich die ausländischen Schüler auf die Bundesländer?
+        # Daten einlesen: Destatis 21111-03
+        # Schüler/-innen (Deutsche, Ausländer/-innen) nach Bildungsbereichen, rechtlichem Status der Schule, Schularten und Geschlecht
+        url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Bildungsintegration/Destatis_21111-03_allgemeinbildende_schulen_2021_2024_zusammengefuegt.csv"
+        df = pd.read_csv(url, sep=',')
 
-    # Auswahl für Schuljahr – Standard: 2023/24
-    schuljahre = sorted(df["Schuljahr"].unique())
-    default_index = schuljahre.index("2023/24") if "2023/24" in schuljahre else 0
-    jahr = st.selectbox("Wähle ein Schuljahr", schuljahre, index=default_index)
+        # Vorverarbeitung
+        df = df.drop(columns=['Staatsangehoerigkeit'])
+        df = df.rename(columns={'Staatsangehoerigkeit_clean': 'Staatsangehoerigkeit'})
+        df = df[df['Bildungsbereich'] != 'Bereich unbekannt']
 
-    # Nur relevante Daten für Filterung vorbereiten
-    df_filter_basis = df[
-        (df['Geschlecht'].isin(['männlich', 'weiblich'])) &
-        (df['Bundesland'] != 'Deutschland') &
-        (df['Schuljahr'] == jahr) &
-        (df['Staatsangehoerigkeit'].isin(['deutsche Schüler/innen', 'ausländische Schüler/innen']))
-    ]
 
-    # Dynamische Filterlogik
-    alle_bildungsbereiche = sorted(df_filter_basis["Bildungsbereich"].dropna().unique().tolist())
-    alle_schularten = sorted(df_filter_basis["Schulart"].dropna().unique().tolist())
 
-    ausgewaehlter_bildungsbereich = st.selectbox("Wähle einen Bildungsbereich", ["Alle"] + alle_bildungsbereiche)
+        ####################################
+        # Diagramm 1: Karte Deutschlands   #
+        ####################################
+        # Wie verteilen sich die ausländischen Schüler auf die Bundesländer?
 
-    # Schularten abhängig vom Bildungsbereich
-    if ausgewaehlter_bildungsbereich == "Alle":
-        verfuegbare_schularten = sorted(df_filter_basis["Schulart"].dropna().unique())
-    else:
-        verfuegbare_schularten = sorted(df_filter_basis[df_filter_basis["Bildungsbereich"] == ausgewaehlter_bildungsbereich]["Schulart"].dropna().unique())
+        col1, col2, col3 = st.columns(3)
 
-    ausgewaehlte_schulart = st.selectbox("Wähle eine Schulart", ["Alle"] + verfuegbare_schularten)
+        with col1:
+            schuljahre = sorted(df["Schuljahr"].unique())
+            default_index = schuljahre.index("2023/24") if "2023/24" in schuljahre else 0
+            jahr = st.selectbox("📅 Schuljahr", schuljahre, index=default_index)
 
-    # Optional: Re-Filter Bildungsbereiche basierend auf Schulart
-    if ausgewaehlte_schulart != "Alle":
-        verfuegbare_bildungsbereiche = sorted(df_filter_basis[df_filter_basis["Schulart"] == ausgewaehlte_schulart]["Bildungsbereich"].dropna().unique())
-        if ausgewaehlter_bildungsbereich != "Alle" and ausgewaehlter_bildungsbereich not in verfuegbare_bildungsbereiche:
-            st.warning("Der ausgewählte Bildungsbereich passt nicht zur Schulart. Bitte anpassen.")
+        with col2:
+            # Nur relevante Daten
+            df_filter_basis = df[
+                (df['Geschlecht'].isin(['männlich', 'weiblich'])) &
+                (df['Bundesland'] != 'Deutschland') &
+                (df['Schuljahr'] == jahr) &
+                (df['Staatsangehoerigkeit'].isin(['deutsche Schüler/innen', 'ausländische Schüler/innen']))
+                ]
 
-    # Filter anwenden
-    df_filtered = df_filter_basis.copy()
+            alle_bildungsbereiche = sorted(df_filter_basis["Bildungsbereich"].dropna().unique().tolist())
+            ausgewaehlter_bildungsbereich = st.selectbox("🎓 Bildungsbereich", alle_bildungsbereiche)
 
-    if ausgewaehlter_bildungsbereich != "Alle":
-        df_filtered = df_filtered[df_filtered['Bildungsbereich'] == ausgewaehlter_bildungsbereich]
 
-    if ausgewaehlte_schulart != "Alle":
-        df_filtered = df_filtered[df_filtered['Schulart'] == ausgewaehlte_schulart]
 
-    # Pivot-Tabelle für Schularten-Ranking (nur für 2023/24)
-    df_temp = df[
-        (df['Geschlecht'].isin(['männlich', 'weiblich'])) &
-        (df['Bundesland'] != 'Deutschland') &
-        (df['Schuljahr'] == "2023/24") &
-        (df['Staatsangehoerigkeit'].isin(['deutsche Schüler/innen', 'ausländische Schüler/innen']))
-    ]
+        with col3:
+            bundesland_options = df['Bundesland'].unique()
+            selected_bundesland = st.selectbox(
+                "🗺️ Bundesland",
+                bundesland_options,
+                index=list(bundesland_options).index('Deutschland') if 'Deutschland' in bundesland_options else 0
+            )
 
-    if "Schulart" in df_temp.columns:
-        pivot_schulart = df_temp.pivot_table(
-            index='Schulart',
+
+
+        # Filter anwenden
+        if selected_bundesland != 'Deutschland':
+            df_filtered = df_filter_basis[
+                (df_filter_basis["Bildungsbereich"] == ausgewaehlter_bildungsbereich) &
+                (df_filter_basis["Bundesland"] == selected_bundesland)
+                ]
+        else:
+            df_filtered = df_filter_basis[
+                (df_filter_basis["Bildungsbereich"] == ausgewaehlter_bildungsbereich)
+            ]
+
+
+        # Pivot-Tabelle für Schularten-Ranking (nur für 2023/24)
+        df_temp = df[
+            (df['Geschlecht'].isin(['männlich', 'weiblich'])) &
+            (df['Bundesland'] != 'Deutschland') &
+            (df['Schuljahr'] == "2023/24") &
+            (df['Staatsangehoerigkeit'].isin(['deutsche Schüler/innen', 'ausländische Schüler/innen']))
+        ]
+
+        if "Schulart" in df_temp.columns:
+            pivot_schulart = df_temp.pivot_table(
+                index='Schulart',
+                columns='Staatsangehoerigkeit',
+                values='Schueler_innen_Anzahl',
+                aggfunc='sum',
+                fill_value=0
+            )
+
+            pivot_schulart['gesamt'] = pivot_schulart['deutsche Schüler/innen'] + pivot_schulart['ausländische Schüler/innen']
+            pivot_schulart['anteil_auslaendisch'] = (pivot_schulart['ausländische Schüler/innen'] / pivot_schulart['gesamt']) * 100
+            sortierte_schularten = pivot_schulart.sort_values(by='anteil_auslaendisch', ascending=False).index.tolist()
+        else:
+            sortierte_schularten = []
+
+        # Pivot-Tabelle
+        pivot = df_filtered.pivot_table(
+            index=['Bundesland', 'Geschlecht'],
             columns='Staatsangehoerigkeit',
             values='Schueler_innen_Anzahl',
             aggfunc='sum',
             fill_value=0
+        ).reset_index()
+
+        # Gesamtdaten je Bundesland
+        gesamt_bundesland = pivot.groupby('Bundesland')[['deutsche Schüler/innen', 'ausländische Schüler/innen']].sum()
+        gesamt_bundesland['gesamt_gesamt'] = (
+            gesamt_bundesland['deutsche Schüler/innen'] + gesamt_bundesland['ausländische Schüler/innen']
         )
+        anteile = (gesamt_bundesland['ausländische Schüler/innen'] / gesamt_bundesland['gesamt_gesamt']) * 100
 
-        pivot_schulart['gesamt'] = pivot_schulart['deutsche Schüler/innen'] + pivot_schulart['ausländische Schüler/innen']
-        pivot_schulart['anteil_auslaendisch'] = (pivot_schulart['ausländische Schüler/innen'] / pivot_schulart['gesamt']) * 100
-        sortierte_schularten = pivot_schulart.sort_values(by='anteil_auslaendisch', ascending=False).index.tolist()
-    else:
-        sortierte_schularten = []
-
-    # Pivot-Tabelle
-    pivot = df_filtered.pivot_table(
-        index=['Bundesland', 'Geschlecht'],
-        columns='Staatsangehoerigkeit',
-        values='Schueler_innen_Anzahl',
-        aggfunc='sum',
-        fill_value=0
-    ).reset_index()
-
-    # Gesamtdaten je Bundesland
-    gesamt_bundesland = pivot.groupby('Bundesland')[['deutsche Schüler/innen', 'ausländische Schüler/innen']].sum()
-    gesamt_bundesland['gesamt_gesamt'] = (
-        gesamt_bundesland['deutsche Schüler/innen'] + gesamt_bundesland['ausländische Schüler/innen']
-    )
-    anteile = (gesamt_bundesland['ausländische Schüler/innen'] / gesamt_bundesland['gesamt_gesamt']) * 100
-
-    # Namensmapping
-    name_mapping = {
-        'Baden-Württemberg': 'Baden-Württemberg',
-        'Bayern': 'Bayern',
-        'Berlin': 'Berlin',
-        'Brandenburg': 'Brandenburg',
-        'Bremen': 'Bremen',
-        'Hamburg': 'Hamburg',
-        'Hessen': 'Hessen',
-        'Mecklenburg-Vorpommern': 'Mecklenburg-Vorpommern',
-        'Niedersachsen': 'Niedersachsen',
-        'Nordrhein-Westfalen': 'Nordrhein-Westfalen',
-        'Rheinland-Pfalz': 'Rheinland-Pfalz',
-        'Saarland': 'Saarland',
-        'Sachsen': 'Sachsen',
-        'Sachsen-Anhalt': 'Sachsen-Anhalt',
-        'Schleswig-Holstein': 'Schleswig-Holstein',
-        'Thüringen': 'Thüringen'
-    }
-    anteile.index = anteile.index.map(name_mapping)
-
-    # Geschlechterverteilung bei ausländischen Schüler/innen
-    pivot_geschlecht = df_filtered.pivot_table(
-        index=['Bundesland', 'Staatsangehoerigkeit'],
-        columns='Geschlecht',
-        values='Schueler_innen_Anzahl',
-        aggfunc='sum',
-        fill_value=0
-    ).reset_index()
-
-    ausl_pivot = pivot_geschlecht[pivot_geschlecht['Staatsangehoerigkeit'] == 'ausländische Schüler/innen']
-    ausl_pivot['gesamt_ausl'] = ausl_pivot['männlich'] + ausl_pivot['weiblich']
-    ausl_pivot['Anteil weiblich (%)'] = (ausl_pivot['weiblich'] / ausl_pivot['gesamt_ausl']) * 100
-    ausl_pivot['Anteil männlich (%)'] = (ausl_pivot['männlich'] / ausl_pivot['gesamt_ausl']) * 100
-
-    ausl_geschlecht = ausl_pivot.set_index('Bundesland')[['Anteil weiblich (%)', 'Anteil männlich (%)']]
-
-    # GeoJSON laden
-    url_geo = "https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/2_bundeslaender/2_hoch.geo.json"
-    bundeslaender = gpd.read_file(url_geo)
-
-    # Spalten hinzufügen
-    bundeslaender['Anteil (%)'] = bundeslaender['name'].map(anteile)
-    bundeslaender['Anteil weiblich (%)'] = bundeslaender['name'].map(ausl_geschlecht['Anteil weiblich (%)'])
-    bundeslaender['Anteil männlich (%)'] = bundeslaender['name'].map(ausl_geschlecht['Anteil männlich (%)'])
-
-    # Rundung
-    for col in ['Anteil (%)', 'Anteil weiblich (%)', 'Anteil männlich (%)']:
-        bundeslaender[col] = bundeslaender[col].round(1)
-
-    # Farbskala
-    vmin = bundeslaender['Anteil (%)'].min()
-    vmax = bundeslaender['Anteil (%)'].max()
-
-
-    colors = [
-       # '#fff5f0',  # sehr helles Rot
-        '#fee0d2',
-        '#fcbba1',
-        #'#fc9272',
-        '#fb6a4a',
-        '#cb181d' ,  # dunkleres Rot
-        '#2e2828'
-    ]
-
-    colormap = cm.LinearColormap(
-        colors=colors,
-        vmin=vmin,
-        vmax=vmax
-    )
-    colormap.caption = 'Anteil ausländischer Schüler/innen (%)'
-
-    # Karte erstellen
-    # m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB positron')
-    m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB dark_matter')
-
-    def style_function(feature):
-        anteil = feature['properties']['Anteil (%)']
-        return {
-            'fillOpacity': 0.8,
-            'weight': 1,
-            'color': 'black',
-            'fillColor': colormap(anteil) if anteil is not None else 'lightgray'
+        # Namensmapping
+        name_mapping = {
+            'Baden-Württemberg': 'Baden-Württemberg',
+            'Bayern': 'Bayern',
+            'Berlin': 'Berlin',
+            'Brandenburg': 'Brandenburg',
+            'Bremen': 'Bremen',
+            'Hamburg': 'Hamburg',
+            'Hessen': 'Hessen',
+            'Mecklenburg-Vorpommern': 'Mecklenburg-Vorpommern',
+            'Niedersachsen': 'Niedersachsen',
+            'Nordrhein-Westfalen': 'Nordrhein-Westfalen',
+            'Rheinland-Pfalz': 'Rheinland-Pfalz',
+            'Saarland': 'Saarland',
+            'Sachsen': 'Sachsen',
+            'Sachsen-Anhalt': 'Sachsen-Anhalt',
+            'Schleswig-Holstein': 'Schleswig-Holstein',
+            'Thüringen': 'Thüringen'
         }
+        anteile.index = anteile.index.map(name_mapping)
 
-    tooltip = folium.GeoJsonTooltip(
-        fields=['name', 'Anteil (%)', 'Anteil weiblich (%)', 'Anteil männlich (%)'],
-        aliases=[
-            'Bundesland:',
-            'Ausländische Schüler/innen (%):',
-            'davon weiblich (%):',
-            'davon männlich (%):'
-        ],
-        localize=True,
-        labels=True,
-        sticky=False,
-        style="""
-            background-color: #F0EFEF;
-            border: 1px solid black;
-            border-radius: 3px;
-            box-shadow: 3px;
-        """
-    )
+        # Geschlechterverteilung bei ausländischen Schüler/innen
+        pivot_geschlecht = df_filtered.pivot_table(
+            index=['Bundesland', 'Staatsangehoerigkeit'],
+            columns='Geschlecht',
+            values='Schueler_innen_Anzahl',
+            aggfunc='sum',
+            fill_value=0
+        ).reset_index()
 
-    folium.GeoJson(
-        bundeslaender,
-        style_function=style_function,
-        tooltip=tooltip
-    ).add_to(m)
+        ausl_pivot = pivot_geschlecht[pivot_geschlecht['Staatsangehoerigkeit'] == 'ausländische Schüler/innen']
+        ausl_pivot['gesamt_ausl'] = ausl_pivot['männlich'] + ausl_pivot['weiblich']
+        ausl_pivot['Anteil weiblich (%)'] = (ausl_pivot['weiblich'] / ausl_pivot['gesamt_ausl']) * 100
+        ausl_pivot['Anteil männlich (%)'] = (ausl_pivot['männlich'] / ausl_pivot['gesamt_ausl']) * 100
 
-    colormap.add_to(m)
+        ausl_geschlecht = ausl_pivot.set_index('Bundesland')[['Anteil weiblich (%)', 'Anteil männlich (%)']]
 
-    # In Streamlit anzeigen
-    #st.subheader(f"Anteil ausländischer Schüler/innen nach Bundesland ({jahr})")
-    #fig1 = st_folium(m, width=1000, height=700)
+        # GeoJSON laden
+        url_geo = "https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/2_bundeslaender/2_hoch.geo.json"
+        bundeslaender = gpd.read_file(url_geo)
 
-    #############################################################################
-    # Viz 2: Balkendiagramm: Anteil ausländischer Schüler pro Schulart (horizontal)
-    #############################################################################
+        # Spalten hinzufügen
+        bundeslaender['Anteil (%)'] = bundeslaender['name'].map(anteile)
+        bundeslaender['Anteil weiblich (%)'] = bundeslaender['name'].map(ausl_geschlecht['Anteil weiblich (%)'])
+        bundeslaender['Anteil männlich (%)'] = bundeslaender['name'].map(ausl_geschlecht['Anteil männlich (%)'])
 
-    # Daten vorbereiten (wie in deinem Originalcode)
-    df_plot = df_filtered.groupby(['Schulart', 'Staatsangehoerigkeit'])['Schueler_innen_Anzahl'].sum().reset_index()
-    df_plot = df_plot[(df_plot['Schulart'].notna()) & (df_plot['Schulart'] != 'Insgesamt')]
-    df_plot = df_plot[df_plot['Schulart'] != 'Keine Zuordnung zu einer Schulart möglich']
+        # Rundung
+        for col in ['Anteil (%)', 'Anteil weiblich (%)', 'Anteil männlich (%)']:
+            bundeslaender[col] = bundeslaender[col].round(1)
 
-    df_total = df_plot.groupby('Schulart')['Schueler_innen_Anzahl'].sum().reset_index().rename(
-        columns={'Schueler_innen_Anzahl': 'Gesamt'})
-    df_plot = df_plot.merge(df_total, on='Schulart')
-    df_plot['Anteil'] = df_plot['Schueler_innen_Anzahl'] / df_plot['Gesamt'] * 100
+        # Farbskala
+        vmin = bundeslaender['Anteil (%)'].min()
+        vmax = bundeslaender['Anteil (%)'].max()
 
-    df_auslaendisch = df_plot[df_plot['Staatsangehoerigkeit'] == 'ausländische Schüler/innen']
-    df_auslaendisch = df_auslaendisch.sort_values(by='Anteil', ascending=True)  # Für horizontalen Plot aufsteigend
 
-    # Farben
-    farben = sns.color_palette("Set2")
-    orange = farben[1]
+        colors = [
+           # '#fff5f0',  # sehr helles Rot
+            '#FDD8C7',
+            '#FDB79D',
+            '#FC8D62',
+            '#E67654',
+            '#CC6140',  # dunkleres Rot
+            '#A84B2E'
+        ]
 
-    # Horizontalen Balkendiagramm-Plot erstellen
-    fig2, ax = plt.subplots(figsize=(8, 8), edgecolor='none')
-    fig2.patch.set_facecolor('black')
-    fig2.patch.set_linewidth(0)
-    ax.set_facecolor('black')
+        colormap = cm.LinearColormap(
+            colors=colors,
+            vmin=vmin,
+            vmax=vmax
+        )
+        colormap.caption = 'Anteil ausländischer Schüler/innen (%)'
 
-    y = range(len(df_auslaendisch))
-    werte = df_auslaendisch['Anteil'].values
-    schularten = df_auslaendisch['Schulart'].values
+        # Karte erstellen
+        # m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB positron')
+        m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB dark_matter')
 
-    bars = ax.barh(y, werte, height=0.8, color=orange, label='ausländische Schüler/innen')  # breitere Balken
+        def style_function(feature):
+            anteil = feature['properties']['Anteil (%)']
+            return {
+                'fillOpacity': 0.8,
+                'weight': 1,
+                'color': 'black',
+                'fillColor': colormap(anteil) if anteil is not None else 'lightgrey'
+            }
 
-    # Prozentwerte rechts neben den Balken anzeigen
-    for bar, wert in zip(bars, werte):
-        ax.text(
-            bar.get_width() + 1,
-            bar.get_y() + bar.get_height() / 2,
-            f"{wert:.1f}%",
-            va='center',
-            ha='left',
-            color='white',
-            fontsize=10,
-            fontweight='bold'
+        tooltip = folium.GeoJsonTooltip(
+            fields=['name'],
+            aliases=[''],
+            localize=True,
+            labels=True,
+            sticky=False,
+            style="""
+                background-color: #F0EFEF;
+                border: 1px solid black;
+                border-radius: 3px;
+                box-shadow: 3px;
+            """
         )
 
-    # Achsen und Beschriftungen
-    ax.set_yticks(y)
-    ax.set_yticklabels(schularten, color='white', fontsize=10)
-    ax.set_ylabel('')
-    ax.set_xlabel('')
-    #ax.set_title("Anteil ausländischer Schüler/innen pro Schulart", color='white')
+        folium.GeoJson(
+            bundeslaender,
+            style_function=style_function,
+            tooltip=tooltip
+        ).add_to(m)
 
-    # Rahmen entfernen
-    for spine in ax.spines.values():
-        spine.set_visible(False)
+        # Prozentwerte als Text auf der Karte anzeigen
+        for _, row in bundeslaender.iterrows():
+            if pd.notna(row['Anteil (%)']):
+                folium.map.Marker(
+                    [row['geometry'].centroid.y, row['geometry'].centroid.x],
+                    icon=folium.DivIcon(
+                        html=f"""
+                        <div style="
+                            font-size: 12px; 
+                            color: white; 
+                            font-weight: bold;
+                            text-align: center;
+                            background-color: rgba(0,0,0,0.5);
+                            padding: 2px 4px;
+                            border-radius: 4px;">
+                            {row['Anteil (%)']}%
+                        </div>
+                        """
+                    )
+                ).add_to(m)
 
-    # Gitterlinien auf der x-Achse (optional)
-    ax.grid(axis='x', linestyle='--', alpha=0.3, color='white')
+        colormap.add_to(m)
 
-    # Achsenticks und Rahmenfarbe anpassen
-    # ax.tick_params(colors='white')
+        # In Streamlit anzeigen
+        #st.subheader(f"Anteil ausländischer Schüler/innen nach Bundesland ({jahr})")
+        #fig1 = st_folium(m, width=1000, height=700)
 
-    plt.tight_layout()
+        #########################################################
+        # Diagramm 2: Anteil ausländischer Schüler pro Schulart #
+        #########################################################
 
-    # st.pyplot(fig2)
+        # Daten vorbereiten (wie in deinem Originalcode)
+        df_plot = df_filtered.groupby(['Schulart', 'Staatsangehoerigkeit'])['Schueler_innen_Anzahl'].sum().reset_index()
+        df_plot = df_plot[(df_plot['Schulart'].notna()) & (df_plot['Schulart'] != 'Insgesamt')]
+        df_plot = df_plot[df_plot['Schulart'] != 'Keine Zuordnung zu einer Schulart möglich']
+
+        df_total = df_plot.groupby('Schulart')['Schueler_innen_Anzahl'].sum().reset_index().rename(
+            columns={'Schueler_innen_Anzahl': 'Gesamt'})
+        df_plot = df_plot.merge(df_total, on='Schulart')
+        df_plot['Anteil'] = df_plot['Schueler_innen_Anzahl'] / df_plot['Gesamt'] * 100
+
+        df_auslaendisch = df_plot[df_plot['Staatsangehoerigkeit'] == 'ausländische Schüler/innen']
+        df_auslaendisch = df_auslaendisch.sort_values(by='Anteil', ascending=True)  # Für horizontalen Plot aufsteigend
+
+        # Farben
+        farben = sns.color_palette("Set2")
+        orange = farben[1]
+
+        # Horizontalen Balkendiagramm-Plot erstellen
+        fig2, ax = plt.subplots(figsize=(8, 8), edgecolor='none')
+        fig2.patch.set_facecolor('black')
+        fig2.patch.set_linewidth(0)
+        ax.set_facecolor('black')
+
+        y = range(len(df_auslaendisch))
+        werte = df_auslaendisch['Anteil'].values
+        schularten = df_auslaendisch['Schulart'].values
+
+        bars = ax.barh(y, werte, height=0.8, color=orange, label='ausländische Schüler/innen')  # breitere Balken
+
+        # Prozentwerte rechts neben den Balken anzeigen
+        for bar, wert in zip(bars, werte):
+            ax.text(
+                bar.get_width() + 1,
+                bar.get_y() + bar.get_height() / 2,
+                f"{wert:.1f}%",
+                va='center',
+                ha='left',
+                color='white',
+                fontsize=10,
+                fontweight='bold'
+            )
+
+        # Achsen und Beschriftungen
+        ax.set_yticks(y)
+        ax.set_xticks([])
+        ax.set_yticklabels(schularten, color='white', fontsize=10)
+        ax.set_ylabel('')
+        ax.set_xlabel('')
+        #ax.set_title("Anteil ausländischer Schüler/innen pro Schulart", color='white')
+
+        # Rahmen entfernen
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+
+        # Gitterlinien auf der x-Achse (optional)
+        ax.grid(axis='x', linestyle='--', alpha=0.3, color='white')
+
+        # Achsenticks und Rahmenfarbe anpassen
+        # ax.tick_params(colors='white')
+
+        plt.tight_layout()
+
+        # st.pyplot(fig2)
+
+        # die Diagramme in 2x2 Columns anzeigen
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.subheader("Anteil ausländischer Schüler nach Bundesland")
+            fig1 = st_folium(m, width=500, height=600)
+
+        with col2:
+            st.subheader("Anteil ausländischer Schüler nach Schulart")
+            # Diagramm 2 anzeigen
+            st.pyplot(fig2)
 
 
-    ###############################################################################
-    # Daten einlesen: Destatis 21111-08
-    # Ausländische Schüler/-innen nach Schularten, Staatsangehörigkeit und Geschlecht
-    url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Bildungsintegration/Destatis_21111-08_allgemeinbildende_schulen_2021_2024_zusammengefuegt.csv"
-    df = pd.read_csv(url, sep=',')
 
-    # Die ersten zwei Spalten löschen
-    df = df.drop(df.columns[:2], axis=1)
+        ###############################################################################
+        # Daten einlesen: Destatis 21111-08
+        # Ausländische Schüler/-innen nach Schularten, Staatsangehörigkeit und Geschlecht
+        url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Bildungsintegration/Destatis_21111-08_allgemeinbildende_schulen_2021_2024_zusammengefuegt.csv"
+        df = pd.read_csv(url, sep=',')
 
-    # 'Syrien, Arabische Republik' in 'Syrien' umbenennen
-    df['Staatsangehoerigkeit'] = df['Staatsangehoerigkeit'].replace('Syrien, Arabische Republik', 'Syrien')
+        # Die ersten zwei Spalten löschen
+        df = df.drop(df.columns[:2], axis=1)
 
-    # Filter als Dropdowns (selectbox) ohne Sidebar
-    bundesland_options = df['Bundesland'].unique()
-    selected_bundesland = st.selectbox(
-        "Bundesland auswählen",
-        bundesland_options,
-        index=list(bundesland_options).index('Deutschland') if 'Deutschland' in bundesland_options else 0
-    )
+        # 'Syrien, Arabische Republik' in 'Syrien' umbenennen
+        df['Staatsangehoerigkeit'] = df['Staatsangehoerigkeit'].replace('Syrien, Arabische Republik', 'Syrien')
 
-    # Staatsangehörigkeit Filter entfernt
+        # Filter als Dropdowns (selectbox)
 
-    schulart_options = df['Schulart'].unique()
-    selected_schulart = st.selectbox("Schulart auswählen (optional)",
-                                     ['Alle'] + list(schulart_options), index=0)
+        bundesland_options_2 = df['Bundesland'].unique()
+        selected_bundesland_2 = st.selectbox(
+            "Bundesland auswählen 2",
+            bundesland_options_2,
+            index=list(bundesland_options_2).index('Deutschland') if 'Deutschland' in bundesland_options_2 else 0
+        )
 
-    # Filter anwenden
-    df_filtered = df[df['Bundesland'] == selected_bundesland]
 
-    if selected_schulart != 'Alle':
-        df_filtered = df_filtered[df_filtered['Schulart'] == selected_schulart]
+        schulart_options_2 = df['Schulart'].unique()
+        selected_schulart_2 = st.selectbox("Schulart auswählen 2",
+                                         ['Alle'] + list(schulart_options_2), index=0)
 
-    # 'Insgesamt' rauslassen (falls noch drin)
-    df_filtered = df_filtered[df_filtered['Staatsangehoerigkeit'] != 'Insgesamt']
+        # Filter anwenden
+        df_filtered = df[df['Bundesland'] == selected_bundesland_2]
 
-    # Gruppieren und aufsummieren
-    df_grouped = df_filtered.groupby('Staatsangehoerigkeit')['auslaendische_Schueler_innen_Anzahl'].sum().reset_index()
+        if selected_schulart_2 != 'Alle':
+            df_filtered = df_filtered[df_filtered['Schulart'] == selected_schulart]
 
-    # Gesamtanzahl für die Prozentrechnung
-    gesamt_anzahl = df_grouped['auslaendische_Schueler_innen_Anzahl'].sum()
+        # 'Insgesamt' rauslassen (falls noch drin)
+        df_filtered = df_filtered[df_filtered['Staatsangehoerigkeit'] != 'Insgesamt']
 
-    # Prozentanteil berechnen
-    df_grouped['Prozent'] = (df_grouped['auslaendische_Schueler_innen_Anzahl'] / gesamt_anzahl) * 100
+        # Gruppieren und aufsummieren
+        df_grouped = df_filtered.groupby('Staatsangehoerigkeit')['auslaendische_Schueler_innen_Anzahl'].sum().reset_index()
 
-    # Top 10 nach Prozentanteil auswählen
-    df_top10 = df_grouped.sort_values(by='Prozent', ascending=False).head(10)
+        # Gesamtanzahl für die Prozentrechnung
+        gesamt_anzahl = df_grouped['auslaendische_Schueler_innen_Anzahl'].sum()
 
-    ########################################################################
-    # Viz 4: Kreisdiagramm
-    plt.style.use('dark_background')
-    fig3, ax = plt.subplots(figsize=(8, 8))
-    plt.pie(
-        df_top10['Prozent'],
-        labels=df_top10['Staatsangehoerigkeit'],
-        autopct='%1.1f%%',
-        startangle=140,
-        colors=['#fc8d62'] * len(df_top10),
-        wedgeprops={'edgecolor': 'black', 'linewidth': 2},  # Schwarze Trennlinien mit Breite 2
-        textprops={'color': "white", 'fontsize': 10}
-    )
-    ax.set_title(f'Top 10 Staatsangehörigkeiten im Bundesland {selected_bundesland} (in %)', color='white')
-    fig3.tight_layout()
+        # Prozentanteil berechnen
+        df_grouped['Prozent'] = (df_grouped['auslaendische_Schueler_innen_Anzahl'] / gesamt_anzahl) * 100
 
-    ##################################################################
-    # Daten einlesen: Destatis 21111-12
-    # Absolvierende / Abgehende (Deutsche, Ausländer/-innen) nach Abschluss-, Schularten, Klassen-/Jahrgangsstufen und Geschlecht (einschl. Externe)
-    url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Bildungsintegration/Destatis_21111-12_allgemeinbildende_schulen_2021_2023_zusammengefuegt.csv"
-    df = pd.read_csv(url, sep=';')
+        # Top 10 nach Prozentanteil auswählen
+        df_top10 = df_grouped.sort_values(by='Prozent', ascending=False).head(10)
 
-    # Die ersten zwei Spalten löschen
-    df = df.drop(df.columns[:2], axis=1)
+        ########################################################
+        # Diagramm 3: Kreisdiagramm Top 10 Staatsangehörigkeit #
+        ########################################################
+        plt.style.use('dark_background')
 
-    # Spalte umbenennen, um das Leerzeichen loszuwerden
-    df = df.rename(columns={
-        'auslaendische_Absolvierende_und_Abgehende _Anzahl': 'auslaendische_Absolvierende_und_Abgehende_Anzahl'
-    })
+        # Basisfarbe
+        base_color = mcolors.to_rgb('#fc8d62')
 
-    # in Typ float umwandeln
-    df['Absolvierende_und_Abgehende_Anzahl'] = pd.to_numeric(
-        df['Absolvierende_und_Abgehende_Anzahl'], errors='coerce'
-    )
+        # Normalisieren der Prozentwerte (0 bis 1) – höhere Werte führen zu dunkleren Farben
+        percent_values = df_top10['Prozent'].values
+        norm = (percent_values - percent_values.min()) / (percent_values.max() - percent_values.min())
+        inverted_norm = 1 - norm  # Größere Werte = dunkler
 
-    df['auslaendische_Absolvierende_und_Abgehende_Anzahl'] = pd.to_numeric(
-        df['auslaendische_Absolvierende_und_Abgehende_Anzahl'], errors='coerce'
-    )
+        # Funktion zum Abdunkeln der Farbe
+        def darken_color(color, factor):
+            return tuple(np.clip(np.array(color) * factor, 0, 1))
 
-    #####################################################
-    # Balkendiagramm: Prozentualer Anteil der ausländischen Absolventen nach Abschluss
+        # Erzeuge abgestufte Farben
+        colors = [darken_color(base_color, 0.5 + 0.5 * f) for f in inverted_norm]
 
-    gesamt_auslaender = df['auslaendische_Absolvierende_und_Abgehende_Anzahl'].sum()
-    df_grouped = df.groupby('Abschluss')['auslaendische_Absolvierende_und_Abgehende_Anzahl'].sum().reset_index()
-    df_grouped['Prozent'] = (df_grouped['auslaendische_Absolvierende_und_Abgehende_Anzahl'] / gesamt_auslaender) * 100
-    df_grouped = df_grouped.sort_values(by='Prozent', ascending=False)
+        # Zeichne das Kreisdiagramm
+        plt.style.use('dark_background')
+        fig3, ax = plt.subplots(figsize=(8, 8))
 
-    # Figure und Achse erstellen
-    fig4, ax = plt.subplots(figsize=(8, 8))
+        plt.pie(
+            df_top10['Prozent'],
+            labels=df_top10['Staatsangehoerigkeit'],
+            autopct='%1.1f%%',
+            startangle=140,
+            colors=colors,
+            wedgeprops={'edgecolor': 'black', 'linewidth': 2},
+            textprops={'color': "white", 'fontsize': 12}
+        )
 
-    # Vertikales Balkendiagramm
-    bars = ax.bar(df_grouped['Abschluss'], df_grouped['Prozent'], color='#fc8d62', width=0.5)
+        fig3.tight_layout()
 
-    # Prozentwerte über den Balken
-    for bar in bars:
-        height = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width() / 2, height + 0.5,
-                f'{height:.1f}%', ha='center', va='bottom', fontsize=10)
+        ##################################################################
+        # Daten einlesen: Destatis 21111-12
+        # Absolvierende / Abgehende (Deutsche, Ausländer/-innen) nach Abschluss-, Schularten, Klassen-/Jahrgangsstufen und Geschlecht (einschl. Externe)
+        url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Bildungsintegration/Destatis_21111-12_allgemeinbildende_schulen_2021_2023_zusammengefuegt.csv"
+        df = pd.read_csv(url, sep=';')
 
-    # x-Achse mit Abschlussnamen, gedreht
-    ax.set_xticks(range(len(df_grouped['Abschluss'])))
-    ax.set_xticklabels(df_grouped['Abschluss'], rotation=45, ha='right')
+        # Die ersten zwei Spalten löschen
+        df = df.drop(df.columns[:2], axis=1)
 
-    # y-Achse ausblenden (keine Ticks, kein Label)
-    ax.yaxis.set_visible(False)
+        # Spalte umbenennen, um das Leerzeichen loszuwerden
+        df = df.rename(columns={
+            'auslaendische_Absolvierende_und_Abgehende _Anzahl': 'auslaendische_Absolvierende_und_Abgehende_Anzahl'
+        })
 
-    # Achsentitel ausblenden
-    ax.set_xlabel('')
-    ax.set_ylabel('')
+        # in Typ float umwandeln
+        df['Absolvierende_und_Abgehende_Anzahl'] = pd.to_numeric(
+            df['Absolvierende_und_Abgehende_Anzahl'], errors='coerce'
+        )
 
-    # Rahmen (Spines) entfernen
-    for spine in ax.spines.values():
-        spine.set_visible(False)
+        df['auslaendische_Absolvierende_und_Abgehende_Anzahl'] = pd.to_numeric(
+            df['auslaendische_Absolvierende_und_Abgehende_Anzahl'], errors='coerce'
+        )
 
-    # Hintergrundfarbe transparent (für Streamlit dark mode passend)
-    ax.set_facecolor('none')
-    fig4.patch.set_facecolor('none')
+        #########################################################################################
+        # Diagramm 4 Prozentualer Anteil der deutschen/ausländischen Absolventen nach Abschluss #
+        #########################################################################################
+        df = df[df['Abschluss'] != 'ohne Hauptschulabschluss']
+        df['Abschluss'] = df['Abschluss'].replace('mittlerer Abschluss', 'Mittlerer Abschluss')
 
-    plt.title('Prozentualer Anteil der ausländischen Absolventen nach Abschluss')
-    plt.tight_layout()
+        Abgangsjahr = df['Abgangsjahr'].unique()
+        selected_Abgangsjahr = st.selectbox("Abgangsjahr", Abgangsjahr)
+        df_filtered_12 = df[df['Abgangsjahr'] == selected_Abgangsjahr]
 
-    # st.pyplot(fig4)
-    ###############################################################
-    # die Diagramme in 2x2 Columns anzeigen
-    col1, col2 = st.columns(2)
+        # Deutsche Absolventen berechnen
+        df_filtered_12['deutsche_Absolvierende'] = df_filtered_12['Absolvierende_und_Abgehende_Anzahl'] - df_filtered_12[
+            'auslaendische_Absolvierende_und_Abgehende_Anzahl']
 
-    with col1:
-        st.subheader("Anteil ausländischer Schüler nach Bundesland")
-        fig1 = st_folium(m, width=1000, height=700)
+        # Gruppierung nach Abschluss
+        df_grouped = df_filtered_12.groupby('Abschluss').agg({
+            'deutsche_Absolvierende': 'sum',
+            'auslaendische_Absolvierende_und_Abgehende_Anzahl': 'sum'
+        }).reset_index()
 
-    with col2:
-        st.subheader("Anteil ausländischer Schüler nach Schulart")
-        # Diagramm 2 anzeigen
-        st.pyplot(fig2)
+        # Gesamtsummen für Prozentberechnung
+        gesamt_auslaender = df_grouped['auslaendische_Absolvierende_und_Abgehende_Anzahl'].sum()
+        gesamt_deutsche = df_grouped['deutsche_Absolvierende'].sum()
 
-    # zweite Zeile (nochmal 2 Spalten)
-    col3, col4 = st.columns(2)
+        # Prozentwerte berechnen
+        df_grouped['Prozent_auslaender'] = (df_grouped[
+                                                'auslaendische_Absolvierende_und_Abgehende_Anzahl'] / gesamt_auslaender) * 100
+        df_grouped['Prozent_deutsche'] = (df_grouped['deutsche_Absolvierende'] / gesamt_deutsche) * 100
 
-    with col3:
-        st.subheader("Top 10 Staatsangehörigkeiten")
-        # Diagramm 3 anzeigen
-        st.pyplot(fig3)
+        # Sortieren nach Anteil Ausländer absteigend
+        grouped_sorted = df_grouped.sort_values(by='Prozent_auslaender', ascending=False).reset_index(drop=True)
 
-    with col4:
-        st.subheader("Anteil ausländischer Absolventen/Abgänger")
-        # Diagramm 4 anzeigen
-        st.pyplot(fig4)
+        # Transponiertes (horizontal) Balkendiagramm mit Matplotlib
+        fig4, ax = plt.subplots(figsize=(10, 8))
+
+        bars_auslaender = ax.barh(grouped_sorted['Abschluss'], grouped_sorted['Prozent_auslaender'],
+                                  label='Ausländisch', color='#fc8d62')
+        bars_deutsche = ax.barh(grouped_sorted['Abschluss'], grouped_sorted['Prozent_deutsche'],
+                                left=grouped_sorted['Prozent_auslaender'], label='Deutsch', color='#66c2a5')
+
+        # Prozentwerte in die Balken schreiben, nur wenn größer 5% für bessere Lesbarkeit
+        for bar, wert in zip(bars_auslaender, grouped_sorted['Prozent_auslaender']):
+            if wert > 5:
+                ax.text(bar.get_width() / 2, bar.get_y() + bar.get_height() / 2,
+                        f'{wert:.1f}%', va='center', ha='center', color='white', fontsize=13)
+
+        for bar, wert, left in zip(bars_deutsche, grouped_sorted['Prozent_deutsche'], grouped_sorted['Prozent_auslaender']):
+            if wert > 5:
+                ax.text(left + bar.get_width() / 2, bar.get_y() + bar.get_height() / 2,
+                        f'{wert:.1f}%', va='center', ha='center', color='white', fontsize=13)
+
+        # Achsen und Stil anpassen
+        ax.xaxis.set_visible(False)  # Optional: x-Achse ausblenden
+        # größere Beschriftung
+        ax.set_yticklabels(grouped_sorted['Abschluss'], fontsize=15)
+        ax.set_title('')  # Kein Titel
+        ax.invert_yaxis()  # Höchster Wert oben
+
+        # Rahmen entfernen
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+
+        # Legende anzeigen
+        ax.legend()
+
+        plt.tight_layout()
+
+        #st.pyplot(fig4)
+        ###############################################################
+
+        # zweite Zeile (nochmal 2 Spalten)
+        col3, col4 = st.columns(2)
+
+        with col3:
+            st.subheader("Top 10 Staatsangehörigkeiten")
+            # Diagramm 3 anzeigen
+            st.pyplot(fig3)
+
+        with col4:
+            st.subheader("Anteil Absolventen")
+            # Diagramm 4 anzeigen
+            st.pyplot(fig4)
+
+
+    with tab2:
+        st.subheader("Bildungsabschluss")
