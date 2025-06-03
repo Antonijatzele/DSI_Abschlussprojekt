@@ -15,18 +15,24 @@ def load_data():
 
 # Neuer Datensatz: nach Geschlecht
 @st.cache_data
-def load_data_geschlecht():
-    df = pd.read_csv(
-        "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Arbeitsmarktintegration/besch%C3%A4ftigungsquote_afghanisten.csv",
+def load_data_geschlecht(): 
+    # Liste der Ländernamen, die in den Dateinamen verwendet werden
+    laender = ["Afghanistan", "Syrien"]  # Beispiel: DE für Deutschland, FR für Frankreich, etc.
 
-        
-        sep=";",
-        decimal=",",
-        encoding="utf-8"
-    )
-    df = df.dropna(subset=["Jahr"])  # Letzte leere Zeile entfernen
-    df["Jahr"] = df["Jahr"].astype(int)
-    return df
+    dfs = []  # Liste zum Sammeln der DataFrames
+
+    for land in laender:
+        url = f"https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten/{land}.csv"
+        df = pd.read_csv(url, sep=";", decimal=",", encoding="utf-8")
+        df = df.dropna(subset=["Jahr"])  # Letzte leere Zeile entfernen
+        df["Jahr"] = df["Jahr"].astype(int)
+        df["Land"] = land  # Optional: Spalte hinzufügen, um die Herkunft des Datensatzes zu kennzeichnen
+        dfs.append(df)
+
+    # Alle DataFrames zu einem großen DataFrame zusammenfügen
+    gesamt_df = pd.concat(dfs, ignore_index=True)
+    return gesamt_df
+
 
 # Spaltennamen zerlegen
 def parse_column(col):
@@ -50,7 +56,7 @@ def show():
     jahr_col = df.columns[0]
 
     # Tabs
-    tab1, tab2, tab3 = st.tabs(["Übersicht", "Geschlecht", "Beschreibung"])
+    tab1, tab2, tab3 = st.tabs(["Übersicht", "Nach Herkunftsland", "Beschreibung"])
 
     # Beschreibung (Tab 3)
     with tab3:
@@ -62,12 +68,12 @@ def show():
 
     # Neuer Tab: nach Geschlecht (nicht Staatsangehörigkeit!)
     with tab2:
-        st.subheader("👩‍🦰👨‍🦱 Beschäftigungsquote nach Geschlecht")
+        st.subheader("Beschäftigungsquote nach Herkunftsland")
 
         df_geschlecht = load_data_geschlecht()
         st.dataframe(df_geschlecht)
 
-        indikator_options = ["Beschäftigungsquote", "Frauen Beschäftigungsquote", "Männer Beschäftigungsquote"]
+        indikator_options = []
         selected = st.multiselect("Indikatoren wählen", indikator_options, default=indikator_options)
 
         fig, ax = plt.subplots(figsize=(12, 6))
