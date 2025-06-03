@@ -211,7 +211,7 @@ def show():
 
             # Karte erstellen
             # m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB positron')
-            m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB dark_matter')
+            m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB positron')
 
             def style_function(feature):
                 anteil = feature['properties']['Anteil (%)']
@@ -581,3 +581,19 @@ def show():
 
         with st.expander("DataFrame anzeigen"):
             st.dataframe(df)
+
+        # Plot
+        plt.figure(figsize=(8, 5))
+        sns.barplot(
+            data=df,
+            x="Beruflicher Bildungsabschluss",
+            y="Anzahl",
+            hue="Migrationsstatus",
+            palette=farben
+        )
+        plt.title("Beruflicher Bildungsabschluss nach Migrationsstatus")
+        plt.ylabel("Anzahl (in 1000)")
+        plt.xlabel("Abschluss")
+        plt.legend(title="Migrationsstatus")
+        plt.tight_layout()
+        plt.show()
