@@ -39,17 +39,24 @@ def json2df(stat, lng="de"):
     for x in flat_arr:
         row = []
         for i, j in enumerate(x[0]):
-            if not data["id"][i] in ["statistic", "content"]:
-                code = dim[i][j]
+            code = dim[i][j]
+            if data["id"][i] == "statistic":
+                val = structure["statistics"][code]["label"][lng]
+            elif data["id"][i] == "content":
+                code = code.split('$')[0]
+                val = structure["contents"][code]["label"][lng]
+            else:
                 val = structure["variableValues"][code]["label"][lng]
-                row.append(code)
-                row.append(val)
+            
+            row.append(code)
+            row.append(val)
+
             
         row.append(int(x[1]))
         table.append(row)
 
     # Spaltennamen erstellen
-    cols = [item for sublist in [[col, structure["variables"][col]["label"][lng]] for col in data["id"] if not col in ["statistic", "content"]] for item in sublist] + ["Value"]
+    cols = [item for sublist in [[col, structure["variables"][col]["label"][lng] if not col in ["statistic", "content"] else col + "_desc"] for col in data["id"]] for item in sublist] + ["Value"]
     
     # Tabelle als DataFrame zurückgeben
     return pd.DataFrame(table, columns=cols)
