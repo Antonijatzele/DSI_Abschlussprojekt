@@ -9,7 +9,7 @@ def show():
     st.header("Bevölkerungsdichte vs. Ausländeranteil")
 
     # Fester Pfad zur CSV-Datei
-    csv_path = "data/migration/scatter_plot_anteil_dichte.csv"
+    csv_path = "Streamlit/data/migration/scatter_plot_anteil_dichte.csv"
 
     # CSV einlesen
 

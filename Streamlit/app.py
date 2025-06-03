@@ -62,7 +62,6 @@ elif ausgewaehlte_seite == "Geographie1":
 elif ausgewaehlte_seite == "Geographie2":
     migration_kreise_scatter.show()
 
-
 # Integration
 elif ausgewaehlte_seite == "Arbeitsmarkt":
     integration_arbeitsmarkt.show()
