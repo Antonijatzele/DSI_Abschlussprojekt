@@ -690,82 +690,88 @@ def show():
         df = pd.read_csv(url, sep=";")
 
         df['Anzahl'] = pd.to_numeric(df['Anzahl'], errors='coerce')
-        print(df['Anzahl'].isna().sum())
         df = df.dropna(subset=['Anzahl'])
+
+
+
+        # Liste gültiger Unterkategorien
+        valid_entries = [
+            "Lehre / Berufsausbildung",
+            "Fachschulabschluss",
+            "Bachelor",
+            "Master",
+            "Diplom",
+            "Promotion",
+            "In schulischer oder beruflicher Ausbildung",
+            "Nicht in schulischer oder beruflicher Ausbildung"
+        ]
+
+        # Filter anwenden
+        df = df[df["Beruflicher Bildungsabschluss"].isin(valid_entries)]
+
+        # Mapping für Gruppierung
+        mapping = {
+            "Lehre / Berufsausbildung": "Mit beruflichem Bildungsabschluss",
+            "Fachschulabschluss": "Mit beruflichem Bildungsabschluss",
+            "Bachelor": "Mit beruflichem Bildungsabschluss",
+            "Master": "Mit beruflichem Bildungsabschluss",
+            "Diplom": "Mit beruflichem Bildungsabschluss",
+            "Promotion": "Mit beruflichem Bildungsabschluss",
+            "In schulischer oder beruflicher Ausbildung": "Ohne beruflichen Bildungsabschluss",
+            "Nicht in schulischer oder beruflicher Ausbildung": "Ohne beruflichen Bildungsabschluss"
+        }
+
+        # Neue Gruppenspalte
+        df["Bildungsabschluss Gruppe"] = df["Beruflicher Bildungsabschluss"].map(mapping)
 
         with st.expander("DataFrame anzeigen"):
             st.dataframe(df)
 
-        # Streamlit Filter
-        jahre = df['Jahr'].unique()
-        selected_jahr = st.selectbox("Wähle das Jahr", sorted(jahre))
-
-        migrations_status = ['Mit Migrationshintergrund', 'Ohne Migrationshintergrund']
-        selected_status = st.multiselect("Migrationsstatus", migrations_status, default=migrations_status)
+        # Streamlit UI: Filter auswählen
+        jahr = st.selectbox("Jahr auswählen:", options=sorted(df["Jahr"].unique()),
+                            index=sorted(df["Jahr"].unique()).index(2023))
+        migrationsstatus = st.selectbox("Migrationsstatus auswählen:", options=sorted(df["Migrationsstatus"].unique()))
 
         # Daten filtern
-        df_filtered = df[(df['Jahr'] == selected_jahr) & (df['Migrationsstatus'].isin(selected_status))]
+        df_filtered = df[
+            (df["Jahr"] == jahr) &
+            (df["Migrationsstatus"] == migrationsstatus) &
+            (df["Geschlecht"] == "Insgesamt")  # wie vorher
+            ].copy()
 
-        # 'Insgesamt' aus 'Beruflicher Bildungsabschluss' entfernen
-        df_filtered = df_filtered[df_filtered['Beruflicher Bildungsabschluss'] != 'Insgesamt']
+        # Prozentanteile berechnen
+        total = df_filtered["Anzahl"].sum()
+        df_filtered["Prozent"] = df_filtered["Anzahl"] / total * 100
+        df_filtered["Prozent"] = df_filtered["Prozent"].round(1)
 
-        # Nur spezifische Abschlüsse (keine Oberkategorien)
-        df_filtered = df_filtered[df_filtered['Beruflicher Bildungsabschluss'].isin([
-            'Bachelor', 'Diplom', 'Master'
-        ])]
+        # Sortiere nach Prozent absteigend
+        df_filtered = df_filtered.sort_values(by="Prozent", ascending=False)
+        category_order = df_filtered["Beruflicher Bildungsabschluss"].tolist()
 
-        # Gesamtzahl aller Personen für das ausgewählte Jahr und beide Migrationsstatus
-        gesamt = df_filtered['Anzahl'].sum()
+        # Orange aus Set2-Palette (ungefähr)
+        orange_set2 = "#fd8d3c"
 
-        # Prozentwerte berechnen - Anteil jeder Gruppe (Bildungsabschluss + Migrationsstatus) am Gesamtwert
-        grouped = df_filtered.groupby(['Beruflicher Bildungsabschluss', 'Migrationsstatus'])[
-            'Anzahl'].sum().reset_index()
-        grouped['Prozent'] = 100 * grouped['Anzahl'] / gesamt
+        # Plot erstellen
+        fig = px.bar(
+            df_filtered,
+            y="Beruflicher Bildungsabschluss",
+            x="Prozent",
+            orientation='h',
+            category_orders={"Beruflicher Bildungsabschluss": category_order},
+            title=f"Prozentuale Verteilung der Bildungsabschlüsse ({migrationsstatus}, {jahr})",
+            labels={"Beruflicher Bildungsabschluss": "", "Prozent": ""},
+            text="Prozent",
+            color_discrete_sequence=[orange_set2]
+        )
 
-        # Pivot für gestapeltes Balkendiagramm
-        df_pivot = grouped.pivot(index='Beruflicher Bildungsabschluss', columns='Migrationsstatus',
-                                 values='Prozent').fillna(0)
+        fig.update_traces(texttemplate='%{text}%', textposition='outside')
 
-        # Plot horizontal
-        fig, ax = plt.subplots(figsize=(10, 6), facecolor='white')
-        ax.set_facecolor('white')
+        fig.update_layout(
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
+            xaxis=dict(showticklabels=False, showgrid=False, zeroline=False, visible=False),
+            yaxis_title='',
+            xaxis_title=''
+        )
 
-        left = pd.Series([0] * len(df_pivot), index=df_pivot.index)
-        colors = ['#fc8d62', '#66c2a5']
-
-        for i, status in enumerate(df_pivot.columns):
-            bars = ax.barh(df_pivot.index, df_pivot[status], left=left, label=status, color=colors[i])
-            # Prozentwerte auf die Balken schreiben – jetzt schwarz
-            for bar, wert in zip(bars, df_pivot[status]):
-                if wert > 3:
-                    ax.text(
-                        bar.get_x() + bar.get_width() / 2,
-                        bar.get_y() + bar.get_height() / 2,
-                        f'{wert:.1f}%',
-                        ha='center',
-                        va='center',
-                        color='black',  # Schwarz statt weiß
-                        fontsize=12
-                    )
-            left += df_pivot[status]
-
-        # Achsenticks schwarz machen
-        ax.tick_params(axis='y', colors='black', labelsize=12)
-
-        # Achsentitel entfernen (oder falls vorhanden, schwarz setzen)
-        ax.set_xlabel('')
-        ax.set_ylabel('')
-
-        # X-Achse ausblenden
-        ax.xaxis.set_visible(False)
-
-        # Titel schwarz
-        # ax.set_title(f'Prozentuale Anteile nach Bildungsabschluss im Jahr {selected_jahr}', color='black')
-
-        # Legende schwarz (Text & Titel)
-        leg = ax.legend([])
-        plt.setp(leg.get_texts(), color='black')
-        leg.get_title().set_color('black')
-
-        plt.tight_layout()
-        st.pyplot(fig)
+        st.plotly_chart(fig, use_container_width=True)
