@@ -7,7 +7,7 @@ StaatsangehörigkeitEs werden Grafiken und Daten nur zu denjenigen Staatsangehö
 ;;;
 Hinweise:;Bei den Jahreszahlen handelt es sich um Jahresdurchschnitte. Aufgrund von geringen Fallzahlen sowie unterschiedlicher Datenquellen können die Daten bzw. Quoten stärkeren kurzfristigen oder zufälligen Schwankungen unterliegen, die die Vergleichbarkeit einschränken können. Bitte beachten Sie die ausführlichen Hinweise unter „Informationen“. Eine Differenzierung nach Bundesländern und Geschlecht steht erst seit Jahresbeginn 2021 zur Verfügung.;;
 ;;;
-jahr ;Frauen Beschäftigungsquote ;Männer Beschäftigungsquote ;Beschäftigungsquote 
+Jahr;Frauen Beschäftigungsquote ;Männer Beschäftigungsquote ;Beschäftigungsquote 
 2015;x;x;28,2
 2016;x;x;16,1
 2017;x;x;21,6
