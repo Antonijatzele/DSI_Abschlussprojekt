@@ -32,10 +32,7 @@ def get_country_files():
 def load_data_geschlecht(): 
        # Liste der Ländernamen, die in den Dateinamen verwendet werden
     laender = get_country_files()
-    coords = {
-        "Afghanistan": {"lat": 33.93911, "lon": 67.709953},
-        "Syrien": {"lat": 34.802075, "lon": 38.996815}
-    }
+    
 
     dfs = []  # Liste zum Sammeln der DataFrames
 
@@ -68,8 +65,6 @@ def load_data_geschlecht():
         # Herkunftsspalte
         df["Land"] = land
         # Koordinaten ergänzen
-        df["lat"] = df["Land"].apply(lambda x: coords[x]["lat"])
-        df["lon"] = df["Land"].apply(lambda x: coords[x]["lon"])
 
 
         
@@ -143,13 +138,6 @@ def show():
         jahr = st.selectbox("Wähle ein Jahr", sorted(df_geschlecht["Jahr"].unique()))
         df_filtered = df_geschlecht[df_geschlecht["Jahr"] == jahr]
 
-        # Für die Demo nehmen wir eine Spalte als "Wert" – z.B. die erste numerische Spalte nach lat/lon
-        numerische_spalten = df_filtered.select_dtypes(include="number").columns.tolist()
-        numerische_spalten = [col for col in numerische_spalten if col not in ["Jahr", "lat", "lon"]]
-
-        if len(numerische_spalten) == 0:
-            st.error("Keine geeigneten Werte-Spalten gefunden.")
-            st.stop()
 
         wert_spalte = "Beschäftigungsquote"
 
@@ -167,53 +155,34 @@ def show():
         geojson_data = requests.get(geojson_url).json()
     
         with col1:
-            map_center = [df_filtered["lat"].mean(), df_filtered["lon"].mean()]
-            m = folium.Map(location=map_center, zoom_start=5)
+            m = folium.Map(zoom_start=5)
+            
+            st.dataframe(df_filtered)
 
-            for idx, row in df_filtered.iterrows():
-                if row["Land"] in top3["Land"].values:
-                    farbe = farben[top3["Land"].tolist().index(row["Land"])]
-                    radius = 12
-                else:
-                    farbe = "blue"
-                    radius = 7
+            # Länder einfärben
+            folium.Choropleth(
+                geo_data=geojson_data,
+                data=df_filtered,
+                columns=["Land", "Beschäftigungsquote"],
+                key_on="feature.properties.name",
+                fill_color="YlOrRd",
+                fill_opacity=0.8,
+                line_opacity=0.3,
+                legend_name="Beschäftigungsquote (%)",
+                nan_fill_color="lightgray"
+            ).add_to(m)
 
-                popup_text = (
-                    f"<b>{row['Land']}</b><br>"
-                    f"{wert_spalte}: {row[wert_spalte]:.1f}%"
+            for _, row in df_filtered.iterrows():
+                popup_text = f"""
+                <b>Land:</b> {row['Land']}<br>
+                <b>Jahr:</b> {row['Jahr']}<br>
+                <b>Beschäftigungsquote:</b> {row['Beschäftigungsquote']}%
+                """
+                folium.GeoJsonPopup(
+                    fields=[],
+                    labels=False,
+                    html=popup_text
                 )
-
-                wert = row[wert_spalte]
-
-                # Länder einfärben
-                folium.Choropleth(
-                    geo_data=geojson_data,
-                    data=df_filtered,
-                    columns=["Land", "Beschäftigungsquote"],
-                    key_on="feature.properties.name",
-                    fill_color="YlOrRd",
-                    fill_opacity=0.8,
-                    line_opacity=0.3,
-                    legend_name="Beschäftigungsquote (%)",
-                    nan_fill_color="lightgray"
-                ).add_to(m)
-
-                folium.CircleMarker(
-                    location=[row["lat"], row["lon"]],
-                    radius=radius,
-                    color=farbe,
-                    fill=True,
-                    fill_color=farbe,
-                    fill_opacity=0.7,
-                    popup=folium.Popup(popup_text, max_width=200),
-                    tooltip=f"{wert:.1f}%"  # Tooltip zeigt den Wert
-                ).add_to(m)
-
-                # Text direkt über dem Marker
-                folium.map.Marker(
-                    [row["lat"] + 0.5, row["lon"]],  # leicht versetzt nach oben
-                    icon=folium.DivIcon(html=f"""<div style="font-size: 12px; color: black; text-align: center;">{wert:.1f}%</div>""")
-                ).add_to(m)
 
 
 
