@@ -1,13 +1,13 @@
-<svg width="500" height="105" xmlns="http://www.w3.org/2000/svg">
-  <text x="0" y="20" font-family="Arial" font-size="20" fill="black">
+<svg width="500" height="100" xmlns="http://www.w3.org/2000/svg">
+  <text x="0" y="20" font-family="Arial" font-size="20" fill="black" text-anchor="start">
     Datengetriebene Analyse zu
   </text>
 
-  <text x="0" y="70" font-family="Arial" font-size="45" font-weight="bold" fill="black">
+  <text x="0" y="70" font-family="Arial" font-size="45" font-weight="bold" fill="black" text-anchor="start">
     Migration
   </text>
   
-  <text x="235" y="70" font-family="Arial" font-size="30" fill="black" text-anchor="middle">
+  <text x="235" y="70" font-family="Arial" font-size="28" fill="black" text-anchor="middle">
     und
   </text>
   
@@ -15,7 +15,7 @@
     Integration
   </text>
   
-  <text x="500" y="105" font-family="Arial" font-size="20" fill="black" text-anchor="end">
+  <text x="500" y="100" font-family="Arial" font-size="20" fill="black" text-anchor="end">
     in Deutschland
   </text>
 </svg>
