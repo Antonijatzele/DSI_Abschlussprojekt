@@ -212,7 +212,9 @@ def show():
             st.plotly_chart(fig_bar, use_container_width=True)
 
     with tab1:
+
         st.subheader("Arbeitsmarktintegration — Deutsch vs. Ausländer")
+        st.dataframe(df)
         cols = df.columns[1:]
         parsed_cols = [parse_column(c) for c in cols]
         parsed_cols = [p for p in parsed_cols if p is not None]
