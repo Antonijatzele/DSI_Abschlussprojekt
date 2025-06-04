@@ -20,3 +20,5 @@ def show():
         simple_timeline("wander_gesamt_de.csv", "Art", default_groups)
 
 
+if __name__ == "__main__":
+    show()

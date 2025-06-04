@@ -101,3 +101,6 @@ def show():
 
         # Anzeige des Plots in Streamlit
         st.plotly_chart(fig)
+
+if __name__ == "__main__":
+    show()
