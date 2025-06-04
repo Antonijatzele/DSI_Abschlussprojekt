@@ -11,6 +11,26 @@ from modules import (
 # Seiten-Layout
 st.set_page_config(page_title="Migration & Integration in Deutschland", layout="wide")
 
+# Tabs mit größeren Schriftarten
+st.markdown(
+    """
+    <style>
+    .streamlit-expanderHeader {
+        font-size: 30px !important;
+        font-weight: bold !important;
+    }
+    .css-1l02v5f {
+        font-size: 30px !important;
+        font-weight: bold !important;
+    }
+    </style>
+    """, unsafe_allow_html=True
+)
+
+
+
+
+
 # Hauptmenü-Struktur
 hauptkategorien = {
     "Start": [],

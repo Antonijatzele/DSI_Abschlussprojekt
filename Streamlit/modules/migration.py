@@ -5,7 +5,6 @@ from modules import (
     migration_migration,
     migration_alter,
     migration_kreise,
-    migration_kreise_scatter,
 )
 
 def show():
@@ -27,12 +26,11 @@ def show():
     - Korrelation mit sozioökonomischen Faktoren wie Arbeitslosenquote oder Bevölkerungsdichte  
     """)
 
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "Anteile",
         "Migration",
         "Alterstruktur",
-        "Geographie1",
-        "Geographie2",
+        "Geographie",
         "Einbürgerung"
     ])
 
@@ -53,10 +51,6 @@ def show():
     with tab4:
         migration_kreise.show()
 
-    # "Geographie2"
-    with tab5:
-        migration_kreise_scatter.show()
-
     # "Einbürgerung"
-    with tab6:
+    with tab5:
         migration_einbuergerung.show()
