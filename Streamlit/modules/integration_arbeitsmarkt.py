@@ -130,7 +130,7 @@ def show():
 
 
         wert_spalte = "Beschäftigungsquote"
-
+        st.header("Länder wo es Krieg herrscht:")
         st.write(f"**Färbung basiert auf der Spalte:** {wert_spalte}")
 
         # Top 3 Länder nach Wert bestimmen
