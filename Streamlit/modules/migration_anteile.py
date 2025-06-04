@@ -5,6 +5,8 @@ from modules.plots import simple_timeline, simple_piechart
 
 
 def show():
+    st.header("Ausländeranteil in Deutschland")
+
     tab1, tab2, tab3, tab4 = st.tabs([
         "Gesamt",
         "Ländergruppierungen",
@@ -71,21 +73,24 @@ def show():
             hovermode="x unified"
         )
         st.plotly_chart(fig, use_container_width=True)
-
+        st.markdown("Quelle: [Destatis - Fortschreibung des Bevölkerungsstandes](https://www-genesis.destatis.de/datenbank/online/statistic/12411/details)")
 
     with tab2:
         default_groups = ["Afrika", "Asien", "Europa", "Amerika"]
         simple_timeline("historisch_ländergruppen.csv", "Ländergruppierungen", default_groups)
-
+        st.markdown("Quelle: [Destatis - Ausländerstatistik](https://www-genesis.destatis.de/datenbank/online/statistic/12521/details)")
     
     with tab3:
         default_groups = ['Türkei', 'Italien', 'Ukraine', 'Syrien', 'Afghanistan']
         simple_timeline("historisch_staaten.csv", "Staatsangehörigkeit", default_groups)
         simple_piechart("historisch_staaten.csv", "Staatsangehörigkeit")
+        st.markdown("Quelle: [Destatis - Ausländerstatistik](https://www-genesis.destatis.de/datenbank/online/statistic/12521/details)")
 
     with tab4:
         default_groups = ['Befristete AE, besondere Gründe und nationale Visa', 'Befristete AE, völkerrechtl., human., pol. Gründe', 'Befristete Aufenthaltserlaubnis, Erwerbstätigkeit', 'Aufenthaltsrecht nach FreizügG/EU', 'Unbefristete Niederlassungserlaubnis']
         simple_timeline("historisch_titel.csv", "Ausgewählte Aufenthaltstitel", default_groups)
+        st.markdown("Quelle: [Destatis - Ausländerstatistik](https://www-genesis.destatis.de/datenbank/online/statistic/12521/details)")
+    
 
 
 if __name__ == "__main__":

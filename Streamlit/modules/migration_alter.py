@@ -106,5 +106,7 @@ def show():
 
     st.plotly_chart(fig, use_container_width=True)
 
+    st.markdown("Quelle: [Destatis - Ausländerstatistik](https://www-genesis.destatis.de/datenbank/online/statistic/12521/details)")
+
 if __name__ == "__main__":
     show()
