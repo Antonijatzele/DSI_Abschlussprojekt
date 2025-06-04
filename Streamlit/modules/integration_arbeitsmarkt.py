@@ -136,6 +136,21 @@ def show():
         with col2:
             df_sorted = df_filtered[["Land", wert_spalte]].sort_values(by=wert_spalte, ascending=False)
             st.dataframe(df_sorted.set_index("Land"), use_container_width=True)
+        
+
+       
+
+        fig = px.line(
+            df_geschlecht,
+            x="Jahr",
+            y="Beschäftigungsquote",
+            color="Land",
+            markers=True,
+            title="Entwicklung der Beschäftigungsquote nach Herkunftsland"
+        )
+        fig.update_layout(hovermode="closest")
+
+        st.plotly_chart(fig, use_container_width=True)
 
     with tab1:
         st.subheader("Arbeitsmarktintegration — Deutsch vs. Ausländer")
