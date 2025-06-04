@@ -182,12 +182,46 @@ def show():
 
 
 
-            st_folium(m, width=768, height=1024)
-
+           
+            st_folium(m, height=500)
         with col2:
+            m = folium.Map(zoom_start=5)
+            threshold_scale = [0, 10, 20, 30, 40, 50]
+            # Länder einfärben
+            folium.Choropleth(
+                geo_data=geojson_data,
+                data=df_filtered,
+                columns=["Land", "Beschäftigungsquote"],
+                key_on="feature.properties.name",
+                fill_color="YlOrRd",
+                threshold_scale=threshold_scale,
+                fill_opacity=1,
+                line_opacity=0.3,
+                legend_name="Beschäftigungsquote (%)",
+                nan_fill_color="lightgray"
+            ).add_to(m)
+
+            from folium.features import DivIcon
+            from shapely.geometry import shape
+           # Ländernamen als Text hinzufügen
+            for feature in geojson_data['features']:
+                country_name = feature['properties']['name']
+                
+                if country_name in df_filtered["Land"].values:
+                    geom = shape(feature['geometry'])
+                    centroid = geom.centroid
+                    
+                    folium.map.Marker(
+                        [centroid.y, centroid.x],
+                        icon=DivIcon(
+                            icon_size=(150,36),
+                            icon_anchor=(0,0),
+                            html=f'<div style="font-size:10pt; font-weight:bold">{country_name}</div>',
+                        )
+                    ).add_to(m)
             
-            df_sorted = df_filtered[["Land", wert_spalte]].sort_values(by=wert_spalte, ascending=False)
-            st.dataframe(df_sorted.set_index("Land"), use_container_width=True)
+            #df_sorted = df_filtered[["Land", wert_spalte]].sort_values(by=wert_spalte, ascending=False)
+            #st.dataframe(df_sorted.set_index("Land"), use_container_width=True)
 
     # Übersicht (Tab 1)
     with tab1:
