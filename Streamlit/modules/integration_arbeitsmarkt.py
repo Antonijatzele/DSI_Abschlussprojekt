@@ -6,7 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from streamlit_folium import st_folium
-
+import plotly.express as px
 # Original-Datensatz laden
 @st.cache_data
 def load_data():
@@ -180,7 +180,7 @@ def show():
         ])
 
         if diagramm_typ == "Liniendiagramm":
-            import plotly.express as px
+            
 
 
             # Daten für Plotly vorbereiten
@@ -224,11 +224,18 @@ def show():
             row.columns = ["Wert"]
             row["Gruppe"] = row.index.str.split('_').str[0]
             row["Ausprägung"] = row.index.str.split('_').str[1]
-            fig, ax = plt.subplots(figsize=(10, 6))
-            sns.barplot(data=row.reset_index(), x="Ausprägung", y="Wert", hue="Gruppe", ax=ax)
-            plt.xticks(rotation=45)
-            plt.title(f"Vergleich nach Altersgruppen für {jahr}")
-            st.pyplot(fig)
+
+            fig = px.bar(
+                row.reset_index(),
+                x="Ausprägung",
+                y="Wert",
+                color="Gruppe",
+                barmode="group",
+                text_auto=True  # Werte auf die Balken schreiben
+            )
+            fig.update_layout(title=f"Vergleich nach Altersgruppen für {jahr}")
+            st.plotly_chart(fig, use_container_width=True)
+
 
 
 
