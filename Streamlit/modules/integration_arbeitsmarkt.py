@@ -22,9 +22,15 @@ def load_data():
 def get_country_files():
     api_url = "https://api.github.com/repos/Antonijatzele/DSI_Abschlussprojekt/contents/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten"
     res = requests.get(api_url)
+    
+
     if res.status_code != 200:
+        st.write(f"Status Code: {res.status_code}")
+        st.write(f"Response Headers: {res.headers}")
+        st.write(f"Response Text: {res.text}")
         st.error("Konnte die Dateiliste nicht laden.")
         return []
+
     files = res.json()
     return [f["name"].replace(".csv", "") for f in files if f["name"].endswith(".csv")]
 
