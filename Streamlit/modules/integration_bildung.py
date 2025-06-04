@@ -14,7 +14,7 @@ import plotly.graph_objects as go
 
 
 def show():
-    st.title("🎓 Bildungs-Integration")
+    st.title("🎓 Integration & Bildung")
 
     st.markdown("""
         <style>
@@ -29,6 +29,20 @@ def show():
         }
         </style>
     """, unsafe_allow_html=True)
+
+    st.header("Bildung als Schlüssel zur Integration")
+
+    st.markdown("""
+    Bildung ist einer der zentralen Faktoren für eine gelungene Integration.  
+    Sie schafft Perspektiven, ermöglicht gesellschaftliche Teilhabe und trägt zur Chancengleichheit bei.  
+    Besonders für Menschen mit Migrationsgeschichte ist der Zugang zu Bildung entscheidend – und häufig zugleich herausfordernd.
+
+    Diese Seite beleuchtet:
+    - Zentrale Herausforderungen im Bildungssystem
+    - Daten & Statistiken zur Bildungsbeteiligung
+    - Erfolgreiche Projekte und Praxisbeispiele
+    - Empfehlungen für Politik, Praxis und Gesellschaft
+    """)
 
     tab1, tab2 = st.tabs(["Schulen", "Beruflicher Bildungsabschluss"])
     with tab1:
