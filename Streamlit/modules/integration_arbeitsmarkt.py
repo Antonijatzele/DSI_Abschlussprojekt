@@ -20,11 +20,19 @@ def load_data():
 
 @st.cache_data
 def get_country_files():
+
+    return ['Syria', 'Tunisia', 'Iraq', 'Italy', 'Turkey','Ukraine', 'United States of America', 'Afghanistan' ] 
     api_url = "https://api.github.com/repos/Antonijatzele/DSI_Abschlussprojekt/contents/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten"
     res = requests.get(api_url)
+    
+
     if res.status_code != 200:
+        st.write(f"Status Code: {res.status_code}")
+        st.write(f"Response Headers: {res.headers}")
+        st.write(f"Response Text: {res.text}")
         st.error("Konnte die Dateiliste nicht laden.")
         return []
+
     files = res.json()
     return [f["name"].replace(".csv", "") for f in files if f["name"].endswith(".csv")]
 
@@ -34,7 +42,8 @@ def load_data_geschlecht():
     laender = get_country_files()
     dfs = []
     for land in laender:
-        url = f"https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten/{land}.csv"
+        url = f"https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten/{land}.csv"
+
         csv_data = requests.get(url).text
         df = pd.read_csv(
             StringIO(csv_data),
@@ -138,7 +147,7 @@ def show():
             st.dataframe(df_sorted.set_index("Land"), use_container_width=True)
         
 
-       
+       #Entwicklung über die Jahre
 
         fig = px.line(
             df_geschlecht,
@@ -151,6 +160,53 @@ def show():
         fig.update_layout(hovermode="closest")
 
         st.plotly_chart(fig, use_container_width=True)
+        # balkendiagram 
+        st.subheader("Entwicklung der Beschäftigungsquote nach Geschlecht (2021–2023)")
+
+        # Filter auf die Jahre 2021 bis 2023
+        df_gender_filtered = df_geschlecht[(df_geschlecht["Jahr"] >= 2021) & (df_geschlecht["Jahr"] <= 2023)]
+
+        # Länder-Auswahl als Multiselect
+        laender_liste = sorted(df_gender_filtered["Land"].unique())
+        ausgewaehlte_laender = st.multiselect("Wähle Länder aus", laender_liste, default=laender_liste[:3])
+
+        # Filter nach ausgewählten Ländern
+        df_laender = df_gender_filtered[df_gender_filtered["Land"].isin(ausgewaehlte_laender)]
+
+        if df_laender.empty:
+            st.warning("Keine Daten für die ausgewählten Länder vorhanden.")
+        else:
+            # Durchschnitt pro Jahr und Geschlecht berechnen
+            df_agg = df_laender.groupby(["Jahr"]).agg({
+                "Frauen Beschäftigungsquote": "mean",
+                "Männer Beschäftigungsquote": "mean"
+            }).reset_index()
+
+            # Long-Format für Plotly
+            df_long = df_agg.melt(
+                id_vars="Jahr",
+                value_vars=["Frauen Beschäftigungsquote", "Männer Beschäftigungsquote"],
+                var_name="Geschlecht",
+                value_name="Beschäftigungsquote"
+            )
+
+            # Beschriftung vereinfachen
+            df_long["Geschlecht"] = df_long["Geschlecht"].str.replace(" Beschäftigungsquote", "")
+
+            # Balkendiagramm
+            fig_bar = px.bar(
+                df_long,
+                x="Jahr",
+                y="Beschäftigungsquote",
+                color="Geschlecht",
+                barmode="group",
+                title=f"Beschäftigungsquote nach Geschlecht (2021–2023) für {', '.join(ausgewaehlte_laender)}",
+                labels={"Beschäftigungsquote": "Beschäftigungsquote (%)"},
+                text_auto=True
+            )
+
+            fig_bar.update_layout(xaxis=dict(type='category'))
+            st.plotly_chart(fig_bar, use_container_width=True)
 
     with tab1:
         st.subheader("Arbeitsmarktintegration — Deutsch vs. Ausländer")
