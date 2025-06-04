@@ -21,7 +21,7 @@ def load_data():
 @st.cache_data
 def get_country_files():
 
-    return ['Syria', 'Tunisia', 'Iraq', 'Italy', 'Turkey','Ukraine', 'United States of America', 'Afghanistan' ] 
+    return ['Syria', 'Tunisia', 'Iraq', 'Italy', 'Turkey','Ukraine', 'United%20States%20of%20America', 'Afghanistan' ] 
     api_url = "https://api.github.com/repos/Antonijatzele/DSI_Abschlussprojekt/contents/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten"
     res = requests.get(api_url)
     
