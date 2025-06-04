@@ -5,17 +5,17 @@ def show():
     tab1, tab2, tab3 = st.tabs(["Übersicht", "Herkunftsländer", "Vergleich Deutsche"])
 
     with tab1:
-        st.header("Migration ausländischer Staatbürger")
+        st.subheader("Migration ausländischer Staatbürger")
         default_groups = None
         simple_timeline("wander_gesamt.csv", "Art", default_groups)
 
     with tab2:
-        st.header("Wanderungsaldo nach Herkunftsländern")
+        st.subheader("Wanderungsaldo nach Herkunftsländern")
         default_groups = ['Türkei', 'Italien', 'Ukraine', 'Syrien', 'Afghanistan']
         simple_timeline("wander_staaten.csv", "Herkunfts-/Zielländer", default_groups)
 
     with tab3:
-        st.header("Migration deutscher Staatbürger")
+        st.subheader("Migration deutscher Staatbürger")
         default_groups = None
         simple_timeline("wander_gesamt_de.csv", "Art", default_groups)
 

@@ -29,7 +29,7 @@ def show():
         pivot_df["Insgesamt (Mio)"] = pivot_df["Insgesamt"] / 1_000_000
 
         # Streamlit App
-        st.title("Bevölkerung und Ausländeranteil in Deutschland")
+        st.subheader("Bevölkerung und Ausländeranteil in Deutschland")
 
         # Plotly-Figur mit zwei Y-Achsen
         fig = go.Figure()
@@ -74,21 +74,21 @@ def show():
 
 
     with tab2:
-        st.header("Ländergruppierungen")
+        st.subheader("Ländergruppierungen")
         default_groups = ["Afrika", "Asien", "Europa", "Amerika"]
         simple_timeline("historisch_ländergruppen.csv", "Ländergruppierungen", default_groups)
 
     
     with tab3:
-        st.header("Staatsangehörigkeit")
+        st.subheader("Staatsangehörigkeit")
         default_groups = ['Türkei', 'Italien', 'Ukraine', 'Syrien', 'Afghanistan']
         simple_timeline("historisch_staaten.csv", "Staatsangehörigkeit", default_groups)
         
-        st.header("Staatsangehörigkeit")
+        st.subheader("Staatsangehörigkeit")
         simple_piechart("historisch_staaten.csv", "Staatsangehörigkeit")
 
     with tab4:
-        st.header("Aufenthaltstitel")
+        st.subheader("Aufenthaltstitel")
         default_groups = ['Befristete AE, besondere Gründe und nationale Visa', 'Befristete AE, völkerrechtl., human., pol. Gründe', 'Befristete Aufenthaltserlaubnis, Erwerbstätigkeit', 'Aufenthaltsrecht nach FreizügG/EU', 'Unbefristete Niederlassungserlaubnis']
         simple_timeline("historisch_titel.csv", "Ausgewählte Aufenthaltstitel")
 

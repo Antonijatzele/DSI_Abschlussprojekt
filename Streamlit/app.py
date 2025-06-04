@@ -13,7 +13,6 @@ st.set_page_config(page_title="Migration & Integration in Deutschland", layout="
 
 st.markdown("""
 <style>
-
 	.stTabs [data-baseweb="tab-list"] {
     }
 
@@ -24,7 +23,6 @@ st.markdown("""
 
 	.stTabs [aria-selected="true"] {
 	}
-
 </style>""", unsafe_allow_html=True)
 
 # Hauptmenü-Struktur

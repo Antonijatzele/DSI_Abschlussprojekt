@@ -47,7 +47,7 @@ def show():
     tab1, tab2 = st.tabs(["Karte", "Plot"])
 
     with tab1:
-        st.header('Kreise')
+        st.subheader('Kreise')
         geojson_str, colormap = lade_geodaten()
         m = erstelle_karte(geojson_str)
         
@@ -60,7 +60,7 @@ def show():
     with tab2:
 
         # Titel
-        st.header("Bevölkerungsdichte vs. Ausländeranteil")
+        st.subheader("Bevölkerungsdichte vs. Ausländeranteil")
 
         # Fester Pfad zur CSV-Datei
         csv_path = "Streamlit/data/migration/scatter_plot_anteil_dichte.csv"
