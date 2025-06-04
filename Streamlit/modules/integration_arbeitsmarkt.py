@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from streamlit_folium import st_folium
 import plotly.express as px
+from urllib.parse import quote
+
 # Original-Datensatz laden
 @st.cache_data
 def load_data():
@@ -21,7 +23,7 @@ def load_data():
 @st.cache_data
 def get_country_files():
 
-    return ['Syria', 'Tunisia', 'Iraq', 'Italy', 'Turkey','Ukraine', 'United States of America', 'Afghanistan' ] 
+    return ['Syria', 'Tunisia', 'Iraq', 'Italy', 'Turkey','Ukraine','Afghanistan', 'United States of America'  ] 
     api_url = "https://api.github.com/repos/Antonijatzele/DSI_Abschlussprojekt/contents/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten"
     res = requests.get(api_url)
     
@@ -42,7 +44,8 @@ def load_data_geschlecht():
     laender = get_country_files()
     dfs = []
     for land in laender:
-        url = f"https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten/{land}.csv"
+        encoded_land = quote(land)
+        url = f"https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten/{encoded_land}.csv"
 
         csv_data = requests.get(url).text
         df = pd.read_csv(
@@ -116,7 +119,7 @@ def show():
                 data=df_filtered,
                 columns=["Land", "Beschäftigungsquote"],
                 key_on="feature.properties.name",
-                fill_color="YlOrRd",
+                fill_color="YlOrRd_r",
                 threshold_scale=threshold_scale,
                 fill_opacity=1,
                 line_opacity=0.3,
