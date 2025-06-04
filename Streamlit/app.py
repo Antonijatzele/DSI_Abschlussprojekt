@@ -4,34 +4,37 @@ from modules import (
     integration_arbeitsmarkt,
     integration_sprache,
     integration_bildung,
-    migration_einbuergerung,
-    migration_migration,
     migration,
-    migration_alter,
-    migration_kreise,
-    migration_kreise_scatter,
     glossar,
 )
 
 # Seiten-Layout
 st.set_page_config(page_title="Migration & Integration in Deutschland", layout="wide")
 
+st.markdown("""
+<style>
+	.stTabs [data-baseweb="tab-list"] {
+    }
+
+	.stTabs [data-baseweb="tab"] p {
+        font-size: 20pt;
+        font-weight: bold;
+    }
+
+	.stTabs [aria-selected="true"] {
+	}
+</style>""", unsafe_allow_html=True)
+
 # Hauptmenü-Struktur
 hauptkategorien = {
     "Start": [],
     "Migration": [
-        "Übersicht",
-        "Migration",
-        "Alterstruktur",
-        "Geographie1",
-        "Geographie2",
-        "Einbürgerung"
+        "Übersicht"
     ],
     "Integration": [
         "Arbeitsmarkt",
         "Sprache",
-        "Bildung",
-        "Einbürgerung"
+        "Bildung"
     ],
     "Glossar": [
         "Begriffe & Datenquellen"
@@ -56,20 +59,6 @@ if gewaehlte_kategorie == "Start" or not ausgewaehlte_seite:
 elif ausgewaehlte_seite == "Übersicht":
     migration.show()
 
-elif ausgewaehlte_seite == "Migration":
-    migration_migration.show()
-
-elif ausgewaehlte_seite == "Alterstruktur":
-    migration_alter.show()
-
-elif ausgewaehlte_seite == "Geographie1":
-    migration_kreise.show()
-
-elif ausgewaehlte_seite == "Geographie2":
-    migration_kreise_scatter.show()
-
-elif ausgewaehlte_seite == "Einbürgerung":
-    migration_einbuergerung.show()
 
 # Integration
 elif ausgewaehlte_seite == "Arbeitsmarkt":
@@ -80,9 +69,6 @@ elif ausgewaehlte_seite == "Sprache":
 
 elif ausgewaehlte_seite == "Bildung":
     integration_bildung.show()
-
-elif ausgewaehlte_seite == "Einbürgerung":
-    integration_einbuergerung.show()
 
 elif ausgewaehlte_seite == "Begriffe & Datenquellen":
     glossar.show()
