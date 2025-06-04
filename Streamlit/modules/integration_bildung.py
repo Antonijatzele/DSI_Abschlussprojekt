@@ -62,7 +62,7 @@ def show():
             with col1:
                 schuljahre = sorted(df["Schuljahr"].unique())
                 default_index = schuljahre.index("2023/24") if "2023/24" in schuljahre else 0
-                jahr = st.selectbox("📅 Schuljahr", schuljahre, index=default_index)
+                jahr = st.selectbox("Schuljahr", schuljahre, index=default_index)
 
             with col2:
                 # Nur relevante Daten
@@ -74,14 +74,14 @@ def show():
                     ]
 
                 alle_bildungsbereiche = sorted(df_filter_basis["Bildungsbereich"].dropna().unique().tolist())
-                ausgewaehlter_bildungsbereich = st.selectbox("🎓 Bildungsbereich", alle_bildungsbereiche)
+                ausgewaehlter_bildungsbereich = st.selectbox("Bildungsbereich", alle_bildungsbereiche)
 
 
 
             with col3:
                 bundesland_options = df['Bundesland'].unique()
                 selected_bundesland = st.selectbox(
-                    "🗺️ Bundesland",
+                    "Bundesland",
                     bundesland_options,
                     index=list(bundesland_options).index('Deutschland') if 'Deutschland' in bundesland_options else 0
                 )
@@ -399,47 +399,50 @@ def show():
             with st.expander("DataFrame anzeigen"):
                 st.dataframe(df)
 
-            # Filter als Dropdowns (selectbox)
-
+            # Multiselect-Filter statt Dropdowns (selectbox)
             col1, col2, col3 = st.columns(3)
 
-            with col1:
-                schuljahre = sorted(df["Schuljahr"].unique())
-                default_index = schuljahre.index("2023/24") if "2023/24" in schuljahre else 0
-                jahr = st.selectbox("Schuljahr", schuljahre, index=default_index)
+            # Schuljahre als Liste sortieren
+            schuljahre = sorted(df["Schuljahr"].unique())
+            default_schuljahre = ["2023/24"] if "2023/24" in schuljahre else [schuljahre[0]]
 
+            # Schularten (ohne Duplikate)
+            schulart_options_2 = df['Schulart'].unique().tolist()
+
+            # Bundesländer
+            bundesland_options_2 = df['Bundesland'].unique().tolist()
+            default_bundesland = ["Deutschland"] if "Deutschland" in bundesland_options_2 else bundesland_options_2
+
+            with col1:
+                jahr = st.multiselect("Schuljahr", options=schuljahre, default=default_schuljahre)
 
             with col2:
-                schulart_options_2 = df['Schulart'].unique()
-                selected_schulart_2 = st.selectbox("Schulart",
-                                                   ['Alle'] + list(schulart_options_2), index=0)
-
+                selected_schulart_2 = st.multiselect("Schulart", options=schulart_options_2, default=["Insgesamt"])
 
             with col3:
-                bundesland_options_2 = df['Bundesland'].unique()
-                selected_bundesland_2 = st.selectbox(
-                    "Bundesland",
-                    bundesland_options_2,
-                    index=list(bundesland_options_2).index('Deutschland') if 'Deutschland' in bundesland_options_2 else 0
-                )
+                selected_bundesland_2 = st.multiselect("Bundesland", options=bundesland_options_2,
+                                                       default=default_bundesland)
 
+            # Filter anwenden — prüfen, ob Auswahl nicht leer ist, sonst leeres DataFrame
+            if not jahr:
+                jahr = schuljahre  # Falls nichts gewählt, alle nehmen
+            if not selected_schulart_2:
+                selected_schulart_2 = schulart_options_2
+            if not selected_bundesland_2:
+                selected_bundesland_2 = bundesland_options_2
 
-
-
-            # Filter anwenden
             df_filtered = df[
-                (df['Bundesland'] == selected_bundesland_2) &
-                (df['Schuljahr'] == jahr)
+                (df['Bundesland'].isin(selected_bundesland_2)) &
+                (df['Schuljahr'].isin(jahr)) &
+                (df['Schulart'].isin(selected_schulart_2))
                 ]
-
-            if selected_schulart_2 != 'Alle':
-                df_filtered = df_filtered[df_filtered['Schulart'] == selected_schulart_2]
 
             # 'Insgesamt' rauslassen (falls noch drin)
             df_filtered = df_filtered[df_filtered['Staatsangehoerigkeit'] != 'Insgesamt']
 
             # Gruppieren und aufsummieren
-            df_grouped = df_filtered.groupby('Staatsangehoerigkeit')['auslaendische_Schueler_innen_Anzahl'].sum().reset_index()
+            df_grouped = df_filtered.groupby('Staatsangehoerigkeit')[
+                'auslaendische_Schueler_innen_Anzahl'].sum().reset_index()
 
             # Gesamtanzahl für die Prozentrechnung
             gesamt_anzahl = df_grouped['auslaendische_Schueler_innen_Anzahl'].sum()
@@ -450,7 +453,6 @@ def show():
             # Top 10 nach Prozentanteil auswählen
             df_top10 = df_grouped.sort_values(by='Prozent', ascending=False).head(10)
 
-
             ########################################################
             # Plot: top 10 staatsangehörigkeite ab 2021 ausländischer schüler #
             ########################################################
@@ -459,22 +461,22 @@ def show():
             df['Jahr'] = df['Schuljahr'].str[:4].astype(int)
 
             # Filter: nur einzelne Herkunftsländer (kein "Insgesamt")
-            df_filtered = df[df['Staatsangehoerigkeit'] != "Insgesamt"]
+            df_filtered_plot = df[df['Staatsangehoerigkeit'] != "Insgesamt"]
 
             # Gruppieren nach Jahr und Staatsangehoerigkeit, Anzahl summieren
-            df_grouped = df_filtered.groupby(['Jahr', 'Staatsangehoerigkeit'], as_index=False)[
+            df_grouped_plot = df_filtered_plot.groupby(['Jahr', 'Staatsangehoerigkeit'], as_index=False)[
                 'auslaendische_Schueler_innen_Anzahl'].sum()
 
             # Top 10 Länder nach Gesamtanzahl (über alle Jahre)
-            top10_länder = df_grouped.groupby('Staatsangehoerigkeit')[
+            top10_länder = df_grouped_plot.groupby('Staatsangehoerigkeit')[
                 'auslaendische_Schueler_innen_Anzahl'].sum().nlargest(10).index
 
             # Filter auf Top 10 Länder
-            df_top10 = df_grouped[df_grouped['Staatsangehoerigkeit'].isin(top10_länder)]
+            df_top10_plot = df_grouped_plot[df_grouped_plot['Staatsangehoerigkeit'].isin(top10_länder)]
 
             # Plot erstellen
             fig = px.line(
-                df_top10,
+                df_top10_plot,
                 x='Jahr',
                 y='auslaendische_Schueler_innen_Anzahl',
                 color='Staatsangehoerigkeit',
@@ -496,6 +498,7 @@ def show():
 
             # Plot in Streamlit anzeigen
             st.plotly_chart(fig)
+
             ##########################################
             # Datensatz laden: Schüler, Staatsangehörigkeiten, Bundesländer, Jahre 1992-2000
 
@@ -543,7 +546,7 @@ def show():
                 y="Anzahl",
                 color="Kontinent",
                 title="Anzahl ausländischer Schüler nach Kontinent",
-                markers = True
+                markers=True
             )
 
             # Weißer Hintergrund, schwarze Schrift
@@ -556,7 +559,6 @@ def show():
             )
 
             # Streamlit Ausgabe
-            # st.title("Anzahl ausländischer Schüler nach Kontinent")
             st.plotly_chart(fig)
 
             # Plot Anzahl ausländischer Schüler (Top 10 Staatsangehörigkeiten)
@@ -595,17 +597,12 @@ def show():
                 plot_bgcolor="white",
                 paper_bgcolor="white",
                 font=dict(color="black"),
-                xaxis_title = "",  # Achsentitel X ausblenden
-                yaxis_title = ""  # Achsentitel Y ausblenden
+                xaxis_title="",  # Achsentitel X ausblenden
+                yaxis_title=""  # Achsentitel Y ausblenden
             )
 
             # In Streamlit anzeigen
             st.plotly_chart(fig)
-
-
-
-
-
         with tab5:
             ##################################################################
             # Daten einlesen: Destatis 21111-12
@@ -640,9 +637,15 @@ def show():
             df.loc[df[
                        'Abschluss2'] == 'dar.: mit schulischem Teil der Fachhochschulreife', 'Abschluss'] = 'Fachhochschulreife'
 
-            Abgangsjahr = df['Abgangsjahr'].unique()
-            selected_Abgangsjahr = st.selectbox("Abgangsjahr", Abgangsjahr)
-            df_filtered_12 = df[df['Abgangsjahr'] == selected_Abgangsjahr]
+            jahre = sorted(df['Abgangsjahr'].unique())
+            selected_jahre = st.multiselect("Jahr", options=jahre,
+                                            default=[jahre[-1]])  # z.B. letztes Jahr vorausgewählt
+
+            # Falls nichts ausgewählt wurde, alle Jahre nehmen
+            if not selected_jahre:
+                selected_jahre = jahre
+
+            df_filtered_12 = df[df['Abgangsjahr'].isin(selected_jahre)]
 
             df_filtered_12['deutsche_Absolvierende'] = df_filtered_12['Absolvierende_und_Abgehende_Anzahl'] - \
                                                        df_filtered_12[

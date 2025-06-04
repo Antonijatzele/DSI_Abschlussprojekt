@@ -1,5 +1,5 @@
 import streamlit as st
-from modules.plots import simple_timeline
+from modules.plots import simple_timeline, simple_piechart
 
 def show():
     st.title("🛂 Integration: Einbürgerung")
@@ -17,6 +17,11 @@ def show():
     st.header("Staatsangehörigkeit")
     default_groups = ['Türkei', 'Italien', 'Ukraine', 'Syrien', 'Afghanistan']
     simple_timeline("einbürg_staaten.csv", "Staatsangehörigkeit", default_groups)
+    simple_piechart("einbürg_staaten.csv", "Staatsangehörigkeit", True)
+
+    
+
+
 
     st.header("Rechtsgrundlagen")
     default_groups = None
