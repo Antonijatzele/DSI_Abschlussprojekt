@@ -34,7 +34,8 @@ def load_data_geschlecht():
     laender = get_country_files()
     dfs = []
     for land in laender:
-        url = f"https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten/{land}.csv"
+        url = f"https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten/{land}.csv"
+
         csv_data = requests.get(url).text
         df = pd.read_csv(
             StringIO(csv_data),
