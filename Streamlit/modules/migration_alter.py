@@ -28,7 +28,7 @@ def show():
         return df_men, df_women, selected_group
 
     # Titel
-    st.title("Alterverteilung im Vergleich")
+    st.header("Alterverteilung im Vergleich")
 
 
     # Ausländer
@@ -105,3 +105,6 @@ def show():
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
+if __name__ == "__main__":
+    show()
