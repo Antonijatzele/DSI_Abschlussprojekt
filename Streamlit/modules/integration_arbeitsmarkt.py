@@ -139,7 +139,7 @@ def show():
         # Farben für Top 3 (Gold, Silber, Bronze)
         farben = ["#FFD700", "#C0C0C0", "#CD7F32"]
 
-        col1, col2 = st.columns([2, 1])
+        col1, col2 = st.columns([2, 2])
 
         geojson_url = "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/world-countries.json"
         geojson_data = requests.get(geojson_url).json()
@@ -219,9 +219,10 @@ def show():
                             html=f'<div style="font-size:10pt; font-weight:bold">{country_name}</div>',
                         )
                     ).add_to(m)
+                    st_folium(m, height=500)
             
-            #df_sorted = df_filtered[["Land", wert_spalte]].sort_values(by=wert_spalte, ascending=False)
-            #st.dataframe(df_sorted.set_index("Land"), use_container_width=True)
+            df_sorted = df_filtered[["Land", wert_spalte]].sort_values(by=wert_spalte, ascending=False)
+            st.dataframe(df_sorted.set_index("Land"), use_container_width=True)
 
     # Übersicht (Tab 1)
     with tab1:
