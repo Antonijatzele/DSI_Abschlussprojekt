@@ -93,7 +93,7 @@ def parse_column(col):
 
 # Hauptfunktion
 def show():
-    st.title("💼 Integration: Arbeitsmarkt")
+    st.title("Integration: Arbeitsmarkt")
 
     df = load_data()
     jahr_col = df.columns[0]
@@ -111,13 +111,20 @@ def show():
 
     # Neuer Tab: nach Geschlecht (nicht Staatsangehörigkeit!)
     with tab2:
-    
+        with st.expander("DataFrame anzeigen"):
+            df_geschlecht = load_data_geschlecht()
+            st.dataframe(df_geschlecht)
 
+      
+
+    
         ##############################################################
         #
         # Weltkarte
         # Karte erstellen, zentriert irgendwo
         # Filtere nach Jahr
+        st.header('Beschäftigungsquote (Top Herkunftsländer) nach Jahr')
+
         jahr = st.selectbox("Wähle ein Jahr", sorted(df_geschlecht["Jahr"].unique()))
         df_filtered = df_geschlecht[df_geschlecht["Jahr"] == jahr]
 
@@ -178,13 +185,13 @@ def show():
             st_folium(m, width=768, height=1024)
 
         with col2:
-            st.markdown("### 📋 Länder nach Beschäftigungsquote")
+            
             df_sorted = df_filtered[["Land", wert_spalte]].sort_values(by=wert_spalte, ascending=False)
             st.dataframe(df_sorted.set_index("Land"), use_container_width=True)
 
     # Übersicht (Tab 1)
     with tab1:
-        st.subheader("📊 Arbeitsmarktintegration — Deutsch vs. Ausländer")
+        st.subheader("Arbeitsmarktintegration — Deutsch vs. Ausländer")
 
         cols = df.columns[1:]
         parsed_cols = [parse_column(c) for c in cols]
