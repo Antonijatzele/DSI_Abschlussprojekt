@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from streamlit_folium import st_folium
 import plotly.express as px
+from urllib.parse import quote
+
 # Original-Datensatz laden
 @st.cache_data
 def load_data():
@@ -42,7 +44,8 @@ def load_data_geschlecht():
     laender = get_country_files()
     dfs = []
     for land in laender:
-        url = f"https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten/{land}.csv"
+        encoded_land = quote(land)
+        url = f"https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoten/{encoded_land}.csv"
 
         csv_data = requests.get(url).text
         df = pd.read_csv(
