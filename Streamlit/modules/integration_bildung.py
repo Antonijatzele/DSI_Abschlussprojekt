@@ -766,57 +766,158 @@ def show():
             "Nicht in schulischer oder beruflicher Ausbildung": "Ohne beruflichen Bildungsabschluss"
         }
 
-        # Neue Gruppenspalte
-        df["Bildungsabschluss Gruppe"] = df["Beruflicher Bildungsabschluss"].map(mapping)
+        # Migrationsstatus "Insgesamt" rausfiltern
+        df = df[df["Migrationsstatus"] != "Insgesamt"]
 
-        with st.expander("DataFrame anzeigen"):
-            st.dataframe(df)
+        status_liste = ["Ohne Migrationshintergrund", "Mit Migrationshintergrund"]
+        col1, col2 = st.columns(2)
 
-        # Streamlit UI: Filter auswählen
-        jahr = st.selectbox("Jahr auswählen:", options=sorted(df["Jahr"].unique()),
-                            index=sorted(df["Jahr"].unique()).index(2023))
-        migrationsstatus = st.selectbox("Migrationsstatus auswählen:", options=sorted(df["Migrationsstatus"].unique()))
+        for i, (col, status) in enumerate(zip([col1, col2], status_liste)):
+            df_filtered = df[
+                (df["Migrationsstatus"] == status) &
+                (df["Geschlecht"] == "Insgesamt")
+                ].copy()
 
-        # Daten filtern
-        df_filtered = df[
-            (df["Jahr"] == jahr) &
-            (df["Migrationsstatus"] == migrationsstatus) &
-            (df["Geschlecht"] == "Insgesamt")  # wie vorher
-            ].copy()
+            df_grouped = (
+                df_filtered
+                .groupby(["Jahr", "Beruflicher Bildungsabschluss"])["Anzahl"]
+                .sum()
+                .reset_index()
+            )
 
-        # Prozentanteile berechnen
-        total = df_filtered["Anzahl"].sum()
-        df_filtered["Prozent"] = df_filtered["Anzahl"] / total * 100
-        df_filtered["Prozent"] = df_filtered["Prozent"].round(1)
+            df_grouped["Prozent"] = df_grouped.groupby("Jahr")["Anzahl"].transform(lambda x: 100 * x / x.sum())
+            df_grouped["Prozent"] = df_grouped["Prozent"].round(1)
 
-        # Sortiere nach Prozent absteigend
-        df_filtered = df_filtered.sort_values(by="Prozent", ascending=False)
-        category_order = df_filtered["Beruflicher Bildungsabschluss"].tolist()
+            fig = px.line(
+                df_grouped,
+                x="Jahr",
+                y="Prozent",
+                color="Beruflicher Bildungsabschluss",
+                markers=True,
+                title=status,
+                labels={"Prozent": "Prozent (%)", "Jahr": "Jahr", "Beruflicher Bildungsabschluss": "Bildungsabschluss"}
+            )
 
-        # Orange aus Set2-Palette (ungefähr)
-        orange_set2 = "#fd8d3c"
+            fig.update_traces(texttemplate='%{y}%', textposition='top center')
+            fig.update_layout(
+                hovermode="x unified",
+                plot_bgcolor="white",
+                paper_bgcolor="white",
+                margin=dict(l=40, r=40, t=60, b=40),
+                shapes=[
+                    dict(
+                        type="rect",
+                        xref="paper",
+                        yref="paper",
+                        x0=0,
+                        y0=0,
+                        x1=1,
+                        y1=1,
+                        line=dict(color="black", width=2),
+                        layer="above"
+                    )
+                ],
+                yaxis=dict(range=[0, 55]),
+                showlegend=False  # Legende ausblenden in den beiden Plots
+            )
 
-        # Plot erstellen
-        fig = px.bar(
-            df_filtered,
-            y="Beruflicher Bildungsabschluss",
-            x="Prozent",
-            orientation='h',
-            category_orders={"Beruflicher Bildungsabschluss": category_order},
-            title=f"Prozentuale Verteilung der Bildungsabschlüsse ({migrationsstatus}, {jahr})",
-            labels={"Beruflicher Bildungsabschluss": "", "Prozent": ""},
-            text="Prozent",
-            color_discrete_sequence=[orange_set2]
+            col.plotly_chart(fig, use_container_width=True)
+
+        # Legende separat unterhalb der beiden Plots anzeigen
+        # Dafür einen kleinen Plot mit nur der Legende erstellen:
+
+        # Gesamtdaten für Legende (kann vom ersten Status oder vom kombinierten Datensatz kommen)
+        df_legend = df[
+            (df["Geschlecht"] == "Insgesamt") &
+            (df["Beruflicher Bildungsabschluss"].isin(df["Beruflicher Bildungsabschluss"].unique()))
+            ]
+
+        fig_legend = go.Figure()
+
+        farben = px.colors.qualitative.Plotly
+        abschluesse = df_legend["Beruflicher Bildungsabschluss"].unique()
+
+        for i, abschluss in enumerate(abschluesse):
+            fig_legend.add_trace(
+                go.Scatter(
+                    x=[None],
+                    y=[None],
+                    mode='markers+lines',
+                    name=abschluss,
+                    marker=dict(color=farben[i % len(farben)]),
+                    line=dict(color=farben[i % len(farben)])
+                )
+            )
+
+        fig_legend.update_layout(
+            showlegend=True,
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1,
+                xanchor="center",
+                x=0.5
+            ),
+            margin=dict(l=40, r=40, t=10, b=10),
+            height=80,
+            xaxis=dict(visible=False),
+            yaxis=dict(visible=False)
         )
 
-        fig.update_traces(texttemplate='%{text}%', textposition='outside')
+        st.plotly_chart(fig_legend, use_container_width=True)
 
-        fig.update_layout(
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            xaxis=dict(showticklabels=False, showgrid=False, zeroline=False, visible=False),
-            yaxis_title='',
-            xaxis_title=''
+
+        # Plot Anzahl der gewählten Bildungsabschlüsse nach Migrationsstatus
+        df = df[df["Beruflicher Bildungsabschluss"].isin(valid_entries)]
+        # Ausschluss bestimmter Migrationsstatus
+        ausgeschlossene_status = ["Insgesamt", "Mit Migrationshintergrund", "Ohne Migrationshintergrund"]
+
+        df = df[~df["Migrationsstatus"].isin(ausgeschlossene_status)]
+
+        # "Insgesamt" bei Migrationsstatus rausfiltern
+        df = df[df["Migrationsstatus"] != "Insgesamt"]
+
+        # Bildungsabschluss Filter (Mehrfachauswahl)
+        auswahl_abschluss = st.multiselect(
+            "Bildungsabschluss auswählen:",
+            options=sorted(df["Beruflicher Bildungsabschluss"].unique()),
+            default=["Lehre / Berufsausbildung"]
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+        if not auswahl_abschluss:
+            st.warning("Bitte mindestens einen Bildungsabschluss auswählen.")
+        else:
+            # Daten filtern
+            df_filtered = df[df["Beruflicher Bildungsabschluss"].isin(auswahl_abschluss)].copy()
+
+            # Gruppieren nach Jahr, Migrationsstatus (summe Anzahl)
+            df_grouped = df_filtered.groupby(['Jahr', 'Migrationsstatus'])['Anzahl'].sum().reset_index()
+
+            # Plot erstellen
+            # Bildungsabschlüsse als String, mit Kommas getrennt, ohne Hochzeichen
+            abschluesse_str = ", ".join(auswahl_abschluss)
+
+            fig = px.line(
+                df_grouped,
+                x='Jahr',
+                y='Anzahl',
+                color='Migrationsstatus',
+                markers=True,
+                title=f"Anzahl der Bildungsabschlüsse nach Migrationsstatus ({abschluesse_str})",
+                labels={"Anzahl": "", "Jahr": "", "Migrationsstatus": "Migrationsstatus"}
+            )
+
+            # Hover-Template anpassen, um "k" hinter die Zahl zu setzen (im Tooltip)
+            fig.update_traces(
+                hovertemplate='%{y}k<br>%{x}<br>%{color}',
+                texttemplate='%{y}k',
+                textposition='top center'
+            )
+
+            fig.update_layout(
+                hovermode='x unified',
+                yaxis_title="Anzahl in 1000",
+                xaxis_title=None
+            )
+
+            st.plotly_chart(fig, use_container_width=True)
