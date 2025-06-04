@@ -113,13 +113,13 @@ def show():
 
         with col1:
             m = folium.Map(zoom_start=5)
-            threshold_scale = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+            threshold_scale = [0, 10, 20, 30, 40, 50, 60, 70]
             folium.Choropleth(
                 geo_data=geojson_data,
                 data=df_filtered,
                 columns=["Land", "Beschäftigungsquote"],
                 key_on="feature.properties.name",
-                fill_color="RdOrYl",
+                fill_color="YlOrRd_r",
                 threshold_scale=threshold_scale,
                 fill_opacity=1,
                 line_opacity=0.3,
