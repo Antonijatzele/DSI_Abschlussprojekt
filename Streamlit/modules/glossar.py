@@ -16,3 +16,6 @@ def show():
     - Bundesamt für Migration und Flüchtlinge (BAMF)  
     - Mikrozensus  
     """)
+
+if __name__ == "__main__":
+    show()

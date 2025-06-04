@@ -88,4 +88,6 @@ def show():
         simple_timeline("historisch_titel.csv", "Ausgewählte Aufenthaltstitel", default_groups)
 
 
+if __name__ == "__main__":
+    show()
 
