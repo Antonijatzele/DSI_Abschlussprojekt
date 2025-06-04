@@ -174,32 +174,41 @@ def show():
                 data_plot[f"Deutsch_{auspraegung}"] = df[sp_insgesamt]
 
         diagramm_typ = st.selectbox("Diagrammtyp wählen", [
-            "Liniendiagramm (wie bisher)",
+            "Liniendiagramm",
             "Gestapeltes Balkendiagramm",
             "Vergleich nach Altersgruppen (Balken)"
         ])
 
-        if diagramm_typ == "Liniendiagramm (wie bisher)":
-            fig, ax = plt.subplots(figsize=(12, 7))
-            colors = plt.cm.get_cmap('tab10', len(auspraegungen))
-            linestyles = {'Ausländer': '-', 'Deutsch': '--'}
-            for i, auspraegung in enumerate(auspraegungen):
+        if diagramm_typ == "Liniendiagramm":
+            import plotly.express as px
+
+
+            # Daten für Plotly vorbereiten
+            df_plotly = pd.DataFrame()
+            df_plotly[jahr_col] = data_plot[jahr_col]
+            
+            for auspraegung in auspraegungen:
                 for gruppe in ['Ausländer', 'Deutsch']:
                     col_name = f"{gruppe}_{auspraegung}"
                     if col_name in data_plot.columns:
-                        ax.plot(
-                            data_plot[jahr_col], data_plot[col_name],
-                            linestyle=linestyles[gruppe],
-                            color=colors(i),
-                            marker='o',
-                            label=f"{gruppe} - {auspraegung}"
-                        )
-            ax.set_title(f"Vergleich Deutsch vs. Ausländer für {indikator} - {merkmal}")
-            ax.set_xlabel("Jahr")
-            ax.set_ylabel("Anzahl")
-            ax.legend(title="Gruppe - Ausprägung", bbox_to_anchor=(1.05, 1), loc='upper left')
-            ax.grid(True)
-            st.pyplot(fig)
+                        df_plotly[f"{gruppe} - {auspraegung}"] = data_plot[col_name]
+
+            # Daten ins lange Format transformieren für Plotly
+            df_long = df_plotly.melt(id_vars=[jahr_col], var_name='Gruppe_Ausprägung', value_name='Wert')
+
+            fig = px.line(
+                df_long,
+                x=jahr_col,
+                y='Wert',
+                color='Gruppe_Ausprägung',
+                markers=True,
+                title=f"Vergleich Deutsch vs. Ausländer für {indikator} - {merkmal}",
+                labels={jahr_col: "Jahr", "Wert": "Anzahl"}
+            )
+            
+            fig.update_layout(legend_title_text='Gruppe - Ausprägung')
+            st.plotly_chart(fig, use_container_width=True)
+
 
         elif diagramm_typ == "Gestapeltes Balkendiagramm":
             data_plot_sum = data_plot.drop(columns=[jahr_col]).groupby(lambda x: x.split('_')[1], axis=1).sum()
