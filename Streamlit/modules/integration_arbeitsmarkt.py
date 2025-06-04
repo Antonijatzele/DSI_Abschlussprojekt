@@ -148,17 +148,6 @@ def show():
             m = folium.Map(zoom_start=5)
             threshold_scale = [0, 10, 20, 30, 40, 50]
             # Länder einfärben
-            import numpy as np
-
-            # Annahme: df_filtered enthält die Spalte "Beschäftigungsquote"
-            min_val = df_filtered["Beschäftigungsquote"].min()
-            max_val = df_filtered["Beschäftigungsquote"].max()
-
-            # Erstelle 6 gleichmäßige Intervalle (5 Bins)
-            threshold_scale = list(np.linspace(min_val, max_val, num=6))
-
-            # Optional: Rundung auf ganze Zahlen, falls du möchtest
-            threshold_scale = [round(x) for x in threshold_scale]
             folium.Choropleth(
                 geo_data=geojson_data,
                 data=df_filtered,
