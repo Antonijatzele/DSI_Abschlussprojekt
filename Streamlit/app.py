@@ -4,7 +4,8 @@ from modules import (
     integration_arbeitsmarkt,
     integration_sprache,
     integration_bildung,
-    integration_einbuergerung,
+    migration_einbuergerung,
+    migration_migration,
     migration,
     migration_alter,
     migration_kreise,
@@ -20,9 +21,11 @@ hauptkategorien = {
     "Start": [],
     "Migration": [
         "Übersicht",
+        "Migration",
         "Alterstruktur",
         "Geographie1",
         "Geographie2",
+        "Einbürgerung"
     ],
     "Integration": [
         "Arbeitsmarkt",
@@ -53,6 +56,9 @@ if gewaehlte_kategorie == "Start" or not ausgewaehlte_seite:
 elif ausgewaehlte_seite == "Übersicht":
     migration.show()
 
+elif ausgewaehlte_seite == "Migration":
+    migration_migration.show()
+
 elif ausgewaehlte_seite == "Alterstruktur":
     migration_alter.show()
 
@@ -61,6 +67,9 @@ elif ausgewaehlte_seite == "Geographie1":
 
 elif ausgewaehlte_seite == "Geographie2":
     migration_kreise_scatter.show()
+
+elif ausgewaehlte_seite == "Einbürgerung":
+    migration_einbuergerung.show()
 
 # Integration
 elif ausgewaehlte_seite == "Arbeitsmarkt":

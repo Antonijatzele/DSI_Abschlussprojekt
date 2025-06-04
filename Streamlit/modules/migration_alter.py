@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import os
+
 
 def show():
     altersreihenfolge = list(range(85))
@@ -32,11 +32,11 @@ def show():
 
 
     # Ausländer
-    file_path_ausl = os.path.join("data", "migration", "alterspyramide.csv")
+    file_path_ausl = "Streamlit/data/migration/alterspyramide.csv"
     df_men_ausl, df_women_ausl, selected_group_ausl = load_and_prepare_data(file_path_ausl, True )
 
     # Deutsche
-    file_path_de = os.path.join("data", "migration", "alterspyramide_de.csv")
+    file_path_de = "Streamlit/data/migration/alterspyramide_de.csv"
     df_men_de, df_women_de, selected_group_de = load_and_prepare_data(file_path_de, False)
 
 
