@@ -146,7 +146,7 @@ def show():
     
         with col1:
             m = folium.Map(zoom_start=5)
-            threshold_scale = [0, 10, 20, 30, 40, 50, 100]
+            threshold_scale = [0, 10, 20, 30, 40, 50, 100, 120]
             # Länder einfärben
             folium.Choropleth(
                 geo_data=geojson_data,
