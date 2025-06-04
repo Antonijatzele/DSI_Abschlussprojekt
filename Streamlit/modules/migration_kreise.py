@@ -44,6 +44,8 @@ def erstelle_karte(geojson_str):
 
 
 def show():
+    st.header("Geographische Verteilung")
+
     tab1, tab2 = st.tabs(["Karte", "Plot"])
 
     with tab1:
@@ -101,6 +103,8 @@ def show():
 
         # Anzeige des Plots in Streamlit
         st.plotly_chart(fig)
+
+    st.markdown("Quelle: [Destatis - Ausländerstatistik](https://www-genesis.destatis.de/datenbank/online/statistic/12521/details)")
 
 if __name__ == "__main__":
     show()

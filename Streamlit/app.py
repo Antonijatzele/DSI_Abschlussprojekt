@@ -16,8 +16,16 @@ st.markdown("""
 
 	.stTabs [aria-selected="true"] {
 	}
+    
+    .stLogo {
+        height: auto!important;
+    }
 
 </style>""", unsafe_allow_html=True)
+
+
+st.logo("Streamlit/images/logo.svg")
+
 
 # Hauptmenü-Struktur
 hauptkategorien = {
