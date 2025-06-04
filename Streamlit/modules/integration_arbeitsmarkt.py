@@ -93,7 +93,7 @@ def parse_column(col):
 
 # Hauptfunktion
 def show():
-    st.title("💼 Integration: Arbeitsmarkt")
+    st.title("Integration: Arbeitsmarkt")
 
     df = load_data()
     jahr_col = df.columns[0]
@@ -111,19 +111,26 @@ def show():
 
     # Neuer Tab: nach Geschlecht (nicht Staatsangehörigkeit!)
     with tab2:
-    
+        with st.expander("DataFrame anzeigen"):
+            df_geschlecht = load_data_geschlecht()
+            st.dataframe(df_geschlecht)
 
+      
+
+    
         ##############################################################
         #
         # Weltkarte
         # Karte erstellen, zentriert irgendwo
         # Filtere nach Jahr
+        st.header('Beschäftigungsquote (Top Herkunftsländer) nach Jahr')
+
         jahr = st.selectbox("Wähle ein Jahr", sorted(df_geschlecht["Jahr"].unique()))
         df_filtered = df_geschlecht[df_geschlecht["Jahr"] == jahr]
 
 
         wert_spalte = "Beschäftigungsquote"
-
+        st.header("Länder wo es Krieg herrscht:")
         st.write(f"**Färbung basiert auf der Spalte:** {wert_spalte}")
 
         # Top 3 Länder nach Wert bestimmen
@@ -132,7 +139,7 @@ def show():
         # Farben für Top 3 (Gold, Silber, Bronze)
         farben = ["#FFD700", "#C0C0C0", "#CD7F32"]
 
-        col1, col2 = st.columns([2, 1])
+        col1, col2 = st.columns([2, 2])
 
         geojson_url = "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/world-countries.json"
         geojson_data = requests.get(geojson_url).json()
@@ -175,16 +182,51 @@ def show():
 
 
 
-            st_folium(m, width=768, height=1024)
-
+           
+            st_folium(m, height=500)
         with col2:
-            st.markdown("### 📋 Länder nach Beschäftigungsquote")
+            m = folium.Map(zoom_start=5)
+            threshold_scale = [0, 10, 20, 30, 40, 50]
+            # Länder einfärben
+            folium.Choropleth(
+                geo_data=geojson_data,
+                data=df_filtered,
+                columns=["Land", "Beschäftigungsquote"],
+                key_on="feature.properties.name",
+                fill_color="YlOrRd",
+                threshold_scale=threshold_scale,
+                fill_opacity=1,
+                line_opacity=0.3,
+                legend_name="Beschäftigungsquote (%)",
+                nan_fill_color="lightgray"
+            ).add_to(m)
+
+            from folium.features import DivIcon
+            from shapely.geometry import shape
+           # Ländernamen als Text hinzufügen
+            for feature in geojson_data['features']:
+                country_name = feature['properties']['name']
+                
+                if country_name in df_filtered["Land"].values:
+                    geom = shape(feature['geometry'])
+                    centroid = geom.centroid
+                    
+                    folium.map.Marker(
+                        [centroid.y, centroid.x],
+                        icon=DivIcon(
+                            icon_size=(150,36),
+                            icon_anchor=(0,0),
+                            html=f'<div style="font-size:10pt; font-weight:bold">{country_name}</div>',
+                        )
+                    ).add_to(m)
+                    st_folium(m, height=500)
+            
             df_sorted = df_filtered[["Land", wert_spalte]].sort_values(by=wert_spalte, ascending=False)
             st.dataframe(df_sorted.set_index("Land"), use_container_width=True)
 
     # Übersicht (Tab 1)
     with tab1:
-        st.subheader("📊 Arbeitsmarktintegration — Deutsch vs. Ausländer")
+        st.subheader("Arbeitsmarktintegration — Deutsch vs. Ausländer")
 
         cols = df.columns[1:]
         parsed_cols = [parse_column(c) for c in cols]

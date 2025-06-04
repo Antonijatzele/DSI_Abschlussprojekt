@@ -1,7 +1,8 @@
 import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
-from modules.plots import simple_timeline
+from modules.plots import simple_timeline, simple_piechart
+
 
 def show():
     st.title("📈 Migration: Demografische & Geografische Analyse")
@@ -81,6 +82,10 @@ def show():
     )
     st.plotly_chart(fig, use_container_width=True)
 
+    st.header("Staatsangehörigkeit")
+    simple_piechart("historisch_staaten.csv", "Staatsangehörigkeit")
+
+
     st.header("Ländergruppierungen")
     default_groups = ["Afrika", "Asien", "Europa", "Amerika"]
     simple_timeline("historisch_ländergruppen.csv", "Ländergruppierungen", default_groups)
@@ -92,4 +97,6 @@ def show():
     st.header("Aufenthaltstitel")
     default_groups = ['Befristete AE, besondere Gründe und nationale Visa', 'Befristete AE, völkerrechtl., human., pol. Gründe', 'Befristete Aufenthaltserlaubnis, Erwerbstätigkeit', 'Aufenthaltsrecht nach FreizügG/EU', 'Unbefristete Niederlassungserlaubnis']
     simple_timeline("historisch_titel.csv", "Ausgewählte Aufenthaltstitel")
+
+
 
