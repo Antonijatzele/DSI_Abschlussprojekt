@@ -11,25 +11,21 @@ from modules import (
 # Seiten-Layout
 st.set_page_config(page_title="Migration & Integration in Deutschland", layout="wide")
 
-# Tabs mit größeren Schriftarten
-st.markdown(
-    """
-    <style>
-    .streamlit-expanderHeader {
-        font-size: 30px !important;
-        font-weight: bold !important;
+st.markdown("""
+<style>
+
+	.stTabs [data-baseweb="tab-list"] {
     }
-    .css-1l02v5f {
-        font-size: 30px !important;
-        font-weight: bold !important;
+
+	.stTabs [data-baseweb="tab"] p {
+        font-size: 20pt;
+        font-weight: bold;
     }
-    </style>
-    """, unsafe_allow_html=True
-)
 
+	.stTabs [aria-selected="true"] {
+	}
 
-
-
+</style>""", unsafe_allow_html=True)
 
 # Hauptmenü-Struktur
 hauptkategorien = {
@@ -40,8 +36,7 @@ hauptkategorien = {
     "Integration": [
         "Arbeitsmarkt",
         "Sprache",
-        "Bildung",
-        "Einbürgerung"
+        "Bildung"
     ],
     "Glossar": [
         "Begriffe & Datenquellen"
@@ -76,9 +71,6 @@ elif ausgewaehlte_seite == "Sprache":
 
 elif ausgewaehlte_seite == "Bildung":
     integration_bildung.show()
-
-elif ausgewaehlte_seite == "Einbürgerung":
-    integration_einbuergerung.show()
 
 elif ausgewaehlte_seite == "Begriffe & Datenquellen":
     glossar.show()
