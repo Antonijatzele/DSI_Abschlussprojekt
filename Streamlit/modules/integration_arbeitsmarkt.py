@@ -130,7 +130,7 @@ def show():
 
 
         wert_spalte = "Beschäftigungsquote"
-        st.subheader("Länder wo es Krieg herrscht:")
+      
         st.write(f"**Färbung basiert auf der Spalte:** {wert_spalte}")
 
         # Top 3 Länder nach Wert bestimmen
@@ -146,7 +146,7 @@ def show():
     
         with col1:
             m = folium.Map(zoom_start=5)
-            threshold_scale = [0, 10, 20, 30, 40, 50, 100, 120]
+            threshold_scale = [0, 10, 20, 30, 40, 50, 60, 70]
             # Länder einfärben
             folium.Choropleth(
                 geo_data=geojson_data,
