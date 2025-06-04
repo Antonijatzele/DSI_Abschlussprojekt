@@ -74,23 +74,18 @@ def show():
 
 
     with tab2:
-        st.subheader("Ländergruppierungen")
         default_groups = ["Afrika", "Asien", "Europa", "Amerika"]
         simple_timeline("historisch_ländergruppen.csv", "Ländergruppierungen", default_groups)
 
     
     with tab3:
-        st.subheader("Staatsangehörigkeit")
         default_groups = ['Türkei', 'Italien', 'Ukraine', 'Syrien', 'Afghanistan']
         simple_timeline("historisch_staaten.csv", "Staatsangehörigkeit", default_groups)
-        
-        st.subheader("Staatsangehörigkeit")
         simple_piechart("historisch_staaten.csv", "Staatsangehörigkeit")
 
     with tab4:
-        st.subheader("Aufenthaltstitel")
         default_groups = ['Befristete AE, besondere Gründe und nationale Visa', 'Befristete AE, völkerrechtl., human., pol. Gründe', 'Befristete Aufenthaltserlaubnis, Erwerbstätigkeit', 'Aufenthaltsrecht nach FreizügG/EU', 'Unbefristete Niederlassungserlaubnis']
-        simple_timeline("historisch_titel.csv", "Ausgewählte Aufenthaltstitel")
+        simple_timeline("historisch_titel.csv", "Ausgewählte Aufenthaltstitel", default_groups)
 
 
 
