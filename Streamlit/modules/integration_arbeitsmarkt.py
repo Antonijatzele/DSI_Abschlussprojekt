@@ -8,7 +8,9 @@ import seaborn as sns
 from streamlit_folium import st_folium
 import plotly.express as px
 from urllib.parse import quote
-
+from folium.features import DivIcon
+from shapely.geometry import shape
+from streamlit_folium import st_folium
 # Original-Datensatz laden
 @st.cache_data
 def load_data():
@@ -93,121 +95,140 @@ def show():
         """)
 
     with tab3:
-        with st.expander("DataFrame anzeigen"):
+        with st.expander("📊 DataFrame anzeigen"):
             df_geschlecht = load_data_geschlecht()
             st.dataframe(df_geschlecht)
 
-        st.header('Beschäftigungsquote (Top Herkunftsländer) nach Jahr')
-        jahr = st.selectbox("Wähle ein Jahr", sorted(df_geschlecht["Jahr"].unique()))
-        df_filtered = df_geschlecht[df_geschlecht["Jahr"] == jahr]
-        wert_spalte = "Beschäftigungsquote"
-        st.write(f"**Färbung basiert auf der Spalte:** {wert_spalte}")
-        top3 = df_filtered.nlargest(3, wert_spalte)
-        farben = ["#FFD700", "#C0C0C0", "#CD7F32"]
-        col1, col2 = st.columns([2, 1])
+    st.header('Beschäftigungsquote (Top-Herkunftsländer) nach Jahr')
 
-        geojson_url = "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/world-countries.json"
-        geojson_data = requests.get(geojson_url).json()
+    # Jahr auswählen
+    jahr = st.selectbox("Wähle ein Jahr", sorted(df_geschlecht["Jahr"].unique()))
+    df_filtered = df_geschlecht[df_geschlecht["Jahr"] == jahr]
 
-        with col1:
-            m = folium.Map(zoom_start=5)
-            threshold_scale = [0, 10, 20, 30, 40, 50, 60, 70]
-            folium.Choropleth(
-                geo_data=geojson_data,
-                data=df_filtered,
-                columns=["Land", "Beschäftigungsquote"],
-                key_on="feature.properties.name",
-                fill_color="YlOrRd_r",
-                threshold_scale=threshold_scale,
-                fill_opacity=1,
-                line_opacity=0.3,
-                legend_name="Beschäftigungsquote (%)",
-                nan_fill_color="lightgray"
-            ).add_to(m)
+    wert_spalte = "Beschäftigungsquote"
+    st.markdown(f"**Färbung basiert auf der Spalte:** `{wert_spalte}`")
 
-            from folium.features import DivIcon
-            from shapely.geometry import shape
-            for feature in geojson_data['features']:
-                country_name = feature['properties']['name']
-                if country_name in df_filtered["Land"].values:
-                    geom = shape(feature['geometry'])
-                    centroid = geom.centroid
-                    folium.map.Marker(
-                        [centroid.y, centroid.x],
-                        icon=DivIcon(
-                            icon_size=(150,36),
-                            icon_anchor=(0,0),
-                            html=f'<div style="font-size:10pt; font-weight:bold">{country_name}</div>',
-                        )
-                    ).add_to(m)
+    # Top 3 Länder
+    top3 = df_filtered.nlargest(10, wert_spalte)
+    farben = ["#FFD700", "#C0C0C0", "#CD7F32"]
 
-            st_folium(m, height=500, width=1200)
+    # GeoJSON laden
+    geojson_url = "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/world-countries.json"
+    geojson_data = requests.get(geojson_url).json()
 
-        with col2:
-            df_sorted = df_filtered[["Land", wert_spalte]].sort_values(by=wert_spalte, ascending=False)
-            st.dataframe(df_sorted.set_index("Land"), use_container_width=True)
+    col1, col2 = st.columns([3, 1])
+
+    with col1:
+        # Karte erstellen
+        m = folium.Map(location=[20, 10], zoom_start=2, tiles="cartodbpositron")
+
+        # Choroplethen-Karte
+        folium.Choropleth(
+            geo_data=geojson_data,
+            data=df_filtered,
+            columns=["Land", "Beschäftigungsquote"],
+            key_on="feature.properties.name",
+            fill_color="YlGnBu",
+            threshold_scale=[0, 20, 30, 40, 50, 60, 70, 80],
+            fill_opacity=0.8,
+            line_opacity=0.2,
+            legend_name="Beschäftigungsquote (%)",
+            nan_fill_color="lightgray",
+            highlight=True
+        ).add_to(m)
+
+        # Länder-Namen als Marker anzeigen
+        for feature in geojson_data['features']:
+            country_name = feature['properties']['name']
+            if country_name in df_filtered["Land"].values:
+                geom = shape(feature['geometry'])
+                centroid = geom.centroid
+                folium.map.Marker(
+                    [centroid.y, centroid.x],
+                    icon=DivIcon(
+                        icon_size=(150, 36),
+                        icon_anchor=(0, 0),
+                        html=f'''
+                        <div style="
+                            background-color: rgba(255, 255, 255, 0.6);
+                            padding: 2px 4px;
+                            border-radius: 4px;
+                            font-size: 10pt;
+                            font-weight: bold;">
+                            {country_name}
+                        </div>''',
+                    )
+                ).add_to(m)
+
+        # Karte anzeigen
+        st_folium(m, height=550, width=1000)
+
+    with col2:
+        st.subheader("Top Länder")
+        for i, row in top3.iterrows():
+            st.markdown(f"**{row['Land']}** – {row[wert_spalte]} %")
         
 
-       #Entwicklung über die Jahre
+#Entwicklung über die Jahre
 
-        fig = px.line(
-            df_geschlecht,
+    fig = px.line(
+        df_geschlecht,
+        x="Jahr",
+        y="Beschäftigungsquote",
+        color="Land",
+        markers=True,
+        title="Entwicklung der Beschäftigungsquote nach Herkunftsland"
+    )
+    fig.update_layout(hovermode="closest")
+
+    st.plotly_chart(fig, use_container_width=True)
+    # balkendiagram 
+    st.subheader("Entwicklung der Beschäftigungsquote nach Geschlecht (2021–2023)")
+
+    # Filter auf die Jahre 2021 bis 2023
+    df_gender_filtered = df_geschlecht[(df_geschlecht["Jahr"] >= 2021) & (df_geschlecht["Jahr"] <= 2023)]
+
+    # Länder-Auswahl als Multiselect
+    laender_liste = sorted(df_gender_filtered["Land"].unique())
+    ausgewaehlte_laender = st.multiselect("Wähle Länder aus", laender_liste)
+
+    # Filter nach ausgewählten Ländern
+    df_laender = df_gender_filtered[df_gender_filtered["Land"].isin(ausgewaehlte_laender)]
+
+    if df_laender.empty:
+        st.warning("Keine Daten für die ausgewählten Länder vorhanden.")
+    else:
+        # Durchschnitt pro Jahr und Geschlecht berechnen
+        df_agg = df_laender.groupby(["Jahr"]).agg({
+            "Frauen Beschäftigungsquote": "mean",
+            "Männer Beschäftigungsquote": "mean"
+        }).reset_index()
+
+        # Long-Format für Plotly
+        df_long = df_agg.melt(
+            id_vars="Jahr",
+            value_vars=["Frauen Beschäftigungsquote", "Männer Beschäftigungsquote"],
+            var_name="Geschlecht",
+            value_name="Beschäftigungsquote"
+        )
+
+        # Beschriftung vereinfachen
+        df_long["Geschlecht"] = df_long["Geschlecht"].str.replace(" Beschäftigungsquote", "")
+
+        # Balkendiagramm
+        fig_bar = px.bar(
+            df_long,
             x="Jahr",
             y="Beschäftigungsquote",
-            color="Land",
-            markers=True,
-            title="Entwicklung der Beschäftigungsquote nach Herkunftsland"
+            color="Geschlecht",
+            barmode="group",
+            title=f"Beschäftigungsquote nach Geschlecht (2021–2023) für {', '.join(ausgewaehlte_laender)}",
+            labels={"Beschäftigungsquote": "Beschäftigungsquote (%)"},
+            text_auto=True
         )
-        fig.update_layout(hovermode="closest")
 
-        st.plotly_chart(fig, use_container_width=True)
-        # balkendiagram 
-        st.subheader("Entwicklung der Beschäftigungsquote nach Geschlecht (2021–2023)")
-
-        # Filter auf die Jahre 2021 bis 2023
-        df_gender_filtered = df_geschlecht[(df_geschlecht["Jahr"] >= 2021) & (df_geschlecht["Jahr"] <= 2023)]
-
-        # Länder-Auswahl als Multiselect
-        laender_liste = sorted(df_gender_filtered["Land"].unique())
-        ausgewaehlte_laender = st.multiselect("Wähle Länder aus", laender_liste, default=laender_liste[:3])
-
-        # Filter nach ausgewählten Ländern
-        df_laender = df_gender_filtered[df_gender_filtered["Land"].isin(ausgewaehlte_laender)]
-
-        if df_laender.empty:
-            st.warning("Keine Daten für die ausgewählten Länder vorhanden.")
-        else:
-            # Durchschnitt pro Jahr und Geschlecht berechnen
-            df_agg = df_laender.groupby(["Jahr"]).agg({
-                "Frauen Beschäftigungsquote": "mean",
-                "Männer Beschäftigungsquote": "mean"
-            }).reset_index()
-
-            # Long-Format für Plotly
-            df_long = df_agg.melt(
-                id_vars="Jahr",
-                value_vars=["Frauen Beschäftigungsquote", "Männer Beschäftigungsquote"],
-                var_name="Geschlecht",
-                value_name="Beschäftigungsquote"
-            )
-
-            # Beschriftung vereinfachen
-            df_long["Geschlecht"] = df_long["Geschlecht"].str.replace(" Beschäftigungsquote", "")
-
-            # Balkendiagramm
-            fig_bar = px.bar(
-                df_long,
-                x="Jahr",
-                y="Beschäftigungsquote",
-                color="Geschlecht",
-                barmode="group",
-                title=f"Beschäftigungsquote nach Geschlecht (2021–2023) für {', '.join(ausgewaehlte_laender)}",
-                labels={"Beschäftigungsquote": "Beschäftigungsquote (%)"},
-                text_auto=True
-            )
-
-            fig_bar.update_layout(xaxis=dict(type='category'))
-            st.plotly_chart(fig_bar, use_container_width=True)
+        fig_bar.update_layout(xaxis=dict(type='category'))
+        st.plotly_chart(fig_bar, use_container_width=True)
 
     with tab1:
         st.subheader("Arbeitsmarktintegration — Deutsch vs. Ausländer")
