@@ -1,5 +1,6 @@
 import streamlit as st
 from modules.plots import simple_timeline, simple_piechart
+import pandas as pd
 
 def show():
     st.header("Einbürgerungen")
@@ -21,7 +22,7 @@ def show():
     with tab3:
         default_groups = None
         simple_timeline("einbürg_recht.csv", "Rechtsgrundlagen", default_groups)
-
+        simple_piechart("einbürg_recht.csv", "Rechtsgrundlagen", True)
 
 if __name__ == "__main__":
     show()

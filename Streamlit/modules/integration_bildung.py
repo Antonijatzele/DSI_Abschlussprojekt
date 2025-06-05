@@ -749,15 +749,15 @@ def show():
                    'Abschluss2'] == 'dar.: mit schulischem Teil der Fachhochschulreife', 'Abschluss'] = 'Fachhochschulreife'
 
         jahre = sorted(df['Abgangsjahr'].unique())
-        selected_jahre = st.multiselect("Jahr", options=jahre,
-                                        default=[jahre[-1]],
-                                        key=("Tab_Abschluss_Jahr"))  # z.B. letztes Jahr vorausgewählt
+        selected_jahr = st.selectbox(
+            "Jahr",
+            options=jahre,
+            index=len(jahre) - 1,  # letztes Jahr vorausgewählt
+            key="Tab_Abschluss_Jahr"
+        )
 
-        # Falls nichts ausgewählt wurde, alle Jahre nehmen
-        if not selected_jahre:
-            selected_jahre = jahre
 
-        df_filtered_12 = df[df['Abgangsjahr'].isin(selected_jahre)]
+        df_filtered_12 = df[df['Abgangsjahr'] == selected_jahr]
 
         df_filtered_12['deutsche_Absolvierende'] = df_filtered_12['Absolvierende_und_Abgehende_Anzahl'] - \
                                                    df_filtered_12[
@@ -811,30 +811,107 @@ def show():
                     s=f"{grouped['deutsch_prozent_norm'][i]:.1f}%", ha='center', va='bottom',
                     fontsize=9, fontweight='bold', color='black')
 
+
         # Achsenticks und -labels
         ax.set_xticks(x)
         ax.set_xticklabels(labels, fontsize=11, color='black')
 
         # Achsentitel entfernen
+
         ax.set_xlabel('')
-        ax.set_ylabel('')
+        #ax.set_ylabel('')
+        ax.set_ylabel('Anteil in Prozent (%)', fontsize=12)
+        # y-Achse mit Prozent-Suffix
+        ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: f'{int(y)}%'))
 
-        # y-Achse Beschriftung optional
-        ax.set_ylabel('Prozentualer Anteil (%)')
+        # Legende rechts oben platzieren
+        ax.legend(loc='upper right')
 
-        # Legende
-        ax.legend()
 
-        # Optische Anpassungen
+        # Entferne unnötige Rahmenlinien
         ax.spines['top'].set_visible(False)
         ax.spines['right'].set_visible(False)
+
         ax.spines['left'].set_visible(True)
         ax.spines['bottom'].set_visible(True)
         ax.yaxis.grid(True, linestyle='--', alpha=0.7)
 
         plt.tight_layout()
         st.pyplot(fig)
-        ###############################################################
+
+
+        ##################################################
+        # Plot ohne Hauptschulabschluss deutsch/ ausländer
+        import plotly.graph_objects as go
+
+        # Filter: nur Abschluss2 mit "Förderschwerpunkt"
+        df_foerderschwerpunkt = df_filtered_12[
+            df_filtered_12['Abschluss2'].str.contains("Förderschwerpunkt", case=False, na=False)]
+
+        if not df_foerderschwerpunkt.empty:
+            # Deutsche berechnen
+            df_foerderschwerpunkt['deutsch_anzahl'] = (
+                    df_foerderschwerpunkt['Absolvierende_und_Abgehende_Anzahl'] -
+                    df_foerderschwerpunkt['auslaendische_Absolvierende_und_Abgehende_Anzahl']
+            )
+
+            # Gruppieren
+            grouped_f = df_foerderschwerpunkt.groupby('Abschluss2').agg({
+                'Absolvierende_und_Abgehende_Anzahl': 'sum',
+                'auslaendische_Absolvierende_und_Abgehende_Anzahl': 'sum',
+                'deutsch_anzahl': 'sum'
+            }).reset_index()
+
+            # Summen berechnen für Prozentnormierung
+            sum_ausl = grouped_f['auslaendische_Absolvierende_und_Abgehende_Anzahl'].sum()
+            sum_deu = grouped_f['deutsch_anzahl'].sum()
+
+            if sum_ausl > 0 and sum_deu > 0:
+                grouped_f['auslaender_prozent'] = grouped_f[
+                                                      'auslaendische_Absolvierende_und_Abgehende_Anzahl'] / sum_ausl * 100
+                grouped_f['deutsch_prozent'] = grouped_f['deutsch_anzahl'] / sum_deu * 100
+
+                # Plotly Balkendiagramm
+                fig = go.Figure()
+
+                fig.add_trace(go.Bar(
+                    x=grouped_f['Abschluss2'],
+                    y=grouped_f['auslaender_prozent'],
+                    name='Ausländisch',
+                    marker_color='#fc8d62',
+                    text=grouped_f['auslaender_prozent'].round(1).astype(str) + '%',
+                    textposition='outside'
+                ))
+
+                fig.add_trace(go.Bar(
+                    x=grouped_f['Abschluss2'],
+                    y=grouped_f['deutsch_prozent'],
+                    name='Deutsch',
+                    marker_color='#66c2a5',
+                    text=grouped_f['deutsch_prozent'].round(1).astype(str) + '%',
+                    textposition='outside'
+                ))
+
+                fig.update_layout(
+                    barmode='group',
+                    title='Anteil bei Förderschwerpunkten (Ohne Hauptschulabschluss)',
+                    xaxis_title='Abschluss2 (Förderschwerpunkt)',
+                    yaxis_title='Anteil in Prozent (%)',
+                    yaxis=dict(ticksuffix='%'),
+                    legend=dict(x=0.85, y=1.0),
+                    bargap=0.2,
+                    plot_bgcolor='white',
+                    height=600
+                )
+
+                st.plotly_chart(fig, use_container_width=True)
+            else:
+                st.warning("Nicht genügend Daten für prozentuale Darstellung (nur Nullwerte).")
+        else:
+            st.info("Keine Daten mit 'Förderschwerpunkt' in Abschluss2 für das gewählte Jahr vorhanden.")
+
+
+
 
 
 

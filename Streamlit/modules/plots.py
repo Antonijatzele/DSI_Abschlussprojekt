@@ -17,7 +17,7 @@ def simple_timeline(file, group_col, default_groups=None):
             label=f"{group_col} auswählen",
             options=all_groups,
             default=default_groups if default_groups else all_groups,
-            key=file
+            key=f"timeline_{file}_{group_col}"
         )
     else:
         sel_groups = all_groups
@@ -52,7 +52,14 @@ def simple_piechart(file, col, sum=False):
 
 
     # Jahr filtern bzw. Summe bilden
-    selected_year = st.slider('Jahr auswählen', min_value=df['Jahr'].min(), max_value=df['Jahr'].max(), value=df['Jahr'].max())
+    selected_year = st.slider(
+        'Jahr auswählen', 
+        min_value=df['Jahr'].min(), 
+        max_value=df['Jahr'].max(), 
+        value=df['Jahr'].max(),
+        key=f"piechart_{file}_{col}"
+    )
+
     if sum:
         filtered_df = df[df['Jahr'] <= selected_year]
         filtered_df = filtered_df.groupby(col)["Value"].sum().reset_index()
@@ -82,8 +89,22 @@ def simple_piechart(file, col, sum=False):
     total_value = final_df['Value'].sum()
     final_df['Prozent'] = (final_df['Value'] / total_value) * 100
 
+    # Titel anpassen
+    if sum:
+        title = f"Summe Jahr {df['Jahr'].min()} bis {selected_year}"
+    else:
+        title = f"Jahr {selected_year}"
+
     # Diagram erstellen und anzeigen
-    fig = px.pie(final_df, names=col, values='Prozent', title=f"{col} im Jahr {selected_year}")
+    fig = px.pie(
+        final_df, 
+        names=col, 
+        values='Prozent', 
+        title=title,
+    )
+    fig.update_layout(
+        legend_title_text=col,
+    ) 
     st.plotly_chart(fig)
 
 
