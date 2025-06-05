@@ -82,8 +82,19 @@ def simple_piechart(file, col, sum=False):
     total_value = final_df['Value'].sum()
     final_df['Prozent'] = (final_df['Value'] / total_value) * 100
 
+    # Titel anpassen
+    if sum:
+        title = f"Summe von Jahr {df['Jahr'].min()} bis {selected_year}"
+    else:
+        title = f"Jahr {selected_year}"
+
     # Diagram erstellen und anzeigen
-    fig = px.pie(final_df, names=col, values='Prozent', title=f"{col} im Jahr {selected_year}")
+    fig = px.pie(
+        final_df, 
+        names=col, 
+        values='Prozent', 
+        title=title
+    )
     st.plotly_chart(fig)
 
 
