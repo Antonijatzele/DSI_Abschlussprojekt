@@ -24,7 +24,7 @@ st.markdown("""
 </style>""", unsafe_allow_html=True)
 
 
-# st.logo("Streamlit/images/logo.svg")
+st.logo("Streamlit/images/logo.svg")
 
 
 # Hauptmenü-Struktur
