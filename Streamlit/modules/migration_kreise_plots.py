@@ -58,8 +58,9 @@ def show():
 
     # Korrealtionsdisgram
     df_corr = pd.read_csv("Streamlit/data/migration/scatter_plot_anteil_dichte_corr.csv")
+    
     fig = px.bar(
-        df_corr, 
+        df_corr.sort_values(by='Correlation'), 
         x='Correlation', 
         y='Staatsangehörigkeit', 
         title='Korrelationen zwischen Bevölkerungsdichte und -anteil nach Ländern',

@@ -29,7 +29,7 @@ def lade_geodaten():
 
 # Karte erstellen
 def erstelle_karte(geojson_str):
-    m = folium.Map(location=[51.0, 10.0], zoom_start=6)
+    m = folium.Map(location=[51.5, 10.0], zoom_start=6)
     folium.GeoJson(
         geojson_str,
         style_function=lambda feature: {
