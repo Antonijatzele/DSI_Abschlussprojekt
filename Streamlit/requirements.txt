@@ -8,3 +8,6 @@ plotly
 leafmap
 streamlit-folium
 branca
+folium
+numpy
+requests

@@ -14,7 +14,6 @@ from shapely.geometry import shape
 from streamlit_folium import st_folium
 import geopandas as gpd
 import numpy as np
-from collections import defaultdict
 # Original-Datensatz laden
 @st.cache_data
 def load_data():
