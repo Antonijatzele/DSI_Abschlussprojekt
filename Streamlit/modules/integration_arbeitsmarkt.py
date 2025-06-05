@@ -1,5 +1,6 @@
 from io import StringIO
 import folium
+import matplotlib as mpl
 import requests
 import streamlit as st
 import pandas as pd
@@ -11,6 +12,8 @@ from urllib.parse import quote
 from folium.features import DivIcon
 from shapely.geometry import shape
 from streamlit_folium import st_folium
+import geopandas as gpd
+import numpy as np
 from collections import defaultdict
 # Original-Datensatz laden
 @st.cache_data
@@ -46,11 +49,11 @@ def load_gesamtDaten():
     base_url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Arbeitsmarktintegration/gesamtdaten/"
     filenames = [
         "auslaender_arbeitslose.csv",
-        "auslaender_arbeitssuchende.csv",
+        "auslaender_arbeitsuchende.csv",
         "auslaender_auszubildende.csv",
         "auslaender_beschaeftigte.csv",
         "deutsch_arbeitslose.csv",
-        "deutsch_arbeitssuchende.csv",
+        "deutsch_arbeitsuchende.csv",
         "deutsch_auszubildende.csv",
         "deutsch_beschaeftigte.csv"
     ]
@@ -62,19 +65,52 @@ def load_gesamtDaten():
     for file in filenames:
         url = base_url + file
         df = pd.read_csv(url, sep=";")  # ggf. sep anpassen
+        df_reduced = df.iloc[:, [0, 3]].copy()
+        df_reduced.columns = ["Jahr", "Gesamt"]
+
         herkunft, status = file.replace(".csv", "").split("_", 1)
-        df["Herkunft"] = herkunft
-        df["Status"] = status
-        all_data.append(df)
+        df_reduced["Herkunft"] = herkunft
+        df_reduced["Status"] = status
+
+        df_reduced["Gesamt"] = df_reduced["Gesamt"].astype(str).str.replace(".", "", regex=False)
+        df_reduced["Gesamt"] = pd.to_numeric(df_reduced["Gesamt"], errors="coerce")
+
+        all_data.append(df_reduced)
 
     # Kombinierter DataFrame
     combined_df = pd.concat(all_data, ignore_index=True)
-
-    # Anzeige in Streamlit
-    st.title("Arbeitsmarktintegration - Kombinierte Daten")
-    st.write(combined_df)
     return combined_df
 
+regio_jahre = [2021, 2022, 2023, 2024]
+regio_laender = ["Afghanistan", "Iraq", "Italy", "Syria", "Tunisia", "Turkey", "Ukraine", "United States of America"]
+
+@st.cache_data
+def load_data_quoteRegional():
+
+    # Leere Liste zum Sammeln der DataFrames
+    dfs = []
+
+    for jahr in regio_jahre:
+        for land in regio_laender:
+            # URL zusammensetzen, dabei Leerzeichen in Ländernamen URL-kodieren
+            encoded_land = land.replace(" ", "%20")
+            url = f"https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Arbeitsmarktintegration/beschaeftigungsquoteregional/{jahr}/{encoded_land}.csv"
+            
+            # CSV laden und Jahr + Land als Spalten hinzufügen
+            try:
+                df = pd.read_csv(url, sep=";", decimal=",", quotechar='"')
+                df['Jahr'] = jahr
+                df['Land'] = land
+                dfs.append(df)
+            except Exception as e:
+                print(f"Fehler beim Laden von {url}: {e}")
+
+    # Alle DataFrames zusammenführen
+    final_df = pd.concat(dfs, ignore_index=True)
+
+    # Optional: Spalten umbenennen, falls gewünscht
+    # final_df.rename(columns={"Region": "Region", "Beschäftigungsquote": "Quote"}, inplace=True)
+    return final_df
 
 # Neuer Datensatz: nach Geschlecht
 @st.cache_data
@@ -232,22 +268,105 @@ def printDeltas(df_filtered, ueberschrift):
     sorted_negative = sorted(negative_prozent.items(), key=lambda x: abs(x[1]), reverse=True)
     plot_bar_chart(sorted_negative, f"Top 10 prozentualer Rückgang ({min_jahr} → {max_jahr})", "Delta in %", "prozent")
 
+def printRegionaleKarte(merged, land, jahr, container=None):
+    data = merged[(merged['Land'] == land) & (merged['Jahr'] == jahr)]
+    fig = px.choropleth(
+        data,
+        geojson=data.geometry,
+        locations=data.index,
+        color="Beschäftigungsquote ",
+        hover_name="Region ",
+        projection="mercator",
+        color_continuous_scale="Viridis"
+    )
+    fig.update_geos(fitbounds="locations", visible=False)
+    if container:
+        container.plotly_chart(fig)
+    else:
+        st.plotly_chart(fig)
+
+
+# Norm und Colormap definieren (für Werte von 1 bis 100)
+vmin, vmax = 1, 70
+cmap = plt.cm.viridis
+norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
+def printRegionaleKarte_matplotlib(merged, land, jahr, ax):
+    # Filtere die Daten für Land und Jahr
+    data = merged[(merged['Land'] == land) & (merged['Jahr'] == jahr)]
+    
+    # Zeichne die Karte mit der "Beschäftigungsquote " als Farbwert
+    data.plot(column='Beschäftigungsquote ', cmap=cmap, norm=norm, linewidth=0.8, ax=ax, edgecolor='0.8')
+    
+    ax.axis('off')
 
 # Hauptfunktion
 def show():
     st.title("Integration: Arbeitsmarkt")
-    df = load_data()
-    jahr_col = df.columns[0]
-
-    tab1, tab2, tab3, tab4 = st.tabs(["Übersicht","Aufteilung", "Entwicklung", "Nach Herkunftsland"])
     
+
+    tab1, tab2, tab3 = st.tabs(["Übersicht","Aufteilung", "Entwicklung"])
+    
+    
+
     with tab1:
         df = load_gesamtDaten()
+        # Plotly-Liniendiagramm
+        
+        # Kombinierte Gruppenspalte
+        df["Gruppe"] = df["Herkunft"] + " – " + df["Status"]
 
+        # Optional: Filter
+        herkunft_optionen = df['Herkunft'].unique()
+        status_optionen = df['Status'].unique()
+
+        herkunft = st.multiselect("Herkunft auswählen", herkunft_optionen, default=herkunft_optionen)
+        status = st.multiselect("Status auswählen", status_optionen, default=status_optionen)
+
+        # Filter anwenden
+        df_filtered = df[df['Herkunft'].isin(herkunft) & df['Status'].isin(status)]
+        df_filtered["Gruppe"] = df_filtered["Herkunft"] + " – " + df_filtered["Status"]
+
+        # Liniendiagramm
+        fig = px.line(
+            df_filtered,
+            x="Jahr",
+            y="Gesamt",
+            color="Gruppe",  # klare Unterscheidung nach Herkunft+Status
+            markers=True,
+            title="Gesamtzahlen nach Jahr für jede Herkunft–Status-Kombination"
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+        jahre = [2015, 2024]
+        df_tabelle = df_filtered[df_filtered['Jahr'].isin(jahre)]
+
+        # Pivot-Tabelle erstellen
+        df_pivot = df_tabelle.pivot_table(index="Gruppe", columns="Jahr", values="Gesamt")
+        df_pivot = df_pivot[[2015, 2024]]
+        df_pivot.columns = ["Wert 2015", "Wert 2024"]
+
+        # Deltas berechnen
+        df_pivot["Δ Absolut"] = df_pivot["Wert 2024"] - df_pivot["Wert 2015"]
+        df_pivot["Δ Relativ (%)"] = (df_pivot["Δ Absolut"] / df_pivot["Wert 2015"]) * 100
+
+        # Formatieren
+        df_formatiert = df_pivot.copy()
+        df_formatiert = df_formatiert.reset_index()
+
+        df_formatiert["Wert 2015"] = df_formatiert["Wert 2015"].apply(lambda x: f"{x:,.0f}".replace(",", "."))
+        df_formatiert["Wert 2024"] = df_formatiert["Wert 2024"].apply(lambda x: f"{x:,.0f}".replace(",", "."))
+        df_formatiert["Δ Absolut"] = df_formatiert["Δ Absolut"].apply(lambda x: f"{x:,.0f}".replace(",", "."))
+        df_formatiert["Δ Relativ (%)"] = df_formatiert["Δ Relativ (%)"].apply(lambda x: f"{x:.2f}%".replace(".", ","))
+
+        # Tabelle anzeigen (rechtsbündig durch monospace-Layout)
+        st.subheader("Vergleichstabelle: Werte für 2015 und 2024 inkl. Entwicklung")
+        st.table(df_formatiert)
+        
     with tab3:
-        
+        df = load_data()
+        jahr_col = df.columns[0]
         cols = [c for c in df.columns if c != 'Jahr']
-        
         groups = defaultdict(dict)
 
         for col in cols:
@@ -268,142 +387,9 @@ def show():
         printDeltas(df_filtered, "Nach Berufsabschluss")
             
 
-    with tab4:
-        with st.expander("📊 DataFrame anzeigen"):
-            df_geschlecht = load_data_geschlecht()
-            st.dataframe(df_geschlecht)
-
-        st.header('Beschäftigungsquote (Top-Herkunftsländer) nach Jahr')
-
-        # Jahr auswählen
-        jahr = st.selectbox("Wähle ein Jahr", sorted(df_geschlecht["Jahr"].unique()))
-        df_filtered = df_geschlecht[df_geschlecht["Jahr"] == jahr]
-
-        wert_spalte = "Beschäftigungsquote"
-        st.markdown(f"**Färbung basiert auf der Spalte:** `{wert_spalte}`")
-
-        # Top 3 Länder
-        top3 = df_filtered.nlargest(10, wert_spalte)
-        farben = ["#FFD700", "#C0C0C0", "#CD7F32"]
-
-        # GeoJSON laden
-        geojson_url = "https://raw.githubusercontent.com/python-visualization/folium/master/examples/data/world-countries.json"
-        geojson_data = requests.get(geojson_url).json()
-
-        col1, col2 = st.columns([3, 1])
-
-        with col1:
-            # Karte erstellen
-            m = folium.Map(location=[20, 10], zoom_start=2, tiles="cartodbpositron")
-
-            # Choroplethen-Karte
-            folium.Choropleth(
-                geo_data=geojson_data,
-                data=df_filtered,
-                columns=["Land", "Beschäftigungsquote"],
-                key_on="feature.properties.name",
-                fill_color="YlGnBu",
-                threshold_scale=[0, 20, 30, 40, 50, 60, 70, 80],
-                fill_opacity=0.8,
-                line_opacity=0.2,
-                legend_name="Beschäftigungsquote (%)",
-                nan_fill_color="lightgray",
-                highlight=True
-            ).add_to(m)
-
-            # Länder-Namen als Marker anzeigen
-            for feature in geojson_data['features']:
-                country_name = feature['properties']['name']
-                if country_name in df_filtered["Land"].values:
-                    geom = shape(feature['geometry'])
-                    centroid = geom.centroid
-                    folium.map.Marker(
-                        [centroid.y, centroid.x],
-                        icon=DivIcon(
-                            icon_size=(150, 36),
-                            icon_anchor=(0, 0),
-                            html=f'''
-                            <div style="
-                                background-color: rgba(255, 255, 255, 0.6);
-                                padding: 2px 4px;
-                                border-radius: 4px;
-                                font-size: 10pt;
-                                font-weight: bold;">
-                                {country_name}
-                            </div>''',
-                        )
-                    ).add_to(m)
-
-            # Karte anzeigen
-            st_folium(m, height=550, width=1000)
-
-        with col2:
-            st.subheader("Top Länder")
-            for i, row in top3.iterrows():
-                st.markdown(f"**{row['Land']}** – {row[wert_spalte]} %")
-            
-
-        #Entwicklung über die Jahre
-        fig = px.line(
-            df_geschlecht,
-            x="Jahr",
-            y="Beschäftigungsquote",
-            color="Land",
-            markers=True,
-            title="Entwicklung der Beschäftigungsquote nach Herkunftsland"
-        )
-        fig.update_layout(hovermode="closest")
-
-        st.plotly_chart(fig, use_container_width=True)
-        # balkendiagram 
-        st.subheader("Entwicklung der Beschäftigungsquote nach Geschlecht (2021–2023)")
-
-        # Filter auf die Jahre 2021 bis 2023
-        df_gender_filtered = df_geschlecht[(df_geschlecht["Jahr"] >= 2021) & (df_geschlecht["Jahr"] <= 2023)]
-
-        # Länder-Auswahl als Multiselect
-        laender_liste = sorted(df_gender_filtered["Land"].unique())
-        ausgewaehlte_laender = st.multiselect("Wähle Länder aus", laender_liste)
-
-        # Filter nach ausgewählten Ländern
-        df_laender = df_gender_filtered[df_gender_filtered["Land"].isin(ausgewaehlte_laender)]
-
-        if df_laender.empty:
-            st.warning("Keine Daten für die ausgewählten Länder vorhanden.")
-        else:
-            # Durchschnitt pro Jahr und Geschlecht berechnen
-            df_agg = df_laender.groupby(["Jahr"]).agg({
-                "Frauen Beschäftigungsquote": "mean",
-                "Männer Beschäftigungsquote": "mean"
-            }).reset_index()
-
-            # Long-Format für Plotly
-            df_long = df_agg.melt(
-                id_vars="Jahr",
-                value_vars=["Frauen Beschäftigungsquote", "Männer Beschäftigungsquote"],
-                var_name="Geschlecht",
-                value_name="Beschäftigungsquote"
-            )
-
-            # Beschriftung vereinfachen
-            df_long["Geschlecht"] = df_long["Geschlecht"].str.replace(" Beschäftigungsquote", "")
-
-            # Balkendiagramm
-            fig_bar = px.bar(
-                df_long,
-                x="Jahr",
-                y="Beschäftigungsquote",
-                color="Geschlecht",
-                barmode="group",
-                title=f"Beschäftigungsquote nach Geschlecht (2021–2023) für {', '.join(ausgewaehlte_laender)}",
-                labels={"Beschäftigungsquote": "Beschäftigungsquote (%)"},
-                text_auto=True
-            )
-
-            fig_bar.update_layout(xaxis=dict(type='category'))
-            st.plotly_chart(fig_bar, use_container_width=True)
-
     with tab2:
+        df = load_data()
+        jahr_col = df.columns[0]
         st.subheader("Arbeitsmarktintegration — Deutsch vs. Ausländer")
         cols = df.columns[1:]
         parsed_cols = [parse_column(c) for c in cols]
@@ -504,6 +490,5 @@ def show():
             fig.update_layout(title=f"Vergleich nach Altersgruppen für {jahr}")
             st.plotly_chart(fig, use_container_width=True)
 
-        
 
 show()
