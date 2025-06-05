@@ -41,6 +41,41 @@ def get_country_files():
     files = res.json()
     return [f["name"].replace(".csv", "") for f in files if f["name"].endswith(".csv")]
 
+@st.cache_data
+def load_gesamtDaten():
+    base_url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/main/Daten/Integration/Arbeitsmarktintegration/gesamtdaten/"
+    filenames = [
+        "auslaender_arbeitslose.csv",
+        "auslaender_arbeitssuchende.csv",
+        "auslaender_auszubildende.csv",
+        "auslaender_beschaeftigte.csv",
+        "deutsch_arbeitslose.csv",
+        "deutsch_arbeitssuchende.csv",
+        "deutsch_auszubildende.csv",
+        "deutsch_beschaeftigte.csv"
+    ]
+
+    # Leerer DataFrame für alle Daten
+    all_data = []
+
+    # Daten einlesen und Herkunft/Status ergänzen
+    for file in filenames:
+        url = base_url + file
+        df = pd.read_csv(url, sep=";")  # ggf. sep anpassen
+        herkunft, status = file.replace(".csv", "").split("_", 1)
+        df["Herkunft"] = herkunft
+        df["Status"] = status
+        all_data.append(df)
+
+    # Kombinierter DataFrame
+    combined_df = pd.concat(all_data, ignore_index=True)
+
+    # Anzeige in Streamlit
+    st.title("Arbeitsmarktintegration - Kombinierte Daten")
+    st.write(combined_df)
+    return combined_df
+
+
 # Neuer Datensatz: nach Geschlecht
 @st.cache_data
 def load_data_geschlecht(): 
@@ -207,7 +242,7 @@ def show():
     tab1, tab2, tab3, tab4 = st.tabs(["Übersicht","Aufteilung", "Entwicklung", "Nach Herkunftsland"])
     
     with tab1:
-        5
+        df = load_gesamtDaten()
 
     with tab3:
         
