@@ -43,54 +43,71 @@ def show():
 
     with tab_kita:
 
+        #############################
+        # Deutschlandkarte mit Anteilen pro Bundesland (Kinder mit Migrationshintergrund in Kitas)
         # CSV einlesen
         csv_url = "https://github.com/Antonijatzele/DSI_Abschlussprojekt/raw/refs/heads/main/Daten/Integration/Bildungsintegration/Kita_Migrationshintergrund_Laendermonitor_2020_2023.csv"
         df = pd.read_csv(csv_url, encoding="ISO-8859-1")
         df["Jahr"] = df["Jahr"].astype(str).str.strip().astype(int)
 
-        with st.expander("DataFrame anzeigen"):
-            st.dataframe(df)
-
-
-        # Prozentanteil berechnen (und auf eine Nachkommastelle runden)
+        # Prozentanteil berechnen
         df["Anteil (%) mit Migrationshintergrund"] = (
                 df["Mit Migrationshintergrund"] / (
                     df["Mit Migrationshintergrund"] + df["Ohne Migrationshintergrund"]) * 100
         ).round(1)
 
-        # Prozentzeichen hinzufügen als Text
-        df["AnteilText"] = df["Anteil (%) mit Migrationshintergrund"].astype(str) + " %"
-
         # Streamlit UI
-        selected_year = st.selectbox("Jahr auswählen", sorted(df["Jahr"].unique(), reverse=True))
-        filtered_df = df[df["Jahr"] == selected_year].sort_values("Anteil (%) mit Migrationshintergrund",
-                                                                  ascending=True)
+        selected_year = st.selectbox("Jahr", sorted(df["Jahr"].unique(), reverse=True))
+        filtered_df = df[df["Jahr"] == selected_year]
 
-        # Balkendiagramm - Kinder mit MH in Kitas
-        fig = px.bar(
-            filtered_df,
-            x="Anteil (%) mit Migrationshintergrund",
-            y="Bundesland",
-            orientation="h",
-            text="AnteilText",
-        )
+        st.write(f"### Anteil von Kindern mit Migrationshintergrund in Kitas ({selected_year})")
 
-        # Farben und Layout anpassen
-        fig.update_traces(
-            textposition="outside",
-            marker_color="#FC8D62"
-        )
+        # GeoJSON für Bundesländer (öffentlicher Link)
+        geojson_url = "https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/2_bundeslaender/1_sehr_hoch.geo.json"
+        geojson_data = requests.get(geojson_url).json()
 
-        fig.update_layout(
-            title=f"Anteil von Kindern mit Migrationshintergrund in Kitas ({selected_year})",
-            xaxis=dict(visible=False),
-            yaxis_title=None,
-            plot_bgcolor="white",
-            margin=dict(l=20, r=40, t=50, b=20)
-        )
+        # Die Bundeslandnamen im GeoJSON (für matching)
+        # In dem GeoJSON heißt das Bundesland-Feld 'name'
+        # Prüfen, ob die Namen in df und GeoJSON übereinstimmen, evtl. anpassen
+        # Beispiel: "Bayern" in df vs "Bayern" in GeoJSON, passt meistens
 
-        # Plot anzeigen
-        st.plotly_chart(fig, use_container_width=True)
+        # Karte initialisieren (Zentrum Deutschland)
+        # Folium-Karte mit hellem Hintergrund (cartodbpositron)
+        m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='cartodbpositron')
+
+        # Choropleth-Map erstellen
+        folium.Choropleth(
+            geo_data=geojson_data,
+            name="choropleth",
+            data=filtered_df,
+            columns=["Bundesland", "Anteil (%) mit Migrationshintergrund"],
+            key_on="feature.properties.name",
+            fill_color="YlOrRd",
+            fill_opacity=0.7,
+            line_opacity=0.2,
+            legend_name="Anteil (%) mit Migrationshintergrund"
+        ).add_to(m)
+
+        # Optional: Tooltips mit Bundeslandnamen und Prozent anzeigen
+        style_function = lambda x: {'fillColor': '#ffffff', 'color': '#000000', 'fillOpacity': 0, 'weight': 0.1}
+        highlight_function = lambda x: {'fillColor': '#000000', 'color': '#000000', 'fillOpacity': 0.5, 'weight': 0.1}
+
+        for feature in geojson_data['features']:
+            bundesland_name = feature['properties']['name']
+            # Anteil finden
+            wert = filtered_df.loc[filtered_df["Bundesland"] == bundesland_name, "Anteil (%) mit Migrationshintergrund"]
+            wert_text = f"{wert.values[0]} %" if not wert.empty else "Keine Daten"
+
+            folium.GeoJson(
+                feature,
+                style_function=style_function,
+                highlight_function=highlight_function,
+                tooltip=folium.Tooltip(f"{bundesland_name}: {wert_text}")
+            ).add_to(m)
+
+        # Karte in Streamlit anzeigen
+        st_folium(m, width=700, height=500)
+
 
 
         ### Linienplot
@@ -356,7 +373,7 @@ def show():
                         html=f"""
                                 <div style="
                                     font-size: 12px; 
-                                    color: white; 
+                                    color: black; 
                                     font-weight: bold;
                                     text-align: center;
                                     background-color: transparent;  /* Kein Hintergrund */
