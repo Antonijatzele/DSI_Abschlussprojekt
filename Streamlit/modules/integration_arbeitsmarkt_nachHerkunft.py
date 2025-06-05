@@ -224,9 +224,7 @@ def show():
             
 
     if tab == "Global nach Herkunftsland":
-        with st.expander("📊 DataFrame anzeigen"):
-            df_geschlecht = load_data_geschlecht()
-            st.dataframe(df_geschlecht)
+        df_geschlecht = load_data_geschlecht()
 
         st.header('Beschäftigungsquote (Top-Herkunftsländer) nach Jahr')
 
@@ -290,7 +288,7 @@ def show():
                     ).add_to(m)
 
             # Karte anzeigen
-            st_folium(m, height=550, width=1000)
+            st_folium(m, height=500,width=800)
 
         with col2:
             st.subheader("Top Länder")
