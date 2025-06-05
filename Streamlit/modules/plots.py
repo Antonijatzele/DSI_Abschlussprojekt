@@ -84,7 +84,7 @@ def simple_piechart(file, col, sum=False):
 
     # Titel anpassen
     if sum:
-        title = f"Summe von Jahr {df['Jahr'].min()} bis {selected_year}"
+        title = f"Summe Jahr {df['Jahr'].min()} bis {selected_year}"
     else:
         title = f"Jahr {selected_year}"
 
@@ -93,8 +93,11 @@ def simple_piechart(file, col, sum=False):
         final_df, 
         names=col, 
         values='Prozent', 
-        title=title
+        title=title,
     )
+    fig.update_layout(
+        legend_title_text=col,
+    ) 
     st.plotly_chart(fig)
 
 
