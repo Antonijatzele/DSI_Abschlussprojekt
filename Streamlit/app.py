@@ -39,12 +39,8 @@ hauptkategorien = {
     ],
     "Integration": [
         st.Page("modules/integration_arbeitsmarkt.py", title="Arbeitsmarkt"),
-        st.Page("modules/integration_sprache.py", title="Sprache"),
         st.Page("modules/integration_bildung.py", title="Bildung"),
 
-    ],
-    "Glossar": [
-        st.Page("modules/glossar.py", title="Begriffe & Datenquellen"),
     ]
 }
 
