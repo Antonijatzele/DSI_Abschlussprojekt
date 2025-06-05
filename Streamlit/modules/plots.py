@@ -19,7 +19,8 @@ def simple_timeline(file, group_col, default_groups=None, running_sum=False):
             key=f"timeline_{file}_{group_col}"
         )
     else:
-        sel_groups = all_groups
+        df = _shorten_df(df, group_col)
+        sel_groups = df[group_col].unique()
 
     # Laufende Summe
     if running_sum:
@@ -81,27 +82,11 @@ def simple_piechart(file, col, sum=False):
     if sum:
         filtered_df = df[df['Jahr'] <= selected_year]
         filtered_df = filtered_df.groupby(col)["Value"].sum().reset_index()
+        filtered_df["Jahr"] =  selected_year
     else:
         filtered_df = df[df['Jahr'] == selected_year]
 
-    # Wenn es mehr als 10 Einträge gibt -> zusammenfassen
-    if len(filtered_df) > 10:
-        # Sortiere nach Value, und wähle die Top 10
-        filtered_df_sorted = filtered_df.sort_values(by='Value', ascending=False)
-        top_10_df = filtered_df_sorted.head(10)
-
-        # Berechne den Rest (Andere)
-        rest_value = filtered_df_sorted.iloc[10:]['Value'].sum()
-
-        # Füge "Andere" hinzu
-        other_df = pd.DataFrame({
-            'Staatsangehörigkeit': ['Andere'],
-            'Value': [rest_value],
-            'Jahr': [selected_year]
-        })
-        final_df = pd.concat([top_10_df, other_df])
-    else:
-        final_df = filtered_df
+    final_df = _shorten_df(filtered_df, col)
 
     # Prozent berechnen
     total_value = final_df['Value'].sum()
@@ -132,3 +117,24 @@ def _read_csv(file):
     if 'STAG' in df.columns:
         df["Jahr"] = pd.to_datetime(df["STAG"]).dt.year
     return df
+
+def _shorten_df(df, col):
+    df_sum = df.groupby(col)["Value"].sum().reset_index()
+    # Wenn es mehr als 10 Einträge gibt -> zusammenfassen
+    if len(df_sum) > 10:
+        # Sortiere nach Value, und wähle die Top 10
+        df_sorted = df_sum.sort_values(by='Value', ascending=False)
+        top10 = df_sorted.head(10)[col]
+
+        # Filter die Top10
+        df_top10 = df[df[col].isin(top10)]
+
+        # Nicht top10 -> Andere
+        df_not_top10 = df[~df[col].isin(top10)].groupby(["Jahr"])["Value"].sum().reset_index()
+        df_not_top10[col] = "Andere"
+ 
+        return pd.concat([df_top10, df_not_top10])
+    else:
+        return df
+
+    

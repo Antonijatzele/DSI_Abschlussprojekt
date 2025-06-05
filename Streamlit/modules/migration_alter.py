@@ -3,6 +3,31 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+def _stats(df):
+    # Kumulierte Anzahl an Personen
+    df_median = df.groupby("ALT")["Value"].sum().reset_index()
+    df_median['Kumulierte_Anzahl'] = df_median['Value'].cumsum()
+
+    # Gesamte Anzahl an Personen
+    total_people = df_median['Value'].sum()
+
+    # Medianalter = Punkt wo kumulierte Anzahl > Gesamte Anzahl / 2
+    median_age_row = df_median[df_median['Kumulierte_Anzahl'] >= total_people / 2].iloc[0]
+    median_age = median_age_row['ALT']
+
+    #Verhältnis der Geschlechter
+    men = df[df["GES"] == "GESM"]["Value"].sum()
+    women = df[df["GES"] == "GESW"]["Value"].sum()
+
+    if men > women:
+        sex_ratio = f"{men/women:.2f} zu 1"
+    else:
+        sex_ratio = f"1 zu {women/men:.2f}"
+
+    return median_age, sex_ratio
+
+
+
 
 def show():
     altersreihenfolge = list(range(85))
@@ -25,7 +50,7 @@ def show():
         df_men = df[df["GES"] == "GESM"].set_index("ALT")["Value"].reindex(altersreihenfolge).fillna(0)
         df_women = df[df["GES"] == "GESW"].set_index("ALT")["Value"].reindex(altersreihenfolge).fillna(0)
 
-        return df_men, df_women, selected_group
+        return df_men, df_women, selected_group, df
 
     # Titel
     st.header("Alterverteilung im Vergleich")
@@ -33,11 +58,11 @@ def show():
 
     # Ausländer
     file_path_ausl = "Streamlit/data/migration/alterspyramide.csv"
-    df_men_ausl, df_women_ausl, selected_group_ausl = load_and_prepare_data(file_path_ausl, True )
+    df_men_ausl, df_women_ausl, selected_group_ausl, df_ausl = load_and_prepare_data(file_path_ausl, True )
 
     # Deutsche
     file_path_de = "Streamlit/data/migration/alterspyramide_de.csv"
-    df_men_de, df_women_de, selected_group_de = load_and_prepare_data(file_path_de, False)
+    df_men_de, df_women_de, selected_group_de, df_de = load_and_prepare_data(file_path_de, False)
 
 
     fig = make_subplots(
@@ -85,18 +110,22 @@ def show():
         showlegend=False
     ), row=1, col=2)
 
+    #Stats
+    median_ausl, sex_ratio_ausl = _stats(df_ausl)
+    median_de, sex_ratio_de = _stats(df_de)
+
     # Layout
     fig.update_layout(
         height=800,
         barmode='overlay',
         bargap=0.1,
         xaxis=dict(
-            title='',
+            title=f'Medianalter: {median_ausl}, Verhältnis (M/W): {sex_ratio_ausl}',
             tickvals=[],
             ticktext=[]
         ),
         xaxis2=dict(
-            title='',
+            title=f'Medianalter: {median_de}, Verhältnis (M/W): {sex_ratio_de}',
             tickvals=[],
             ticktext=[]
         ),
@@ -105,6 +134,7 @@ def show():
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
 
     st.markdown("Quelle: [Destatis - Ausländerstatistik](https://www-genesis.destatis.de/datenbank/online/statistic/12521/details)")
 

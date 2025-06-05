@@ -23,5 +23,7 @@ def show():
         simple_timeline("einbürg_recht.csv", "Rechtsgrundlagen", default_groups, running_sum=True)
         simple_piechart("einbürg_recht.csv", "Rechtsgrundlagen", True)
 
+    st.markdown("Quelle: [Destatis - Einbürgerungsstatistik](https://www-genesis.destatis.de/datenbank/online/statistic/12511/details)")
+
 if __name__ == "__main__":
     show()
