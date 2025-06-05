@@ -38,7 +38,7 @@ def show():
 
             """)
 
-    tab_kita, tab_schule, tab3 = st.tabs(["Frühkindliche Bildung", "Schule", "Beruflicher Bildungsabschluss"])
+    tab_kita, tab_schule, tab_abschluss = st.tabs(["Frühkindliche Bildung", "Schule", "Beruflicher Bildungsabschluss"])
 
 
     with tab_kita:
@@ -648,7 +648,7 @@ def show():
         # ----------------------------- #
         # DataFrame anzeigen
         # ----------------------------- #
-        with st.expander("Gefilterter DataFrame anzeigen"):
+        with st.expander("DataFrame anzeigen"):
             st.dataframe(filtered_df)
 
         # ----------------------------- #
@@ -714,7 +714,7 @@ def show():
 
         st.plotly_chart(fig)
 
-    with tab3:
+        st.subheader("Schulabschlüsse")
         ##################################################################
         # Daten einlesen: Destatis 21111-12
         # Absolvierende / Abgehende (Deutsche, Ausländer/-innen) nach Abschluss-, Schularten, Klassen-/Jahrgangsstufen und Geschlecht (einschl. Externe)
@@ -751,7 +751,7 @@ def show():
         jahre = sorted(df['Abgangsjahr'].unique())
         selected_jahre = st.multiselect("Jahr", options=jahre,
                                         default=[jahre[-1]],
-                                        key = ("Tab_Abschluss_Jahr"))  # z.B. letztes Jahr vorausgewählt
+                                        key=("Tab_Abschluss_Jahr"))  # z.B. letztes Jahr vorausgewählt
 
         # Falls nichts ausgewählt wurde, alle Jahre nehmen
         if not selected_jahre:
@@ -839,8 +839,10 @@ def show():
 
 
 
-    with tab3:
-        # Daten einlesen
+
+
+
+    with tab_abschluss:
         # Daten einlesen
         # CSS für vertikale Zentrierung der Legenden-Spalte
         st.markdown("""
