@@ -749,15 +749,15 @@ def show():
                    'Abschluss2'] == 'dar.: mit schulischem Teil der Fachhochschulreife', 'Abschluss'] = 'Fachhochschulreife'
 
         jahre = sorted(df['Abgangsjahr'].unique())
-        selected_jahre = st.multiselect("Jahr", options=jahre,
-                                        default=[jahre[-1]],
-                                        key=("Tab_Abschluss_Jahr"))  # z.B. letztes Jahr vorausgewählt
+        selected_jahr = st.selectbox(
+            "Jahr",
+            options=jahre,
+            index=len(jahre) - 1,  # letztes Jahr vorausgewählt
+            key="Tab_Abschluss_Jahr"
+        )
 
-        # Falls nichts ausgewählt wurde, alle Jahre nehmen
-        if not selected_jahre:
-            selected_jahre = jahre
 
-        df_filtered_12 = df[df['Abgangsjahr'].isin(selected_jahre)]
+        df_filtered_12 = df[df['Abgangsjahr'] == selected_jahr]
 
         df_filtered_12['deutsche_Absolvierende'] = df_filtered_12['Absolvierende_und_Abgehende_Anzahl'] - \
                                                    df_filtered_12[
