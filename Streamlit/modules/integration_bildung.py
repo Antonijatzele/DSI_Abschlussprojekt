@@ -15,7 +15,7 @@ import requests
 
 
 def show():
-    st.title("🎓 Integration & Bildung")
+    st.title("🎓 Integration: Bildung")
 
     st.markdown("""
         <style>
