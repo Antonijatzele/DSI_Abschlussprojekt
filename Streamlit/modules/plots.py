@@ -4,9 +4,8 @@ import plotly.graph_objects as go
 import plotly.express as px
 
 
-def simple_timeline(file, group_col, default_groups=None):
+def simple_timeline(file, group_col, default_groups=None, running_sum=False):
     df = _read_csv(file)
-    df["Value_Mio"] = df["Value"] / 1_000_000
 
     fig = go.Figure()
 
@@ -17,28 +16,47 @@ def simple_timeline(file, group_col, default_groups=None):
             label=f"{group_col} auswählen",
             options=all_groups,
             default=default_groups if default_groups else all_groups,
-            key=file
+            key=f"timeline_{file}_{group_col}"
         )
     else:
         sel_groups = all_groups
 
-    #st.write(str(sel_groups))
+    # Laufende Summe
+    if running_sum:
+        if st.checkbox('Laufende Summe', key=f"cb_rs_timeline_{file}_{group_col}"):
+            df['Value'] = df.groupby(group_col)['Value'].cumsum()
+
+    # Einheit
+    df_filtered = df[df[group_col].isin(sel_groups)]
+    max_value = df_filtered["Value"].max()
+    einheit = ""
+    if max_value > 1_000_000:
+        df["Value"] = df["Value"] / 1_000_000
+        einheit = "Mio"
+    elif max_value > 1_000:
+        df["Value"] = df["Value"] / 1_000
+        einheit = "Tsd."
+    
+    # Y-Achse
+    yaxis_title="Bevölkerung"
+    if einheit:
+        yaxis_title += f" (in {einheit})"
 
     # Diagrame ersetllen
     for group in sel_groups:
         subset = df[df[group_col] == group]
         fig.add_trace(go.Scatter(
             x=subset["Jahr"],
-            y=subset["Value_Mio"],
+            y=subset["Value"],
             mode="lines+markers",
             name=group,
-            hovertemplate=f"<b>{group}</b><br>Bevölkerung: %{{y:.2f}} Mio<extra></extra>"
+            hovertemplate=f"<b>{group}</b><br>Bevölkerung: %{{y:.2f}} {einheit}<extra></extra>"
         ))
 
     fig.update_layout(
         title="",
         xaxis_title="Jahr",
-        yaxis_title="Bevölkerung (in Mio)",
+        yaxis_title=yaxis_title,
         hovermode="x unified",
         legend_title=group_col,
         template="plotly_white"
@@ -52,7 +70,14 @@ def simple_piechart(file, col, sum=False):
 
 
     # Jahr filtern bzw. Summe bilden
-    selected_year = st.slider('Jahr auswählen', min_value=df['Jahr'].min(), max_value=df['Jahr'].max(), value=df['Jahr'].max())
+    selected_year = st.slider(
+        'Jahr auswählen', 
+        min_value=df['Jahr'].min(), 
+        max_value=df['Jahr'].max(), 
+        value=df['Jahr'].max(),
+        key=f"piechart_{file}_{col}"
+    )
+
     if sum:
         filtered_df = df[df['Jahr'] <= selected_year]
         filtered_df = filtered_df.groupby(col)["Value"].sum().reset_index()
