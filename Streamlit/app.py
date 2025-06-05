@@ -39,6 +39,7 @@ hauptkategorien = {
     ],
     "Integration": [
         st.Page("modules/integration_arbeitsmarkt.py", title="Arbeitsmarkt"),
+        st.Page("modules/integration_arbeitsmarkt_nachHerkunft.py", title="Geographie (Karte)"),
         st.Page("modules/integration_bildung.py", title="Bildung"),
 
     ]

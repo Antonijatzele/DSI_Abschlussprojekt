@@ -15,7 +15,7 @@ import requests
 
 
 def show():
-    st.title("🎓 Integration & Bildung")
+    st.title("🎓 Integration: Bildung")
 
     st.markdown("""
         <style>
@@ -43,54 +43,71 @@ def show():
 
     with tab_kita:
 
+        #############################
+        # Deutschlandkarte mit Anteilen pro Bundesland (Kinder mit Migrationshintergrund in Kitas)
         # CSV einlesen
         csv_url = "https://github.com/Antonijatzele/DSI_Abschlussprojekt/raw/refs/heads/main/Daten/Integration/Bildungsintegration/Kita_Migrationshintergrund_Laendermonitor_2020_2023.csv"
         df = pd.read_csv(csv_url, encoding="ISO-8859-1")
         df["Jahr"] = df["Jahr"].astype(str).str.strip().astype(int)
 
-        with st.expander("DataFrame anzeigen"):
-            st.dataframe(df)
-
-
-        # Prozentanteil berechnen (und auf eine Nachkommastelle runden)
+        # Prozentanteil berechnen
         df["Anteil (%) mit Migrationshintergrund"] = (
                 df["Mit Migrationshintergrund"] / (
                     df["Mit Migrationshintergrund"] + df["Ohne Migrationshintergrund"]) * 100
         ).round(1)
 
-        # Prozentzeichen hinzufügen als Text
-        df["AnteilText"] = df["Anteil (%) mit Migrationshintergrund"].astype(str) + " %"
-
         # Streamlit UI
-        selected_year = st.selectbox("Jahr auswählen", sorted(df["Jahr"].unique(), reverse=True))
-        filtered_df = df[df["Jahr"] == selected_year].sort_values("Anteil (%) mit Migrationshintergrund",
-                                                                  ascending=True)
+        selected_year = st.selectbox("Jahr", sorted(df["Jahr"].unique(), reverse=True))
+        filtered_df = df[df["Jahr"] == selected_year]
 
-        # Balkendiagramm - Kinder mit MH in Kitas
-        fig = px.bar(
-            filtered_df,
-            x="Anteil (%) mit Migrationshintergrund",
-            y="Bundesland",
-            orientation="h",
-            text="AnteilText",
-        )
+        st.write(f"### Anteil von Kindern mit Migrationshintergrund in Kitas ({selected_year})")
 
-        # Farben und Layout anpassen
-        fig.update_traces(
-            textposition="outside",
-            marker_color="#FC8D62"
-        )
+        # GeoJSON für Bundesländer (öffentlicher Link)
+        geojson_url = "https://raw.githubusercontent.com/isellsoap/deutschlandGeoJSON/main/2_bundeslaender/1_sehr_hoch.geo.json"
+        geojson_data = requests.get(geojson_url).json()
 
-        fig.update_layout(
-            title=f"Anteil von Kindern mit Migrationshintergrund in Kitas ({selected_year})",
-            xaxis=dict(visible=False),
-            yaxis_title=None,
-            plot_bgcolor="white",
-            margin=dict(l=20, r=40, t=50, b=20)
-        )
+        # Die Bundeslandnamen im GeoJSON (für matching)
+        # In dem GeoJSON heißt das Bundesland-Feld 'name'
+        # Prüfen, ob die Namen in df und GeoJSON übereinstimmen, evtl. anpassen
+        # Beispiel: "Bayern" in df vs "Bayern" in GeoJSON, passt meistens
 
-        # Plot anzeigen
-        st.plotly_chart(fig, use_container_width=True)
+        # Karte initialisieren (Zentrum Deutschland)
+        # Folium-Karte mit hellem Hintergrund (cartodbpositron)
+        m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='cartodbpositron')
+
+        # Choropleth-Map erstellen
+        folium.Choropleth(
+            geo_data=geojson_data,
+            name="choropleth",
+            data=filtered_df,
+            columns=["Bundesland", "Anteil (%) mit Migrationshintergrund"],
+            key_on="feature.properties.name",
+            fill_color="OrRd",
+            fill_opacity=0.7,
+            line_opacity=0.2,
+            legend_name="Anteil (%) mit Migrationshintergrund"
+        ).add_to(m)
+
+        # Optional: Tooltips mit Bundeslandnamen und Prozent anzeigen
+        style_function = lambda x: {'fillColor': '#ffffff', 'color': '#000000', 'fillOpacity': 0, 'weight': 0.1}
+        highlight_function = lambda x: {'fillColor': '#000000', 'color': '#000000', 'fillOpacity': 0.5, 'weight': 0.1}
+
+        for feature in geojson_data['features']:
+            bundesland_name = feature['properties']['name']
+            # Anteil finden
+            wert = filtered_df.loc[filtered_df["Bundesland"] == bundesland_name, "Anteil (%) mit Migrationshintergrund"]
+            wert_text = f"{wert.values[0]} %" if not wert.empty else "Keine Daten"
+
+            folium.GeoJson(
+                feature,
+                style_function=style_function,
+                highlight_function=highlight_function,
+                tooltip=folium.Tooltip(f"{bundesland_name}: {wert_text}")
+            ).add_to(m)
+
+        # Karte in Streamlit anzeigen
+        st_folium(m, width=700, height=500)
+
 
 
         ### Linienplot
@@ -297,15 +314,13 @@ def show():
         vmin = bundeslaender['Anteil (%)'].min()
         vmax = bundeslaender['Anteil (%)'].max()
 
-        colors = [
-            # '#fff5f0',  # sehr helles Rot
-            '#FDD8C7',
-            '#FDB79D',
-            '#FC8D62',
-            '#E67654',
-            '#CC6140',  # dunkleres Rot
-            '#A84B2E'
-        ]
+        colors = ['#fff7ec',  # sehr helles Orange
+                  '#fee8c8',  # helles Orange
+                  '#fdd49e',  # mittleres Orange
+                  '#fdbb84',  # dunkleres Orange
+                  '#fc8d59',  # Orange-Rot
+                  '#e34a33',  # kräftiges Rot-Orange
+                  '#b30000']  # dunkles Rot
 
         colormap = cm.LinearColormap(
             colors=colors,
@@ -316,59 +331,111 @@ def show():
 
         # Karte erstellen
         # m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB positron')
-        m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB positron')
+        # Karte erstellen mit korrektem Tile-Namen für hellen Hintergrund
+        m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='cartodbpositron')
 
         def style_function(feature):
             anteil = feature['properties']['Anteil (%)']
             return {
-                'fillOpacity': 0.9,
+                'fillOpacity': 0.6,
                 'weight': 1,
                 'color': 'black',
                 'fillColor': colormap(anteil) if anteil is not None else 'lightgrey'
             }
 
+        # Neue Spalte mit Prozentzahl und Prozentzeichen als String
+        bundeslaender['Anteil_text'] = bundeslaender['Anteil (%)'].apply(
+            lambda x: f"{x:.1f}%" if pd.notna(x) else "n/a")
+
+        # Tooltip anpassen: nur eine Zeile mit "Bundesland: XX.X%"
         tooltip = folium.GeoJsonTooltip(
             fields=['name', 'Anteil (%)'],
-            aliases=['Bundesland', 'Anteil (%)'],
+            aliases=['', ''],  # Leere Aliases, damit wir nur einen custom Text bauen
             localize=True,
-            labels=True,
+            labels=False,  # Keine Labels, nur den Wert anzeigen
             sticky=False,
             style="""
-                        background-color: #F0EFEF;
-                        border: 1px solid black;
-                        border-radius: 3px;
-                        box-shadow: 3px;
-                        color: black;
-                    """
+                background-color: #F0EFEF;
+                border: 1px solid black;
+                border-radius: 3px;
+                box-shadow: 3px;
+                color: black;
+                font-weight: bold;
+                text-align: center;
+            """,
+            # custom HTML-Formatierung über tooltip-Funktion
+            # Alternativ einfacher: Tooltip über "tooltip" Parameter anpassen (weiter unten)
         )
+
+        def tooltip_function(feature):
+            name = feature['properties']['name']
+            anteil = feature['properties']['Anteil (%)']
+            if anteil is None:
+                anteil_text = "keine Daten"
+            else:
+                anteil_text = f"{anteil:.1f}%"
+            return f"{name}: {anteil_text}"
+
         folium.GeoJson(
             bundeslaender,
             style_function=style_function,
-            tooltip=tooltip
+            tooltip=folium.GeoJsonTooltip(fields=[], labels=False, sticky=False, localize=True,
+                                          toLocaleString=True,
+                                          style="background-color:#F0EFEF; border:1px solid black; border-radius:3px; color:black; font-weight:bold; text-align:center;",
+                                          ),
+            highlight_function=lambda x: {'weight': 3, 'color': 'blue'},
+            popup=None
         ).add_to(m)
 
-        # Prozentwerte als Text auf der Karte anzeigen
-        for _, row in bundeslaender.iterrows():
-            if pd.notna(row['Anteil (%)']):
-                folium.map.Marker(
-                    [row['geometry'].centroid.y, row['geometry'].centroid.x],
-                    icon=folium.DivIcon(
-                        html=f"""
-                                <div style="
-                                    font-size: 12px; 
-                                    color: white; 
-                                    font-weight: bold;
-                                    text-align: center;
-                                    background-color: transparent;  /* Kein Hintergrund */
-                                    padding: 0;                   /* Kein Padding */
-                                    border: none;                 /* Keine Rahmen */
-                                    ">
-                                    {row['Anteil (%)']}%
-                                </div>
-                                """
-                    )
-                ).add_to(m)
-        # colormap.add_to(m)
+        # Statt Tooltip über folium.GeoJsonTooltip einbauen, kannst du ein benutzerdefiniertes Tooltip mit Popup machen:
+        geojson = folium.GeoJson(
+            bundeslaender,
+            style_function=style_function,
+            highlight_function=lambda x: {'weight': 3, 'color': 'blue'}
+        )
+
+        geojson.add_child(folium.features.GeoJsonTooltip(
+            fields=['name', 'Anteil (%)'],
+            aliases=['', ''],
+            labels=False,
+            localize=True,
+            sticky=False,
+            style="""
+                background-color: #F0EFEF;
+                border: 1px solid black;
+                border-radius: 3px;
+                color: black;
+                font-weight: bold;
+                text-align: center;
+            """,
+            # custom formatieren: nutze formatters, wenn nötig (siehe unten)
+        ))
+
+        geojson.add_to(m)
+
+        # Keine Prozentwerte als Marker hinzufügen - diesen Codeblock entfernen!
+        # for _, row in bundeslaender.iterrows():
+        #     if pd.notna(row['Anteil (%)']):
+        #         folium.map.Marker(
+        #             [row['geometry'].centroid.y, row['geometry'].centroid.x],
+        #             icon=folium.DivIcon(
+        #                 html=f"""
+        #                     <div style="
+        #                         font-size: 12px;
+        #                         color: black;
+        #                         font-weight: bold;
+        #                         text-align: center;
+        #                         background-color: transparent;
+        #                         padding: 0;
+        #                         border: none;
+        #                     ">
+        #                         {row['Anteil (%)']}%
+        #                     </div>
+        #                 """
+        #             )
+        #         ).add_to(m)
+        # Colormap (Legende) hinzufügen
+        colormap.add_to(m)
 
         # In Streamlit anzeigen
         st.subheader(f"Anteil ausländischer Schüler/innen nach Bundesland ({jahr})")
@@ -378,113 +445,136 @@ def show():
         # Diagramm 2: Anteil ausländischer Schüler pro Schulart #
         #                   getrennt nach Geschlecht            #
         #########################################################
-
-        # Nur gültige Geschlechter
-        df_filtered = df_filtered[~df_filtered['Geschlecht'].isin(['Zusammen', 'Insgesamt'])]
-
-        # Ungültige Schularten entfernen
+        # Filter gültige Schularten
         df_filtered = df_filtered[df_filtered['Schulart'].notna()]
         df_filtered = df_filtered[
             ~df_filtered['Schulart'].isin(['Insgesamt', 'Keine Zuordnung zu einer Schulart möglich'])]
 
-        # Gesamtzahl aller Schüler pro Schuljahr und Schulart (ohne Geschlechter-Aufteilung)
+        # Gesamtzahl aller Schüler pro Schuljahr und Schulart
         df_gesamt = df_filtered.groupby(['Schuljahr', 'Schulart'])['Schueler_innen_Anzahl'].sum().reset_index()
-        df_gesamt = df_gesamt.rename(columns={'Schueler_innen_Anzahl': 'Gesamt'})
+        df_gesamt.rename(columns={'Schueler_innen_Anzahl': 'Gesamt'}, inplace=True)
 
-        # Anzahl ausländischer Schüler pro Schuljahr, Schulart und Geschlecht
+        # Anzahl ausländischer Schüler pro Schuljahr und Schulart
         df_auslaender = df_filtered[df_filtered['Staatsangehoerigkeit'] == 'ausländische Schüler/innen'].copy()
-        df_auslaender = df_auslaender.groupby(['Schuljahr', 'Schulart', 'Geschlecht'])[
-            'Schueler_innen_Anzahl'].sum().reset_index()
-        df_auslaender = df_auslaender.rename(columns={'Schueler_innen_Anzahl': 'Auslaendisch'})
+        df_auslaender = df_auslaender.groupby(['Schuljahr', 'Schulart'])['Schueler_innen_Anzahl'].sum().reset_index()
+        df_auslaender.rename(columns={'Schueler_innen_Anzahl': 'Auslaendisch'}, inplace=True)
 
-        # Merge: Ausländische Schüler mit Gesamtzahl pro Schulart (ohne Geschlecht)
-        df_plot = df_auslaender.merge(df_gesamt, on=['Schuljahr', 'Schulart'])
-
-        # Anteil berechnen: ausländische Schüler pro Geschlecht geteilt durch alle Schüler der Schulart
+        # Merge und Anteil berechnen
+        df_plot = pd.merge(df_auslaender, df_gesamt, on=['Schuljahr', 'Schulart'])
         df_plot['Anteil'] = df_plot['Auslaendisch'] / df_plot['Gesamt'] * 100
 
-        # Filter nach gewähltem Jahr
+        # Filter nach Jahr
         df_selected = df_plot[df_plot['Schuljahr'] == jahr].copy()
 
-        # Sortierung nach gesamtem Anteil (Summe aus beiden Geschlechtern) pro Schulart
-        sort_order = df_selected.groupby('Schulart')['Anteil'].sum().sort_values(ascending=True).index.tolist()
+        # Sortierung: höchste Anteile oben
+        df_selected = df_selected.sort_values('Anteil', ascending=False)
+        sort_order = df_selected['Schulart'].tolist()
         df_selected['Schulart'] = pd.Categorical(df_selected['Schulart'], categories=sort_order, ordered=True)
-        df_selected = df_selected.sort_values(['Schulart', 'Geschlecht'])
 
-        # Gesamtanteil (Summe männlich + weiblich) pro Schulart für die Anzeige rechts neben dem Balken
-        gesamt_anteile = df_selected.groupby('Schulart')['Anteil'].sum().reset_index()
 
-        # Erstelle ein Mapping Schulart -> Gesamtanteil-Text
-        gesamt_anteile_map = dict(zip(gesamt_anteile['Schulart'], gesamt_anteile['Anteil']))
 
-        # Farben – dezenter
-        color_map = {
-            'weiblich': '#e76f51',  # zarteres rot
-            'männlich': '#457b9d'  # modernes blau
-        }
+        # Orange Farbe (Set2 Palette: #fc8d62)
+        orange_color = '#fc8d62'
 
-        # Gestapelter Balken-Plot (ohne Text in den Balken)
         fig = px.bar(
             df_selected,
             x='Anteil',
             y='Schulart',
-            color='Geschlecht',
-            color_discrete_map=color_map,
             orientation='h',
-            text=None,  # Keine Prozentzahlen IN den Balken anzeigen
-            labels={
-                'Anteil': '',
-                'Schulart': '',
-                'Geschlecht': 'Geschlecht'
-            },
-            title=f"Anteil ausländischer Schüler/innen pro Schulart und Geschlecht ({jahr}, {selected_bundesland}, {ausgewaehlter_bildungsbereich})",
-            barmode='stack',
-            category_orders={'Schulart': sort_order},
-            custom_data=['Geschlecht']
+            color_discrete_sequence=[orange_color],
+            labels={'Anteil': '', 'Schulart': ''},
+            title=f"Anteil ausländischer Schüler/innen nach Schulart ({jahr}, {selected_bundesland}, {ausgewaehlter_bildungsbereich})"
         )
 
-        # Tooltip (Hover) zeigt die geschlechtsspezifischen Prozentzahlen
-        fig.update_traces(
-            hovertemplate='%{y}<br>%{customdata[0]}: %{x:.1f}%',  # Zugriff auf 'Geschlecht'
-            textposition='inside',
-            insidetextanchor='start'
+        # Layout anpassen
+        fig.update_layout(
+            plot_bgcolor='white',
+            paper_bgcolor='white',
+            font=dict(size=14),
+            xaxis=dict(showgrid=False, zeroline=False, visible=False),
+            yaxis=dict(showgrid=False, autorange='reversed'),  # wichtig: um höchsten Anteil oben zu haben
+            height=600,
+            margin=dict(l=150, r=100, t=50, b=50),
+            showlegend=False
         )
 
-        # Gesamtanteil rechts neben dem Balken als Annotation hinzufügen
-        for i, schulart in enumerate(sort_order):
-            gesamt_text = f"{gesamt_anteile_map[schulart]:.1f}%"
+        # Anteil als Text rechts neben Balken anzeigen
+        for _, row in df_selected.iterrows():
             fig.add_annotation(
-                x=gesamt_anteile_map[schulart] + 1,  # etwas rechts vom Balken-Ende
-                y=schulart,
-                text=gesamt_text,
+                x=row['Anteil'] + 1,
+                y=row['Schulart'],
+                text=f"{row['Anteil']:.1f}%",
                 showarrow=False,
                 font=dict(size=14, color='black'),
                 xanchor='left',
                 yanchor='middle'
             )
 
-        # Layout-Verbesserungen: Hintergrund, Linien und X-Achsentitel entfernen
+        st.plotly_chart(fig, use_container_width=True)
+
+        ######################################################
+        # Nur ausländische Schüler nach Schulart und Geschlecht
+        df_auslaender = df_filtered[df_filtered['Staatsangehoerigkeit'] == 'ausländische Schüler/innen']
+
+        # Summe der ausländischen Schüler pro Schulart und Geschlecht
+        df_grouped = df_auslaender.groupby(['Schulart', 'Geschlecht'])['Schueler_innen_Anzahl'].sum().reset_index()
+
+        # Gesamt ausländische Schüler pro Schulart
+        gesamt_auslaender = df_grouped.groupby('Schulart')['Schueler_innen_Anzahl'].sum().reset_index()
+        gesamt_auslaender = gesamt_auslaender.rename(columns={'Schueler_innen_Anzahl': 'Gesamt_Auslaender'})
+
+        # Merge Gesamt mit gruppierten Daten
+        df_grouped = df_grouped.merge(gesamt_auslaender, on='Schulart')
+
+        # Anteil pro Geschlecht an den ausländischen Schülern der Schulart (in %)
+        df_grouped['Anteil'] = df_grouped['Schueler_innen_Anzahl'] / df_grouped['Gesamt_Auslaender'] * 100
+
+        # Sortierung nach Gesamtzahl ausländischer Schüler pro Schulart (optional)
+        sort_order = gesamt_auslaender.sort_values('Gesamt_Auslaender', ascending=True)['Schulart'].tolist()
+        df_grouped['Schulart'] = pd.Categorical(df_grouped['Schulart'], categories=sort_order, ordered=True)
+        df_grouped = df_grouped.sort_values(['Schulart', 'Geschlecht'])
+
+        # Farben definieren
+        color_map = {
+            'weiblich': '#e76f51',
+            'männlich': '#457b9d'
+        }
+
+        # Plotly Balkendiagramm (100% gestapelt)
+        fig = px.bar(
+            df_grouped,
+            x='Anteil',
+            y='Schulart',
+            color='Geschlecht',
+            color_discrete_map=color_map,
+            orientation='h',
+            barmode='stack',
+            category_orders={'Schulart': sort_order},
+            labels={'Anteil': 'Anteil (%)', 'Schulart': 'Schulart', 'Geschlecht': 'Geschlecht'},
+            title=f"Geschlechter-Anteil an ausländischen Schüler/innen pro Schulart ({jahr})",
+            text=df_grouped['Anteil'].apply(lambda x: f"{x:.1f}%")
+        )
+
         fig.update_layout(
-            plot_bgcolor='white',
-            paper_bgcolor='white',
-            font=dict(size=14),
             xaxis=dict(
-                showgrid=False,
-                zeroline=False,
-                visible=False  # X-Achse komplett ausblenden
+                title='Anteil (%)',
+                range=[0, 100],
+                ticksuffix='%'
             ),
             yaxis=dict(
-                showgrid=False,
-                title='',
-                autorange='reversed'  # falls gewünscht, sonst entfernen
+                title='Schulart',
+                autorange='reversed'
             ),
+            plot_bgcolor='white',
+            paper_bgcolor='white',
             legend_title='Geschlecht',
             height=600,
-            margin=dict(l=150, r=100, t=50, b=50)
+            margin=dict(l=150, r=50, t=80, b=50),
+            uniformtext_minsize=12,
+            uniformtext_mode='hide'
         )
 
         st.plotly_chart(fig, use_container_width=True)
-
 
         ###########################################
         st.subheader("Herkunftsländer")
@@ -493,6 +583,8 @@ def show():
         url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Bildungsintegration/Destatis_21111-08_allgemeinbildende_schulen_2021_2024_zusammengefuegt.csv"
         df = pd.read_csv(url, sep=',')
 
+        # Nur gültige Einzelgeschlechter
+        df = df[df["Geschlecht"] != "Insgesamt"]
         # Erste zwei Spalten löschen
         df = df.drop(df.columns[:2], axis=1)
 
@@ -607,7 +699,6 @@ def show():
         # Daten einlesen
         url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Bildungsintegration/auslaendische_Schueler_Staatsangehoerigkeit_1992_2020_aufbereitet.csv"
         df = pd.read_csv(url, sep=";")
-
         # Spalte umbenennen
         df.rename(columns={"Land der Staatsangehörigkeit": "Staatsangehörigkeit"}, inplace=True)
 
@@ -615,7 +706,7 @@ def show():
         df = df[df["Staatsangehörigkeit"].notna()]
         df = df[~df["Staatsangehörigkeit"].isin(["insgesamt", "Keine Angabe und ungeklärt"])]
         df = df[df["Jahr"].notna()]
-        df = df[df["Geschlecht"] != "z"]
+        df = df[df["Geschlecht"] == "z"]
         df = df[df["Anzahl"] != 0]
         df = df[~df["Kontinent"].isin(["Alle", "Keine Angabe und ungeklärt"])]
 
@@ -623,10 +714,10 @@ def show():
         df = df[df["Bundesland"] != "Deutschland"]
 
         # Geschlecht umbenennen
-        df["Geschlecht"] = df["Geschlecht"].map({
-            "m": "männlich",
-            "w": "weiblich"
-        })
+        #df["Geschlecht"] = df["Geschlecht"].map({
+         #   "m": "männlich",
+          #  "w": "weiblich"
+        #})
 
         # ----------------------------- #
         # Multiselect: Bundesland
@@ -713,6 +804,10 @@ def show():
         )
 
         st.plotly_chart(fig)
+
+
+
+
 
         st.subheader("Schulabschlüsse")
         ##################################################################
@@ -937,6 +1032,9 @@ def show():
 
         df['Anzahl'] = pd.to_numeric(df['Anzahl'], errors='coerce')
         df = df.dropna(subset=['Anzahl'])
+        df = df[df['Geschlecht'] != 'männlich']
+        df = df[df['Geschlecht'] != 'weiblich']
+
 
         valid_entries = [
             "Lehre / Berufsausbildung",
@@ -951,6 +1049,11 @@ def show():
 
         df = df[df["Beruflicher Bildungsabschluss"].isin(valid_entries)]
         df = df[df["Migrationsstatus"] != "Insgesamt"]
+        with st.expander("DataFrame anzeigen"):
+            st.dataframe(df)
+
+
+
 
         farben = px.colors.qualitative.Plotly
         farbe_map = {abschluss: farben[i % len(farben)] for i, abschluss in enumerate(valid_entries)}
