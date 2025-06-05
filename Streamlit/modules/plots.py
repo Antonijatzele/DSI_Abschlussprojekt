@@ -14,7 +14,7 @@ def simple_timeline(file, group_col, default_groups=None):
     all_groups = df[group_col].unique()
     if default_groups:
         sel_groups = st.multiselect(
-            label=f"Wählen Sie {group_col} aus",
+            label=f"{group_col} auswählen",
             options=all_groups,
             default=default_groups if default_groups else all_groups,
             key=file
@@ -22,7 +22,7 @@ def simple_timeline(file, group_col, default_groups=None):
     else:
         sel_groups = all_groups
 
-    st.write(str(sel_groups))
+    #st.write(str(sel_groups))
 
     # Diagrame ersetllen
     for group in sel_groups:
@@ -52,7 +52,7 @@ def simple_piechart(file, col, sum=False):
 
 
     # Jahr filtern bzw. Summe bilden
-    selected_year = st.slider('Wähle das Jahr', min_value=df['Jahr'].min(), max_value=df['Jahr'].max(), value=df['Jahr'].max())
+    selected_year = st.slider('Jahr auswählen', min_value=df['Jahr'].min(), max_value=df['Jahr'].max(), value=df['Jahr'].max())
     if sum:
         filtered_df = df[df['Jahr'] <= selected_year]
         filtered_df = filtered_df.groupby(col)["Value"].sum().reset_index()
