@@ -82,7 +82,7 @@ def show():
             data=filtered_df,
             columns=["Bundesland", "Anteil (%) mit Migrationshintergrund"],
             key_on="feature.properties.name",
-            fill_color="YlOrRd",
+            fill_color="OrRd",
             fill_opacity=0.7,
             line_opacity=0.2,
             legend_name="Anteil (%) mit Migrationshintergrund"
@@ -314,15 +314,13 @@ def show():
         vmin = bundeslaender['Anteil (%)'].min()
         vmax = bundeslaender['Anteil (%)'].max()
 
-        colors = [
-            # '#fff5f0',  # sehr helles Rot
-            '#FDD8C7',
-            '#FDB79D',
-            '#FC8D62',
-            '#E67654',
-            '#CC6140',  # dunkleres Rot
-            '#A84B2E'
-        ]
+        colors = ['#fff7ec',  # sehr helles Orange
+                  '#fee8c8',  # helles Orange
+                  '#fdd49e',  # mittleres Orange
+                  '#fdbb84',  # dunkleres Orange
+                  '#fc8d59',  # Orange-Rot
+                  '#e34a33',  # kräftiges Rot-Orange
+                  '#b30000']  # dunkles Rot
 
         colormap = cm.LinearColormap(
             colors=colors,
@@ -333,59 +331,111 @@ def show():
 
         # Karte erstellen
         # m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB positron')
-        m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='CartoDB positron')
+        # Karte erstellen mit korrektem Tile-Namen für hellen Hintergrund
+        m = folium.Map(location=[51.1657, 10.4515], zoom_start=6, tiles='cartodbpositron')
 
         def style_function(feature):
             anteil = feature['properties']['Anteil (%)']
             return {
-                'fillOpacity': 0.9,
+                'fillOpacity': 0.6,
                 'weight': 1,
                 'color': 'black',
                 'fillColor': colormap(anteil) if anteil is not None else 'lightgrey'
             }
 
+        # Neue Spalte mit Prozentzahl und Prozentzeichen als String
+        bundeslaender['Anteil_text'] = bundeslaender['Anteil (%)'].apply(
+            lambda x: f"{x:.1f}%" if pd.notna(x) else "n/a")
+
+        # Tooltip anpassen: nur eine Zeile mit "Bundesland: XX.X%"
         tooltip = folium.GeoJsonTooltip(
             fields=['name', 'Anteil (%)'],
-            aliases=['Bundesland', 'Anteil (%)'],
+            aliases=['', ''],  # Leere Aliases, damit wir nur einen custom Text bauen
             localize=True,
-            labels=True,
+            labels=False,  # Keine Labels, nur den Wert anzeigen
             sticky=False,
             style="""
-                        background-color: #F0EFEF;
-                        border: 1px solid black;
-                        border-radius: 3px;
-                        box-shadow: 3px;
-                        color: black;
-                    """
+                background-color: #F0EFEF;
+                border: 1px solid black;
+                border-radius: 3px;
+                box-shadow: 3px;
+                color: black;
+                font-weight: bold;
+                text-align: center;
+            """,
+            # custom HTML-Formatierung über tooltip-Funktion
+            # Alternativ einfacher: Tooltip über "tooltip" Parameter anpassen (weiter unten)
         )
+
+        def tooltip_function(feature):
+            name = feature['properties']['name']
+            anteil = feature['properties']['Anteil (%)']
+            if anteil is None:
+                anteil_text = "keine Daten"
+            else:
+                anteil_text = f"{anteil:.1f}%"
+            return f"{name}: {anteil_text}"
+
         folium.GeoJson(
             bundeslaender,
             style_function=style_function,
-            tooltip=tooltip
+            tooltip=folium.GeoJsonTooltip(fields=[], labels=False, sticky=False, localize=True,
+                                          toLocaleString=True,
+                                          style="background-color:#F0EFEF; border:1px solid black; border-radius:3px; color:black; font-weight:bold; text-align:center;",
+                                          ),
+            highlight_function=lambda x: {'weight': 3, 'color': 'blue'},
+            popup=None
         ).add_to(m)
 
-        # Prozentwerte als Text auf der Karte anzeigen
-        for _, row in bundeslaender.iterrows():
-            if pd.notna(row['Anteil (%)']):
-                folium.map.Marker(
-                    [row['geometry'].centroid.y, row['geometry'].centroid.x],
-                    icon=folium.DivIcon(
-                        html=f"""
-                                <div style="
-                                    font-size: 12px; 
-                                    color: black; 
-                                    font-weight: bold;
-                                    text-align: center;
-                                    background-color: transparent;  /* Kein Hintergrund */
-                                    padding: 0;                   /* Kein Padding */
-                                    border: none;                 /* Keine Rahmen */
-                                    ">
-                                    {row['Anteil (%)']}%
-                                </div>
-                                """
-                    )
-                ).add_to(m)
-        # colormap.add_to(m)
+        # Statt Tooltip über folium.GeoJsonTooltip einbauen, kannst du ein benutzerdefiniertes Tooltip mit Popup machen:
+        geojson = folium.GeoJson(
+            bundeslaender,
+            style_function=style_function,
+            highlight_function=lambda x: {'weight': 3, 'color': 'blue'}
+        )
+
+        geojson.add_child(folium.features.GeoJsonTooltip(
+            fields=['name', 'Anteil (%)'],
+            aliases=['', ''],
+            labels=False,
+            localize=True,
+            sticky=False,
+            style="""
+                background-color: #F0EFEF;
+                border: 1px solid black;
+                border-radius: 3px;
+                color: black;
+                font-weight: bold;
+                text-align: center;
+            """,
+            # custom formatieren: nutze formatters, wenn nötig (siehe unten)
+        ))
+
+        geojson.add_to(m)
+
+        # Keine Prozentwerte als Marker hinzufügen - diesen Codeblock entfernen!
+        # for _, row in bundeslaender.iterrows():
+        #     if pd.notna(row['Anteil (%)']):
+        #         folium.map.Marker(
+        #             [row['geometry'].centroid.y, row['geometry'].centroid.x],
+        #             icon=folium.DivIcon(
+        #                 html=f"""
+        #                     <div style="
+        #                         font-size: 12px;
+        #                         color: black;
+        #                         font-weight: bold;
+        #                         text-align: center;
+        #                         background-color: transparent;
+        #                         padding: 0;
+        #                         border: none;
+        #                     ">
+        #                         {row['Anteil (%)']}%
+        #                     </div>
+        #                 """
+        #             )
+        #         ).add_to(m)
+        # Colormap (Legende) hinzufügen
+        colormap.add_to(m)
 
         # In Streamlit anzeigen
         st.subheader(f"Anteil ausländischer Schüler/innen nach Bundesland ({jahr})")
