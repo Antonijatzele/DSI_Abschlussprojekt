@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import plotly.express as px
 import plotly.graph_objects as go
+import requests
 
 
 def show():
@@ -37,9 +38,112 @@ def show():
 
             """)
 
-    tab1, tab2, tab3 = st.tabs(["Übersicht", "Herkunft", "Bildungsabschluss"])
-    with tab1:
+    tab_kita, tab_schule, tab_abschluss = st.tabs(["Frühkindliche Bildung", "Schule", "Beruflicher Bildungsabschluss"])
 
+
+    with tab_kita:
+
+        # CSV einlesen
+        csv_url = "https://github.com/Antonijatzele/DSI_Abschlussprojekt/raw/refs/heads/main/Daten/Integration/Bildungsintegration/Kita_Migrationshintergrund_Laendermonitor_2020_2023.csv"
+        df = pd.read_csv(csv_url, encoding="ISO-8859-1")
+        df["Jahr"] = df["Jahr"].astype(str).str.strip().astype(int)
+
+        with st.expander("DataFrame anzeigen"):
+            st.dataframe(df)
+
+
+        # Prozentanteil berechnen (und auf eine Nachkommastelle runden)
+        df["Anteil (%) mit Migrationshintergrund"] = (
+                df["Mit Migrationshintergrund"] / (
+                    df["Mit Migrationshintergrund"] + df["Ohne Migrationshintergrund"]) * 100
+        ).round(1)
+
+        # Prozentzeichen hinzufügen als Text
+        df["AnteilText"] = df["Anteil (%) mit Migrationshintergrund"].astype(str) + " %"
+
+        # Streamlit UI
+        selected_year = st.selectbox("Jahr auswählen", sorted(df["Jahr"].unique(), reverse=True))
+        filtered_df = df[df["Jahr"] == selected_year].sort_values("Anteil (%) mit Migrationshintergrund",
+                                                                  ascending=True)
+
+        # Balkendiagramm - Kinder mit MH in Kitas
+        fig = px.bar(
+            filtered_df,
+            x="Anteil (%) mit Migrationshintergrund",
+            y="Bundesland",
+            orientation="h",
+            text="AnteilText",
+        )
+
+        # Farben und Layout anpassen
+        fig.update_traces(
+            textposition="outside",
+            marker_color="#FC8D62"
+        )
+
+        fig.update_layout(
+            title=f"Anteil von Kindern mit Migrationshintergrund in Kitas ({selected_year})",
+            xaxis=dict(visible=False),
+            yaxis_title=None,
+            plot_bgcolor="white",
+            margin=dict(l=20, r=40, t=50, b=20)
+        )
+
+        # Plot anzeigen
+        st.plotly_chart(fig, use_container_width=True)
+
+
+        ### Linienplot
+        # Bundesländer-Liste mit 'Alle' ganz vorne
+        bundeslaender = sorted(df["Bundesland"].unique())
+        options = ["Alle"] + bundeslaender
+
+        # Multiselect mit Default "Alle"
+        selected = st.multiselect(
+            "Bundesland auswählen",
+            options=options,
+            default=["Alle"],
+            key="Tab1_Bundesland"
+        )
+
+        # Filter-Logik: Wenn "Alle" gewählt, dann keine Filterung
+        if "Alle" in selected or len(selected) == 0:
+            filtered_df = df.copy()
+        else:
+            filtered_df = df[df["Bundesland"].isin(selected)]
+
+        # Sortieren nach Jahr vor dem Plotten
+        filtered_df = filtered_df.sort_values(by="Jahr")
+
+        fig = px.line(
+            filtered_df,
+            x="Jahr",
+            y="Anteil (%) mit Migrationshintergrund",
+            color="Bundesland",
+            markers=True,
+            labels={
+                "Jahr": "Jahr",
+                "Anteil (%) mit Migrationshintergrund": "Anteil Kinder mit Migrationshintergrund (%)",
+                "Bundesland": "Bundesland"
+            },
+            title="Anteil von Kindern mit Migrationshintergrund in Kitas (2020-2023)"
+        )
+
+        fig.update_layout(
+            xaxis=dict(dtick=1),
+            yaxis=dict(range=[0, filtered_df["Anteil (%) mit Migrationshintergrund"].max() + 5]),
+            legend_title_text="Bundesland",
+            plot_bgcolor="white",
+            margin=dict(l=40, r=40, t=50, b=40)
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+
+    ##################################################################################################
+    ##################################################################################################
+
+    with tab_schule:
 
         # Daten einlesen: Destatis 21111-03
         # Schüler/-innen (Deutsche, Ausländer/-innen) nach Bildungsbereichen, rechtlichem Status der Schule, Schularten und Geschlecht
@@ -50,11 +154,10 @@ def show():
         df = df.drop(columns=['Staatsangehoerigkeit'])
         df = df.rename(columns={'Staatsangehoerigkeit_clean': 'Staatsangehoerigkeit'})
         df = df[df['Bildungsbereich'] != 'Bereich unbekannt']
+        df = df[~df['Bildungsbereich'].isin(['Ohne Zuordnung', 'Vorschulbereich'])]
 
         with st.expander("DataFrame anzeigen"):
             st.dataframe(df)
-
-
 
         ####################################
         # Diagramm 1: Karte Deutschlands   #
@@ -80,8 +183,6 @@ def show():
             alle_bildungsbereiche = sorted(df_filter_basis["Bildungsbereich"].dropna().unique().tolist())
             ausgewaehlter_bildungsbereich = st.selectbox("Bildungsbereich", alle_bildungsbereiche)
 
-
-
         with col3:
             bundesland_options = df['Bundesland'].unique()
             selected_bundesland = st.selectbox(
@@ -89,8 +190,6 @@ def show():
                 bundesland_options,
                 index=list(bundesland_options).index('Deutschland') if 'Deutschland' in bundesland_options else 0
             )
-
-
 
         # Filter anwenden
         if selected_bundesland != 'Deutschland':
@@ -103,14 +202,13 @@ def show():
                 (df_filter_basis["Bildungsbereich"] == ausgewaehlter_bildungsbereich)
             ]
 
-
         # Pivot-Tabelle für Schularten-Ranking (nur für 2023/24)
         df_temp = df[
             (df['Geschlecht'].isin(['männlich', 'weiblich'])) &
             (df['Bundesland'] != 'Deutschland') &
             (df['Schuljahr'] == "2023/24") &
             (df['Staatsangehoerigkeit'].isin(['deutsche Schüler/innen', 'ausländische Schüler/innen']))
-        ]
+            ]
 
         if "Schulart" in df_temp.columns:
             pivot_schulart = df_temp.pivot_table(
@@ -121,8 +219,10 @@ def show():
                 fill_value=0
             )
 
-            pivot_schulart['gesamt'] = pivot_schulart['deutsche Schüler/innen'] + pivot_schulart['ausländische Schüler/innen']
-            pivot_schulart['anteil_auslaendisch'] = (pivot_schulart['ausländische Schüler/innen'] / pivot_schulart['gesamt']) * 100
+            pivot_schulart['gesamt'] = pivot_schulart['deutsche Schüler/innen'] + pivot_schulart[
+                'ausländische Schüler/innen']
+            pivot_schulart['anteil_auslaendisch'] = (pivot_schulart['ausländische Schüler/innen'] / pivot_schulart[
+                'gesamt']) * 100
             sortierte_schularten = pivot_schulart.sort_values(by='anteil_auslaendisch', ascending=False).index.tolist()
         else:
             sortierte_schularten = []
@@ -139,7 +239,7 @@ def show():
         # Gesamtdaten je Bundesland
         gesamt_bundesland = pivot.groupby('Bundesland')[['deutsche Schüler/innen', 'ausländische Schüler/innen']].sum()
         gesamt_bundesland['gesamt_gesamt'] = (
-            gesamt_bundesland['deutsche Schüler/innen'] + gesamt_bundesland['ausländische Schüler/innen']
+                gesamt_bundesland['deutsche Schüler/innen'] + gesamt_bundesland['ausländische Schüler/innen']
         )
         anteile = (gesamt_bundesland['ausländische Schüler/innen'] / gesamt_bundesland['gesamt_gesamt']) * 100
 
@@ -197,9 +297,8 @@ def show():
         vmin = bundeslaender['Anteil (%)'].min()
         vmax = bundeslaender['Anteil (%)'].max()
 
-
         colors = [
-           # '#fff5f0',  # sehr helles Rot
+            # '#fff5f0',  # sehr helles Rot
             '#FDD8C7',
             '#FDB79D',
             '#FC8D62',
@@ -235,12 +334,12 @@ def show():
             labels=True,
             sticky=False,
             style="""
-                background-color: #F0EFEF;
-                border: 1px solid black;
-                border-radius: 3px;
-                box-shadow: 3px;
-                color: black;
-            """
+                        background-color: #F0EFEF;
+                        border: 1px solid black;
+                        border-radius: 3px;
+                        box-shadow: 3px;
+                        color: black;
+                    """
         )
         folium.GeoJson(
             bundeslaender,
@@ -255,24 +354,24 @@ def show():
                     [row['geometry'].centroid.y, row['geometry'].centroid.x],
                     icon=folium.DivIcon(
                         html=f"""
-                        <div style="
-                            font-size: 12px; 
-                            color: white; 
-                            font-weight: bold;
-                            text-align: center;
-                            background-color: transparent;  /* Kein Hintergrund */
-                            padding: 0;                   /* Kein Padding */
-                            border: none;                 /* Keine Rahmen */
-                            ">
-                            {row['Anteil (%)']}%
-                        </div>
-                        """
+                                <div style="
+                                    font-size: 12px; 
+                                    color: white; 
+                                    font-weight: bold;
+                                    text-align: center;
+                                    background-color: transparent;  /* Kein Hintergrund */
+                                    padding: 0;                   /* Kein Padding */
+                                    border: none;                 /* Keine Rahmen */
+                                    ">
+                                    {row['Anteil (%)']}%
+                                </div>
+                                """
                     )
                 ).add_to(m)
-        #colormap.add_to(m)
+        # colormap.add_to(m)
 
         # In Streamlit anzeigen
-        #st.subheader(f"Anteil ausländischer Schüler/innen nach Bundesland ({jahr})")
+        st.subheader(f"Anteil ausländischer Schüler/innen nach Bundesland ({jahr})")
         fig1 = st_folium(m, width=1000, height=700)
 
         #########################################################
@@ -387,7 +486,9 @@ def show():
         st.plotly_chart(fig, use_container_width=True)
 
 
-    with tab2:
+        ###########################################
+        st.subheader("Herkunftsländer")
+
         # Daten einlesen
         url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Bildungsintegration/Destatis_21111-08_allgemeinbildende_schulen_2021_2024_zusammengefuegt.csv"
         df = pd.read_csv(url, sep=',')
@@ -407,7 +508,7 @@ def show():
             st.dataframe(df)
 
         # Auswahloptionen vorbereiten
-        schuljahre = sorted(df["Schuljahr"].dropna().unique())
+        #schuljahre = sorted(df["Schuljahr"].dropna().unique())
         schularten = sorted(df['Schulart'].dropna().unique())
         bundeslaender = sorted(df['Bundesland'].dropna().unique())
 
@@ -416,10 +517,10 @@ def show():
         col1, col2 = st.columns(2)
 
         with col1:
-            selected_schularten = st.multiselect("Schulart", options=["Alle"] + schularten, default=["Alle"])
+            selected_schularten = st.multiselect("Schulart wählen", options=["Alle"] + schularten, default=["Alle"], key="Herkunft_schulart")
 
         with col2:
-            selected_bundeslaender = st.multiselect("Bundesland", options=["Alle"] + bundeslaender, default=["Alle"])
+            selected_bundeslaender = st.multiselect("Bundesland wählen", options=["Alle"] + bundeslaender, default=["Alle"], key="Herkunft_Bundesland")
 
         # Filter anwenden (falls nicht "Alle" gewählt)
         df_filtered = df.copy()
@@ -534,7 +635,8 @@ def show():
         selected_bundeslaender = st.multiselect(
             "Bundesland auswählen",
             options=["Alle"] + bundeslaender,
-            default=["Alle"]
+            default=["Alle"],
+            key="Tab_schule_Herkunft_Bundesland"
         )
 
         # Filter anwenden nur wenn nicht "Alle"
@@ -546,7 +648,7 @@ def show():
         # ----------------------------- #
         # DataFrame anzeigen
         # ----------------------------- #
-        with st.expander("Gefilterter DataFrame anzeigen"):
+        with st.expander("DataFrame anzeigen"):
             st.dataframe(filtered_df)
 
         # ----------------------------- #
@@ -612,7 +714,7 @@ def show():
 
         st.plotly_chart(fig)
 
-    with tab3:
+        st.subheader("Schulabschlüsse")
         ##################################################################
         # Daten einlesen: Destatis 21111-12
         # Absolvierende / Abgehende (Deutsche, Ausländer/-innen) nach Abschluss-, Schularten, Klassen-/Jahrgangsstufen und Geschlecht (einschl. Externe)
@@ -648,7 +750,8 @@ def show():
 
         jahre = sorted(df['Abgangsjahr'].unique())
         selected_jahre = st.multiselect("Jahr", options=jahre,
-                                        default=[jahre[-1]])  # z.B. letztes Jahr vorausgewählt
+                                        default=[jahre[-1]],
+                                        key=("Tab_Abschluss_Jahr"))  # z.B. letztes Jahr vorausgewählt
 
         # Falls nichts ausgewählt wurde, alle Jahre nehmen
         if not selected_jahre:
@@ -736,8 +839,10 @@ def show():
 
 
 
-    with tab3:
-        # Daten einlesen
+
+
+
+    with tab_abschluss:
         # Daten einlesen
         # CSS für vertikale Zentrierung der Legenden-Spalte
         st.markdown("""
@@ -868,7 +973,8 @@ def show():
         auswahl_abschluss = st.multiselect(
             "Bildungsabschluss auswählen:",
             options=sorted(df["Beruflicher Bildungsabschluss"].unique()),
-            default=["Lehre / Berufsausbildung"]
+            default=["Lehre / Berufsausbildung"],
+            key="Tab_Abschluss"
         )
 
         if not auswahl_abschluss:
