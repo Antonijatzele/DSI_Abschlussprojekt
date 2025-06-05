@@ -24,7 +24,7 @@ st.markdown("""
 </style>""", unsafe_allow_html=True)
 
 
-# st.logo("Streamlit/images/logo.svg")
+st.logo("Streamlit/images/logo.svg")
 
 
 # Hauptmenü-Struktur
@@ -33,7 +33,8 @@ hauptkategorien = {
         st.Page("modules/migration_anteile.py", title="Anteile"),
         st.Page("modules/migration_migration.py", title="Migration"),
         st.Page("modules/migration_alter.py", title="Alterstruktur"),
-        st.Page("modules/migration_kreise.py", title="Geographie"),
+        st.Page("modules/migration_kreise.py", title="Geographie (Karte)"),
+        st.Page("modules/migration_kreise_plots.py", title="Geographie (Plots)"),
         st.Page("modules/migration_einbuergerung.py", title="Einbürgerung"),
     ],
     "Integration": [
