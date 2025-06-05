@@ -85,16 +85,14 @@ def show():
     df = load_data()
     jahr_col = df.columns[0]
 
-    tab1, tab2, tab3 = st.tabs(["Übersicht", "Nach Herkunftsland", "Beschreibung"])
-
-    with tab3:
-        st.markdown("""
-        - **Beschäftigungsquote** im Vergleich zur Gesamtbevölkerung  
-        - **Typische Berufsfelder** und Branchen  
-        - **Einflussfaktoren**: Herkunftsregion, Aufenthaltsdauer, Bildungsniveau  
-        """)
+    tab1, tab2, tab3 = st.tabs(["Übersicht", "Beschreibung", "Nach Herkunftsland"])
 
     with tab2:
+        st.markdown("""
+        -
+        """)
+
+    with tab3:
         with st.expander("DataFrame anzeigen"):
             df_geschlecht = load_data_geschlecht()
             st.dataframe(df_geschlecht)
@@ -212,7 +210,6 @@ def show():
             st.plotly_chart(fig_bar, use_container_width=True)
 
     with tab1:
-
         st.subheader("Arbeitsmarktintegration — Deutsch vs. Ausländer")
         st.dataframe(df)
         cols = df.columns[1:]
@@ -312,7 +309,95 @@ def show():
             fig.update_layout(title=f"Vergleich nach Altersgruppen für {jahr}")
             st.plotly_chart(fig, use_container_width=True)
 
+        # Ältestes und aktuellstes Jahr bestimmen
+        cols = [c for c in df.columns if c != 'Jahr']
+
+        from collections import defaultdict
+        groups = defaultdict(dict)
+
+        for col in cols:
+            parts = col.split('_')
+            if len(parts) < 4:
+                continue
+            staat, merkmal, indikator, auspraegung = parts
+            groups[(merkmal, indikator, auspraegung)][staat] = col
+
+        min_jahr = 2015
+        max_jahr = df['Jahr'].max()
+        df_deutsch = df
+
+        # Jetzt "Deutsch" berechnen
+        for (merkmal, indikator, auspraegung), staat_dict in groups.items():
+            if 'insgesamt' in staat_dict and 'ausländer' in staat_dict:
+                col_insgesamt = staat_dict['insgesamt']
+                col_auslaender = staat_dict['ausländer']
+                deutsch_col_name = f"Deutsch_{merkmal}_{indikator}_{auspraegung}"
+                df_deutsch[deutsch_col_name] = df[col_insgesamt] - df[col_auslaender]
+
+        # Schritt 3: "Insgesamt"-Spalten aus Original-DataFrame entfernen (optional)
+        df_deutsch = df_deutsch.drop(columns=[col for col in df_deutsch.columns if col.startswith('insgesamt_')])
 
 
+        # Filter auf ältestes und aktuellstes Jahr
+        df_filtered = df_deutsch[df_deutsch['Jahr'].isin([min_jahr, max_jahr])]
+
+        deltas_abs = {}
+        deltas_prozent = {}
+
+        for col in df_filtered.columns:
+            if col == 'Jahr':
+                continue
+            start_wert = df_filtered.loc[df_filtered['Jahr'] == min_jahr, col].values
+            end_wert = df_filtered.loc[df_filtered['Jahr'] == max_jahr, col].values
+            if start_wert.size > 0 and end_wert.size > 0:
+                start = start_wert[0]
+                end = end_wert[0]
+                delta = end - start
+                deltas_abs[col] = delta
+                if start != 0:
+                    prozent_delta = delta / start * 100
+                    deltas_prozent[col] = prozent_delta
+                else:
+                    deltas_prozent[col] = None  # Division durch 0 vermeiden
+
+
+        sorted_abs = sorted(deltas_abs.items(), key=lambda x: abs(x[1]), reverse=True)
+        labels = [item[0] for item in sorted_abs[:10]]
+        values = [item[1] for item in sorted_abs[:10]]
+
+        fig1, ax1 = plt.subplots()
+        ax1.barh(labels, values)
+        ax1.set_title(f"Top 10 absolute Deltas ({min_jahr} → {max_jahr})")
+        ax1.set_xlabel("Delta absolut")
+        ax1.invert_yaxis()
+        st.pyplot(fig1)
+
+        # Nur valide Werte (ohne None)
+        filtered_prozent = {k: v for k, v in deltas_prozent.items() if v is not None}
+        sorted_prozent = sorted(filtered_prozent.items(), key=lambda x: abs(x[1]), reverse=True)
+
+        labels = [item[0] for item in sorted_prozent[:10]]
+        values = [item[1] for item in sorted_prozent[:10]]
+
+        fig2, ax2 = plt.subplots()
+        ax2.barh(labels, values)
+        ax2.set_title(f"Top 10 prozentuale Deltas ({min_jahr} → {max_jahr})")
+        ax2.set_xlabel("Delta in %")
+        ax2.invert_yaxis()
+        st.pyplot(fig2)
+
+        # Nur valide Werte (ohne None)
+        filtered_prozent = {k: v for k, v in deltas_prozent.items() if v is not None and v < 0}
+        sorted_prozent = sorted(filtered_prozent.items(), key=lambda x: abs(x[1]), reverse=True)
+
+        labels = [item[0] for item in sorted_prozent[:10]]
+        values = [item[1] for item in sorted_prozent[:10]]
+
+        fig2, ax2 = plt.subplots()
+        ax2.barh(labels, values)
+        ax2.set_title(f"Top 10 prozentuale Deltas ({min_jahr} → {max_jahr})")
+        ax2.set_xlabel("Delta in %")
+        ax2.invert_yaxis()
+        st.pyplot(fig2)
 
 show()
