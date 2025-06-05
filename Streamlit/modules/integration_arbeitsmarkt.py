@@ -85,7 +85,7 @@ def show():
     df = load_data()
     jahr_col = df.columns[0]
 
-    tab1, tab2, tab3 = st.tabs(["Übersicht", "Beschreibung", "Nach Herkunftsland"])
+    tab1, tab2, tab3 = st.tabs(["Übersicht", "Entwicklung", "Nach Herkunftsland"])
 
     with tab2:
         st.markdown("""
