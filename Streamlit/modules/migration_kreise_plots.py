@@ -1,9 +1,4 @@
 import streamlit as st
-import folium
-import branca.colormap as cm
-import geopandas as gpd
-import pandas as pd
-from pathlib import Path
 from streamlit_folium import st_folium
 import plotly.express as px
 
@@ -48,7 +43,6 @@ def show():
                 "Dichte": "Bevölkerungsdichte (Einwohner pro km²)",
                 "Anteil": "Ausländeranteil (%)"
             },
-            color_continuous_scale='Viridis',  # Farbpalette
         )
 
         fig.update_layout(
