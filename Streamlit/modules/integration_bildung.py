@@ -583,6 +583,8 @@ def show():
         url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Bildungsintegration/Destatis_21111-08_allgemeinbildende_schulen_2021_2024_zusammengefuegt.csv"
         df = pd.read_csv(url, sep=',')
 
+        # Nur gültige Einzelgeschlechter
+        df = df[df["Geschlecht"] != "Insgesamt"]
         # Erste zwei Spalten löschen
         df = df.drop(df.columns[:2], axis=1)
 
@@ -697,7 +699,6 @@ def show():
         # Daten einlesen
         url = "https://raw.githubusercontent.com/Antonijatzele/DSI_Abschlussprojekt/refs/heads/main/Daten/Integration/Bildungsintegration/auslaendische_Schueler_Staatsangehoerigkeit_1992_2020_aufbereitet.csv"
         df = pd.read_csv(url, sep=";")
-
         # Spalte umbenennen
         df.rename(columns={"Land der Staatsangehörigkeit": "Staatsangehörigkeit"}, inplace=True)
 
@@ -705,7 +706,7 @@ def show():
         df = df[df["Staatsangehörigkeit"].notna()]
         df = df[~df["Staatsangehörigkeit"].isin(["insgesamt", "Keine Angabe und ungeklärt"])]
         df = df[df["Jahr"].notna()]
-        df = df[df["Geschlecht"] != "z"]
+        df = df[df["Geschlecht"] == "z"]
         df = df[df["Anzahl"] != 0]
         df = df[~df["Kontinent"].isin(["Alle", "Keine Angabe und ungeklärt"])]
 
@@ -713,10 +714,10 @@ def show():
         df = df[df["Bundesland"] != "Deutschland"]
 
         # Geschlecht umbenennen
-        df["Geschlecht"] = df["Geschlecht"].map({
-            "m": "männlich",
-            "w": "weiblich"
-        })
+        #df["Geschlecht"] = df["Geschlecht"].map({
+         #   "m": "männlich",
+          #  "w": "weiblich"
+        #})
 
         # ----------------------------- #
         # Multiselect: Bundesland
@@ -1031,6 +1032,9 @@ def show():
 
         df['Anzahl'] = pd.to_numeric(df['Anzahl'], errors='coerce')
         df = df.dropna(subset=['Anzahl'])
+        df = df[df['Geschlecht'] != 'männlich']
+        df = df[df['Geschlecht'] != 'weiblich']
+
 
         valid_entries = [
             "Lehre / Berufsausbildung",
@@ -1045,6 +1049,11 @@ def show():
 
         df = df[df["Beruflicher Bildungsabschluss"].isin(valid_entries)]
         df = df[df["Migrationsstatus"] != "Insgesamt"]
+        with st.expander("DataFrame anzeigen"):
+            st.dataframe(df)
+
+
+
 
         farben = px.colors.qualitative.Plotly
         farbe_map = {abschluss: farben[i % len(farben)] for i, abschluss in enumerate(valid_entries)}
